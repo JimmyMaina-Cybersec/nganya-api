@@ -1,9 +1,12 @@
 import {Prop, Schema} from "@nestjs/mongoose";
 import { ObjectId } from "bson";
+import { HydratedDocument } from "mongoose";
+
+export type AvailabilityDocument = HydratedDocument<Availability>;
 
 @Schema()
 export class Availability {
-  
+
   @Prop({type:ObjectId, ref:"Station"})
   depatureStation: string;
 

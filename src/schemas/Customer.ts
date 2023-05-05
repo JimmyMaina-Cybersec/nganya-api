@@ -1,29 +1,29 @@
-import { Schema, model } from "mongoose";
+import { Prop, Schema } from "@nestjs/mongoose";
+import { HydratedDocument } from "mongoose";
 
- const customerSchema = new Schema({
-  firstName: {
-    type: String,
-    required: true,
-  },
+export type CustomerDocument = HydratedDocument<Customer>;
 
-  secondName: {
-    type: String,
-    required: true,
-  },
 
-  customerID: {
-    type: String,
-    required: true,
-  },
+@Schema()
+export class Customer {
+  @Prop({required: true})
+  firstName: string;
 
-  customerPhone: {
-    type: String,
-    required: true,
-  },
+  @Prop()
+  secondName: string;
 
-  seatNo: {
-    type: String,
-    required: false,
-  },
-});
-//  ticketModel = model("Ticket", ticket);
+  @Prop()
+  customerID: string;
+
+  @Prop({required: true})
+  customerPhone: string;
+
+  @Prop({required: true})
+  seatNo: string;
+
+  @Prop({default: new Date()})
+  addedOn: Date;
+
+  @Prop()
+  updatedOn: Date;
+}
