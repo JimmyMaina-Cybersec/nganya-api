@@ -8,6 +8,7 @@ import { UsersModule } from './users/users.module';
 import { VehiclesModule } from './vehicles/vehicles.module';
 import { SaccosModule } from './saccos/saccos.module';
 import { VehicleOwnersModule } from './vehicle-owners/vehicle-owners.module';
+import { AvailabilitiesModule } from './availabilities/availabilities.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { VehicleOwnersModule } from './vehicle-owners/vehicle-owners.module';
     VehiclesModule,
     SaccosModule,
     VehicleOwnersModule,
+    AvailabilitiesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
