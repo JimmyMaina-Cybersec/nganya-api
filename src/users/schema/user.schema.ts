@@ -1,11 +1,7 @@
 import { ObjectId } from 'bson';
-import {
-  Prop,
-  Schema,
-  SchemaFactory,
-} from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-import { Role } from 'src/types/role';
+import { Permission } from 'src/types/permission';
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -63,7 +59,7 @@ export class User {
   role: string;
 
   @Prop({ required: false })
-  roles: Role;
+  permission: Permission;
 
   @Prop({ default: 'active' })
   status: string;
@@ -99,5 +95,4 @@ export class User {
   refreshToken: string;
 }
 
-export const UserSchema =
-  SchemaFactory.createForClass(User);
+export const UserSchema = SchemaFactory.createForClass(User);

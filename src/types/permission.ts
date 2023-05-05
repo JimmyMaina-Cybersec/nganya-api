@@ -1,4 +1,4 @@
-export class Role {
+export class Permission {
   canBookSeats?: boolean;
   canDeleteUser?: boolean;
   canViewAgentsBookings?: boolean;

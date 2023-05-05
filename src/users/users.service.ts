@@ -1,10 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import {
-  User,
-  UserDocument,
-} from './schema/user.schema';
+import { User, UserDocument } from './schema/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
@@ -15,7 +12,7 @@ export class UsersService {
     private userModel: Model<UserDocument>,
   ) {}
 
-  create(createUserDto: CreateUserDto) {
+  addUser(createUserDto: CreateUserDto) {
     return 'This action adds a new user';
   }
 
@@ -27,10 +24,7 @@ export class UsersService {
     return `This action returns a #${idNo} user`;
   }
 
-  update(
-    id: string,
-    updateUserDto: UpdateUserDto,
-  ) {
+  update(id: string, updateUserDto: UpdateUserDto) {
     return `This action updates a #${id} user`;
   }
 
