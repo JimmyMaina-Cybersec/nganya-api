@@ -1,8 +1,5 @@
-import { saccoModel } from "./Sacco";
 import { ObjectId } from "bson";
 import { model, Schema } from "mongoose";
-import { rolesSchema } from "./Roles";
-import { stationModel } from "./Station";
 
 const userSchema = new Schema({
   uid: {
@@ -41,16 +38,16 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
-  sacco: {
-    type: ObjectId,
-    ref: saccoModel,
-    required: false,
-  },
-  station: {
-    type: ObjectId,
-    ref: stationModel,
-    required: false,
-  },
+  // sacco: {
+  //   type: ObjectId,
+  //   ref: saccoModel,
+  //   required: false,
+  // },
+  // station: {
+  //   type: ObjectId,
+  //   ref: stationModel,
+  //   required: false,
+  // },
   vehicle: {
     type: ObjectId,
     ref: "Vehicle",
@@ -60,10 +57,10 @@ const userSchema = new Schema({
     type: String,
     required: true,
   },
-  roles: {
-    type: rolesSchema,
-    required: false,
-  },
+  // roles: {
+  //   type: rolesSchema,
+  //   required: false,
+  // },
   status: {
     type: String,
     default: "active",
@@ -108,4 +105,4 @@ const userSchema = new Schema({
   },
 });
 
-export const userModel = model("User", userSchema);
+ const userModel = model("User", userSchema);

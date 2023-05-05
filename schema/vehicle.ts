@@ -103,4 +103,4 @@ const vehicle = new Schema({
     required: false,
   },
 });
-export const vehicleModel = model("Vehicle", vehicle);
+const vehicleModel = model("Vehicle", vehicle);

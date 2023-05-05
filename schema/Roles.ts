@@ -1,6 +1,6 @@
 import { Schema } from "mongoose";
 
-export const rolesSchema = new Schema({
+ const rolesSchema = new Schema({
   
   canBookSeats: {
     type: Boolean,

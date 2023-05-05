@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
 
-export const customerSchema = new Schema({
+ const customerSchema = new Schema({
   firstName: {
     type: String,
     required: true,
@@ -26,4 +26,4 @@ export const customerSchema = new Schema({
     required: false,
   },
 });
-// export const ticketModel = model("Ticket", ticket);
+//  ticketModel = model("Ticket", ticket);

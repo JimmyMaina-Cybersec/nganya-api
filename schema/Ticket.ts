@@ -1,4 +1,3 @@
-import { customerSchema } from "./Customer";
 import { ObjectId } from "bson";
 import { Schema, model } from "mongoose";
 
@@ -32,10 +31,10 @@ const ticket = new Schema({
     required: true,
   },
 
-  customers: {
-    type: [customerSchema],
-    required: true,
-  },
+  // customers: {
+  //   type: [customerSchema],
+  //   required: true,
+  // },
 
   billingNumber: {
     type: String,
@@ -93,4 +92,4 @@ const ticket = new Schema({
     required: false,
   },
 });
-export const ticketModel = model("Ticket", ticket);
+const ticketModel = model("Ticket", ticket);

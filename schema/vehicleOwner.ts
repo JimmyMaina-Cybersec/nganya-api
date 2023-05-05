@@ -1,16 +1,16 @@
 import { ObjectId } from "bson";
 import { Schema, model } from "mongoose";
 
-const station = new Schema({
-  name: {
-    type: String,
-    required: false,
-  },
-  street: {
+const vehicleOwner = new Schema({
+  firstName: {
     type: String,
     required: true,
   },
-  location: {
+  secondName: {
+    type: String,
+    required: true,
+  },
+  idNo: {
     type: String,
     required: true,
   },
@@ -18,17 +18,19 @@ const station = new Schema({
     type: String,
     required: true,
   },
+
   email: {
     type: String,
     required: false,
   },
   photoURL: {
     type: String,
-    required: false,
+    required: true,
   },
-  destinations: {
-    type: Array<String>,
-    ref: "Station",
+
+  vehicles: {
+    type: Array<ObjectId>,
+    ref: "Vehicle",
     default: [],
   },
   sacco: {
@@ -62,4 +64,4 @@ const station = new Schema({
     required: false,
   },
 });
-export const stationModel = model("Station", station);
+ const vehicleOwnerModel = model("VehicleOwner", vehicleOwner);

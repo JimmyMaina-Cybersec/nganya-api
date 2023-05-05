@@ -1,12 +1,16 @@
 import { ObjectId } from "bson";
 import { Schema, model } from "mongoose";
 
-const saccoSchema = new Schema({
+const station = new Schema({
   name: {
+    type: String,
+    required: false,
+  },
+  street: {
     type: String,
     required: true,
   },
-  address: {
+  location: {
     type: String,
     required: true,
   },
@@ -16,23 +20,25 @@ const saccoSchema = new Schema({
   },
   email: {
     type: String,
-    required: true,
+    required: false,
   },
-  logo: {
-    type: String,
-    required: true,
-  },
-  primaryColor: {
+  photoURL: {
     type: String,
     required: false,
   },
-  secondaryColor: {
-    type: String,
-    required: false,
+  destinations: {
+    type: Array<String>,
+    ref: "Station",
+    default: [],
+  },
+  sacco: {
+    type: ObjectId,
+    ref: "Sacco",
+    required: true,
   },
   status: {
     type: String,
-    required: false,
+    required: true,
     default: "active",
   },
   addedOn: {
@@ -56,5 +62,4 @@ const saccoSchema = new Schema({
     required: false,
   },
 });
-
-export const saccoModel = model("Sacco", saccoSchema);
+const stationModel = model("Station", station);

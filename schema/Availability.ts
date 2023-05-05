@@ -1,36 +1,41 @@
 import { ObjectId } from "bson";
 import { Schema, model } from "mongoose";
 
-const vehicleOwner = new Schema({
-  firstName: {
-    type: String,
+const availability = new Schema({
+  depatureStation: {
+    type: ObjectId,
+    ref: "Station",
     required: true,
   },
-  secondName: {
-    type: String,
+  finalDestinationStation: {
+    type: ObjectId,
+    ref: "Station",
     required: true,
   },
-  idNo: {
-    type: String,
-    required: true,
+  dropOffLocations: {
+    type: Array<String>,
+    default: [],
   },
-  phone: {
-    type: String,
-    required: true,
+  dropOffPrices: {
+    type: Array<Object>,
+    default: [],
   },
 
-  email: {
-    type: String,
+  depatureTime: {
+    type: Date,
     required: false,
   },
-  photoURL: {
-    type: String,
+  arrivalTime: {
+    type: Date,
+    required: false,
+  },
+  vehicle: {
+    type: ObjectId,
+    ref: "Vehicle",
     required: true,
   },
-
-  vehicles: {
-    type: Array<ObjectId>,
-    ref: "Vehicle",
+  bookedSeates: {
+    type: Array,
     default: [],
   },
   sacco: {
@@ -41,7 +46,7 @@ const vehicleOwner = new Schema({
   status: {
     type: String,
     required: true,
-    default: "active",
+    default: "available",
   },
   addedOn: {
     type: Date,
@@ -64,4 +69,4 @@ const vehicleOwner = new Schema({
     required: false,
   },
 });
-export const vehicleOwnerModel = model("VehicleOwner", vehicleOwner);
+ const availabilityModel = model("Availability", availability);

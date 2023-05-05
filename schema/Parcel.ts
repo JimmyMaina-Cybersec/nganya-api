@@ -1,6 +1,5 @@
 import { ObjectId } from "bson";
 import { Schema, model } from "mongoose";
-import { customerSchema } from "./Customer";
 
 const parcel = new Schema({
   paymentID: {
@@ -48,14 +47,14 @@ const parcel = new Schema({
     required: true,
     default: "pending",
   },
-  sendingCustomer: {
-    type: customerSchema,
-    required: true,
-  },
-  receivingCustomer: {
-    type: customerSchema,
-    required: true,
-  },
+  // sendingCustomer: {
+  //   type: customerSchema,
+  //   required: true,
+  // },
+  // receivingCustomer: {
+  //   type: customerSchema,
+  //   required: true,
+  // },
   sendingFrom: {
     type: ObjectId,
     ref: "Station",
@@ -107,4 +106,4 @@ const parcel = new Schema({
     required: false,
   },
 });
-export const parcelModel = model("Parcel", parcel);
+ const parcelModel = model("Parcel", parcel);
