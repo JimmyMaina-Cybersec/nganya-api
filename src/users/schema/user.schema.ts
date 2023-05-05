@@ -94,6 +94,9 @@ export class User {
     required: false,
   })
   deletedBy: User;
+
+  @Prop({ default: false })
+  refreshToken: string;
 }
 
 export const UserSchema =
