@@ -6,6 +6,7 @@ import { ConfigModule } from '@nestjs/config';
 import { StationsModule } from './stations/stations.module';
 import { UsersModule } from './users/users.module';
 import { VehiclesModule } from './vehicles/vehicles.module';
+import { SaccosModule } from './saccos/saccos.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { VehiclesModule } from './vehicles/vehicles.module';
     StationsModule,
     UsersModule,
     VehiclesModule,
+    SaccosModule,
   ],
   controllers: [AppController],
   providers: [AppService],
