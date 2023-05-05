@@ -10,6 +10,7 @@ import { SaccosModule } from './saccos/saccos.module';
 import { VehicleOwnersModule } from './vehicle-owners/vehicle-owners.module';
 import { AvailabilitiesModule } from './availabilities/availabilities.module';
 import { AuthModule } from './auth/auth.module';
+import { ProfileModule } from './profile/profile.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { AuthModule } from './auth/auth.module';
     VehicleOwnersModule,
     AvailabilitiesModule,
     AuthModule,
+    ProfileModule,
   ],
   controllers: [AppController],
   providers: [AppService],
