@@ -1,4 +1,5 @@
 import {
+  ForbiddenException,
   HttpException,
   HttpStatus,
   Injectable,
@@ -13,8 +14,10 @@ import {
 import { compare } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import { access } from 'fs';
-import { sign } from 'crypto';
+import * as argon2 from 'argon2';
+import { LogoutDto } from './dto/logout.dto';
+import { JwtPayload } from 'src/types/jwt-payload';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 
 @Injectable()
 export class AuthService {
@@ -31,10 +34,7 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new HttpException(
-        'Invalid credentials',
-        HttpStatus.UNAUTHORIZED,
-      );
+      throw new ForbiddenException('Invalid credentials');
     }
 
     const isMatch = await compare(
@@ -55,7 +55,7 @@ export class AuthService {
   }
 
   async signToken(user: UserDocument) {
-    const payload = {
+    const payload: JwtPayload = {
       _id: user._id,
       sub: user._id,
       firstName: user.firstName,
@@ -87,13 +87,16 @@ export class AuthService {
       }),
     ]);
 
-    await user
-      .updateOne({ refreshToken: refreshToken })
-      .exec();
+    const hashedRefreshToken = await argon2.hash(
+      refreshToken,
+    );
 
+    await user
+      .updateOne({ refreshToken: hashedRefreshToken })
+      .exec();
+    HttpStatus.OK;
     return {
       access_token: accessToken,
-
       refresh_token: refreshToken,
     };
   }
@@ -111,5 +114,9 @@ export class AuthService {
     return this.signToken(user);
   }
 
-  signOut() {}
+  async signOut(id: string) {
+    this.userModel.findByIdAndUpdate(id, {
+      refreshToken: null,
+    });
+  }
 }

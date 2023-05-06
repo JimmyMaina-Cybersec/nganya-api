@@ -5,12 +5,16 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { ProfileService } from './profile.service';
-import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { JwtGuard } from 'src/auth/guards/jwt.guard';
+import { JwtPayload } from 'src/types/jwt-payload';
+import { ObjectId } from 'mongodb';
 
+@UseGuards(JwtGuard)
 @Controller('profile')
 export class ProfileController {
   constructor(
@@ -18,8 +22,8 @@ export class ProfileController {
   ) {}
 
   @Get()
-  findOne(@Param('id') id: string) {
-    return this.profileService.myProfile(+id);
+  findOne(@CurrentUser('_id') id: ObjectId) {
+    return this.profileService.myProfile(id);
   }
 
   @Patch('update')
