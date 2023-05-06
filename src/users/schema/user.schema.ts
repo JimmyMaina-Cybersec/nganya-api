@@ -3,7 +3,11 @@ import {
   Schema,
   SchemaFactory,
 } from '@nestjs/mongoose';
-import { HydratedDocument, Types } from 'mongoose';
+import {
+  HydratedDocument,
+  SchemaTypes,
+  Types,
+} from 'mongoose';
 import { Permission } from 'src/types/permission';
 
 export type UserDocument = HydratedDocument<User>;
@@ -38,21 +42,21 @@ export class User {
   photoURL: string;
 
   @Prop({
-    type: Types.ObjectId,
+    type: SchemaTypes.ObjectId,
     ref: 'Vehicle',
     required: false,
   })
   vehicle: string;
 
   @Prop({
-    type: Types.ObjectId,
+    type: SchemaTypes.ObjectId,
     ref: 'Sacco',
     required: false,
   })
   sacco: Types.ObjectId;
 
   @Prop({
-    type: Types.ObjectId,
+    type: SchemaTypes.ObjectId,
     ref: 'Station',
     required: false,
   })
