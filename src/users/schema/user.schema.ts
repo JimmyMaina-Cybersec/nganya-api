@@ -1,6 +1,13 @@
-import { ObjectId } from 'bson';
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import {
+  Prop,
+  Schema,
+  SchemaFactory,
+} from '@nestjs/mongoose';
+import {
+  HydratedDocument,
+  SchemaTypes,
+  Types,
+} from 'mongoose';
 import { Permission } from 'src/types/permission';
 
 export type UserDocument = HydratedDocument<User>;
@@ -35,34 +42,44 @@ export class User {
   photoURL: string;
 
   @Prop({
-    type: ObjectId,
+    type: SchemaTypes.ObjectId,
     ref: 'Vehicle',
     required: false,
   })
   vehicle: string;
 
   @Prop({
-    type: ObjectId,
+    type: SchemaTypes.ObjectId,
     ref: 'Sacco',
     required: false,
   })
-  sacco: string;
+  sacco: Types.ObjectId;
 
   @Prop({
-    type: ObjectId,
+    type: SchemaTypes.ObjectId,
     ref: 'Station',
     required: false,
   })
-  station: string;
+  station: Types.ObjectId;
 
   @Prop({ required: true })
-  role: string;
+  role:
+    | 'Super User'
+    | 'general admin'
+    | 'admin'
+    | 'station manager'
+    | 'accountant'
+    | 'station agent'
+    | 'driver';
 
   @Prop({ required: false })
   permission: Permission;
 
   @Prop({ default: 'active' })
   status: string;
+
+  @Prop({ default: null, required: false })
+  lastLogin: Date;
 
   @Prop({ default: () => Date.now() })
   addedOn: Date;
@@ -71,21 +88,21 @@ export class User {
   updatedOn: Date;
 
   @Prop({
-    type: ObjectId,
+    type: Types.ObjectId,
     ref: 'User',
     required: false,
   })
   addedBy: User;
 
   @Prop({
-    type: ObjectId,
+    type: Types.ObjectId,
     ref: 'User',
     required: false,
   })
   updatedBy: User;
 
   @Prop({
-    type: ObjectId,
+    type: Types.ObjectId,
     ref: 'User',
     required: false,
   })
@@ -95,4 +112,5 @@ export class User {
   refreshToken: string;
 }
 
-export const UserSchema = SchemaFactory.createForClass(User);
+export const UserSchema =
+  SchemaFactory.createForClass(User);
