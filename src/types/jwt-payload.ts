@@ -10,6 +10,15 @@ export class JwtPayload {
   phone: string;
   email: string;
   photoURL: string;
-  role: string;
+  role:
+    | 'Super User'
+    | 'general admin'
+    | 'admin'
+    | 'station manager'
+    | 'accountant'
+    | 'station agent'
+    | 'driver';
+  sacco: ObjectId;
+  station?: ObjectId;
   permission?: Permission;
 }

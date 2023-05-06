@@ -11,8 +11,9 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { AuthGuard } from '@nestjs/passport';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
+import { JwtPayload } from 'src/types/jwt-payload';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 
 @UseGuards(JwtGuard)
 @Controller('users')
@@ -27,8 +28,8 @@ export class UsersController {
   }
 
   @Get()
-  findAll() {
-    return this.usersService.findAll();
+  findAll(@CurrentUser() currentUser: JwtPayload) {
+    return this.usersService.findAll(currentUser);
   }
 
   @Get(':id')

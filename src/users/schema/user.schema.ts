@@ -1,10 +1,9 @@
-import { ObjectId } from 'bson';
 import {
   Prop,
   Schema,
   SchemaFactory,
 } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import { HydratedDocument, Types } from 'mongoose';
 import { Permission } from 'src/types/permission';
 
 export type UserDocument = HydratedDocument<User>;
@@ -39,28 +38,35 @@ export class User {
   photoURL: string;
 
   @Prop({
-    type: ObjectId,
+    type: Types.ObjectId,
     ref: 'Vehicle',
     required: false,
   })
   vehicle: string;
 
   @Prop({
-    type: ObjectId,
+    type: Types.ObjectId,
     ref: 'Sacco',
     required: false,
   })
-  sacco: string;
+  sacco: Types.ObjectId;
 
   @Prop({
-    type: ObjectId,
+    type: Types.ObjectId,
     ref: 'Station',
     required: false,
   })
-  station: string;
+  station: Types.ObjectId;
 
   @Prop({ required: true })
-  role: string;
+  role:
+    | 'Super User'
+    | 'general admin'
+    | 'admin'
+    | 'station manager'
+    | 'accountant'
+    | 'station agent'
+    | 'driver';
 
   @Prop({ required: false })
   permission: Permission;
@@ -78,21 +84,21 @@ export class User {
   updatedOn: Date;
 
   @Prop({
-    type: ObjectId,
+    type: Types.ObjectId,
     ref: 'User',
     required: false,
   })
   addedBy: User;
 
   @Prop({
-    type: ObjectId,
+    type: Types.ObjectId,
     ref: 'User',
     required: false,
   })
   updatedBy: User;
 
   @Prop({
-    type: ObjectId,
+    type: Types.ObjectId,
     ref: 'User',
     required: false,
   })

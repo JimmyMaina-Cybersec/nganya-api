@@ -65,6 +65,8 @@ export class AuthService {
       email: user.email,
       photoURL: user.photoURL,
       role: user.role,
+      sacco: user.sacco,
+      station: user.station,
       permission: user.permission,
     };
 
