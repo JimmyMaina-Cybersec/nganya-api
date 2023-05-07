@@ -18,7 +18,7 @@ export class JwtPayload {
     | 'accountant'
     | 'station agent'
     | 'driver';
-  sacco: ObjectId;
-  station?: ObjectId;
+  sacco: ObjectId | string;
+  station?: ObjectId | string;
   permission?: Permission;
 }
