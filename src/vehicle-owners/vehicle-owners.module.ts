@@ -6,6 +6,7 @@ import {
   VehicleOwner,
   VehicleOwnerSchema,
 } from './schema/vehicle-owner.schema';
+import { Sacco, SaccoSchema } from 'src/saccos/schema/sacco.schema';
 
 @Module({
   controllers: [VehicleOwnersController],
@@ -14,6 +15,10 @@ import {
       {
         name: VehicleOwner.name,
         schema: VehicleOwnerSchema,
+      },
+      {
+        name: Sacco.name,
+        schema: SaccoSchema,
       },
     ]),
   ],
