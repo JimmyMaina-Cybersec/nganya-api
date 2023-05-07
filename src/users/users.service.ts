@@ -5,7 +5,10 @@ import {
 } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { User, UserDocument } from './schema/user.schema';
+import {
+  User,
+  UserDocument,
+} from './schema/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
@@ -30,7 +33,7 @@ export class UsersService {
         console.log(currentUser);
 
         return await this.userModel.find({
-          addedBy: '644263cff75a6b9202bea33d',
+          sacco: currentUser.sacco,
         });
 
       case 'general admin':
@@ -53,7 +56,10 @@ export class UsersService {
     return `This action returns a #${idNo} user`;
   }
 
-  update(id: string, updateUserDto: UpdateUserDto) {
+  update(
+    id: string,
+    updateUserDto: UpdateUserDto,
+  ) {
     return `This action updates a #${id} user`;
   }
 
