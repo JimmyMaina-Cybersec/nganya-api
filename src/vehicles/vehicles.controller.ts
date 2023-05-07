@@ -1,34 +1,59 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { VehiclesService } from './vehicles.service';
 import { CreateVehicleDto } from './dto/create-vehicle.dto';
 import { UpdateVehicleDto } from './dto/update-vehicle.dto';
+import { JwtGuard } from 'src/auth/guards/jwt.guard';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { JwtPayload } from 'src/types/jwt-payload';
 
+@UseGuards(JwtGuard)
 @Controller('vehicles')
 export class VehiclesController {
   constructor(private readonly vehiclesService: VehiclesService) {}
 
-  @Post()
-  create(@Body() createVehicleDto: CreateVehicleDto) {
-    return this.vehiclesService.create(createVehicleDto);
+  @Post('add-vehicle/:vehicleOwnerID')
+  addVehicle(
+    @Body() createVehicleDto: CreateVehicleDto,
+    @CurrentUser() user: JwtPayload,
+    @Param('vehicleOwnerID') vehicleOwner: string,
+  ) {
+    return this.vehiclesService.addVehicle(
+      createVehicleDto,
+      user,
+      vehicleOwner,
+    );
   }
 
   @Get()
-  findAll() {
-    return this.vehiclesService.findAll();
+  findAll(@CurrentUser() user: JwtPayload) {
+    return this.vehiclesService.findAll(user);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.vehiclesService.findOne(+id);
+  findOne(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+    return this.vehiclesService.findOne(id, user);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateVehicleDto: UpdateVehicleDto) {
-    return this.vehiclesService.update(+id, updateVehicleDto);
+  @Patch('upadate-vehicle/:id')
+  updateVehicle(
+    @Param('id') id: string,
+    @Body() updateVehicleDto: UpdateVehicleDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.vehiclesService.updateVehicle(id, updateVehicleDto, user);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.vehiclesService.remove(+id);
+  @Delete('delete-vehicle/:id')
+  deleteVehicle(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+    return this.vehiclesService.deleteVehicle(id, user);
   }
 }
