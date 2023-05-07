@@ -6,13 +6,12 @@ import {
 import { IsEmail } from 'class-validator';
 import {
   HydratedDocument,
-  SchemaType,
   SchemaTypes,
   Types,
 } from 'mongoose';
-import { Permission } from 'src/types/permission';
 
-export type SaccoDocument = HydratedDocument<Sacco>;
+export type SaccoDocument =
+  HydratedDocument<Sacco>;
 
 @Schema({ timestamps: true })
 export class Sacco {
@@ -58,7 +57,10 @@ export class Sacco {
   @Prop({ required: false })
   updatedOn: Date;
 
-  @Prop({ required: false, type: SchemaTypes.ObjectId })
+  @Prop({
+    required: false,
+    type: SchemaTypes.ObjectId,
+  })
   updatedBy: Types.ObjectId | string;
 }
 
