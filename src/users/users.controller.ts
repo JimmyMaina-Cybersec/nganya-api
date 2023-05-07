@@ -23,30 +23,47 @@ export class UsersController {
   ) {}
 
   @Post('add-user')
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.usersService.addUser(createUserDto);
+  create(
+    @Body() createUserDto: CreateUserDto,
+    @CurrentUser() currentUser: JwtPayload,
+  ) {
+    return this.usersService.addUser(
+      createUserDto,
+      currentUser,
+    );
   }
 
   @Get()
   findAll(@CurrentUser() currentUser: JwtPayload) {
-    return this.usersService.findAll(currentUser);
+    return this.usersService.findAllUsers(currentUser);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(id);
+  findOne(
+    @Param('id') id: string,
+    @CurrentUser() currentUser: JwtPayload,
+  ) {
+    return this.usersService.findUser(id, currentUser);
   }
 
-  @Patch(':id')
-  update(
+  @Patch('update-user/:id')
+  updateUser(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
+    @CurrentUser() currentUser: JwtPayload,
   ) {
-    return this.usersService.update(id, updateUserDto);
+    return this.usersService.updateUser(
+      id,
+      updateUserDto,
+      currentUser,
+    );
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.usersService.remove(id);
+  @Delete('delete-user/:id')
+  deleteUser(
+    @Param('id') id: string,
+    @CurrentUser() currentUser: JwtPayload,
+  ) {
+    return this.usersService.deleteUser(id, currentUser);
   }
 }

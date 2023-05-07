@@ -8,11 +8,12 @@ import {
   SchemaTypes,
   Types,
 } from 'mongoose';
+import { Sacco } from 'src/saccos/schema/sacco.schema';
 import { Permission } from 'src/types/permission';
 
 export type UserDocument = HydratedDocument<User>;
 
-@Schema()
+@Schema({ timestamps: true })
 export class User {
   @Prop({ required: false })
   uid: string;
@@ -53,14 +54,14 @@ export class User {
     ref: 'Sacco',
     required: false,
   })
-  sacco: Types.ObjectId;
+  sacco: Types.ObjectId | string;
 
   @Prop({
     type: SchemaTypes.ObjectId,
     ref: 'Station',
     required: false,
   })
-  station: Types.ObjectId;
+  station: Types.ObjectId | string;
 
   @Prop({ required: true })
   role:
@@ -88,25 +89,25 @@ export class User {
   updatedOn: Date;
 
   @Prop({
-    type: Types.ObjectId,
+    type: SchemaTypes.ObjectId,
     ref: 'User',
     required: false,
   })
-  addedBy: User;
+  addedBy: Types.ObjectId | string;
 
   @Prop({
-    type: Types.ObjectId,
+    type: SchemaTypes.ObjectId,
     ref: 'User',
     required: false,
   })
-  updatedBy: User;
+  updatedBy: Types.ObjectId | string;
 
   @Prop({
-    type: Types.ObjectId,
+    type: SchemaTypes.ObjectId,
     ref: 'User',
     required: false,
   })
-  deletedBy: User;
+  deletedBy: Types.ObjectId | string;
 
   @Prop({ default: false })
   refreshToken: string;

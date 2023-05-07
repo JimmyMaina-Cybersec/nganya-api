@@ -28,7 +28,14 @@ export class CreateUserDto {
 
   @IsString()
   @IsNotEmpty()
-  readonly role: string;
+  readonly role:
+    | 'Super User'
+    | 'general admin'
+    | 'admin'
+    | 'station manager'
+    | 'accountant'
+    | 'station agent'
+    | 'driver';
 
   @IsString()
   @IsNotEmpty()
