@@ -49,7 +49,30 @@ export class VehiclesService {
   }
 
   findAll(user: JwtPayload) {
-    return `This action returns all vehicles`;
+    if (
+      user.role === 'Super User' ||
+      user.role === 'admin' ||
+      user.role === 'general admin'
+    ) {
+      return this.vehicleModel
+        .find({
+          sacco: user.sacco,
+        })
+        .exec();
+    } else if (user.role === 'station agent' || 'station manager') {
+      return this.vehicleModel
+        .find({
+          sacco: user.sacco,
+        })
+        .or([
+          { lastStation: user.station },
+          { currentStation: user.station },
+          { nextStation: user.station },
+        ])
+        .exec();
+    } else {
+      return [];
+    }
   }
 
   findOne(id: string, user: JwtPayload) {
