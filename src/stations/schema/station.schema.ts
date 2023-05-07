@@ -10,34 +10,40 @@ import {
   Types,
 } from 'mongoose';
 
-export type SaccoDocument =
-  HydratedDocument<Sacco>;
+export type StationDocument =
+  HydratedDocument<Station>;
 
 @Schema({ timestamps: true })
-export class Sacco {
+export class Station {
   @Prop({ required: true })
   name: string;
 
-  @IsEmail()
   @Prop({ required: true })
-  email: string;
+  street: string;
+
+  @Prop({ required: true })
+  location: string;
 
   @Prop({ required: true })
   phone: string;
 
-  @Prop({ required: true })
-  address: string;
-
-  @Prop({ required: true })
-  logo: string;
+  @IsEmail()
+  @Prop({ required: false })
+  email: string;
 
   @Prop({ required: false })
-  primaryColor: string;
+  photoURL: string;
 
-  @Prop({ required: false })
-  secondaryColor: string;
+  @Prop({ required: false, default: [] })
+  destinations: Array<string>;
 
-  @Prop({ required: false, default: 'active' })
+  @Prop({
+    required: true,
+    type: SchemaTypes.ObjectId,
+  })
+  sacco: Types.ObjectId;
+
+  @Prop({ required: true, default: 'active' })
   status: string;
 
   @Prop({
@@ -64,5 +70,5 @@ export class Sacco {
   updatedBy: Types.ObjectId | string;
 }
 
-export const SaccoSchema =
-  SchemaFactory.createForClass(Sacco);
+export const StationSchema =
+  SchemaFactory.createForClass(Station);
