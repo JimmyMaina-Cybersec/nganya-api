@@ -12,7 +12,6 @@ import { AvailabilitiesModule } from './availabilities/availabilities.module';
 import { AuthModule } from './auth/auth.module';
 import { ProfileModule } from './profile/profile.module';
 import { BookingModule } from './booking/booking.module';
-import { TestPresenceModule } from './test-presence/test-presence.module';
 
 @Module({
   imports: [
@@ -29,7 +28,6 @@ import { TestPresenceModule } from './test-presence/test-presence.module';
     AuthModule,
     ProfileModule,
     BookingModule,
-    TestPresenceModule,
   ],
   controllers: [AppController],
   providers: [AppService],

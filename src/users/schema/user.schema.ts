@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, SchemaTypes, Types } from 'mongoose';
-import { Sacco } from 'src/saccos/schema/sacco.schema';
 import { Permission } from 'src/types/permission';
 
 export type UserDocument = HydratedDocument<User>;
