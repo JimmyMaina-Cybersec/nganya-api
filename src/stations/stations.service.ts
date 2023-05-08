@@ -141,7 +141,25 @@ export class StationsService {
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} station`;
+  async remove(id: string, user: JwtPayload) {
+    try {
+      if (user.role === 'Super User') {
+        await this.stationModel.findByIdAndDelete(id);
+      }
+      if (user.role === 'admin' || user.role === 'general admin') {
+        await this.stationModel.findOneAndDelete({
+          _id: id,
+          sacco: user.sacco,
+        });
+      } else {
+        return new HttpException(
+          'You are not allowed to perform this action',
+          HttpStatus.FORBIDDEN,
+        );
+      }
+      return new HttpException('Station deleted successfully', HttpStatus.OK);
+    } catch (error) {
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 }

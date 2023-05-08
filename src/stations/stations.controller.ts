@@ -18,19 +18,14 @@ import { JwtPayload } from 'src/types/jwt-payload';
 @UseGuards(JwtGuard)
 @Controller('stations')
 export class StationsController {
-  constructor(
-    private readonly stationsService: StationsService,
-  ) {}
+  constructor(private readonly stationsService: StationsService) {}
 
   @Post('add-station')
   create(
     @Body() createStationDto: CreateStationDto,
     @CurrentUser() currentUser: JwtPayload,
   ) {
-    return this.stationsService.createSacco(
-      createStationDto,
-      currentUser,
-    );
+    return this.stationsService.createSacco(createStationDto, currentUser);
   }
 
   @Get()
@@ -48,10 +43,7 @@ export class StationsController {
     @CurrentUser() currentUser: JwtPayload,
     @Param('id') id: string,
   ) {
-    return this.stationsService.findOneStation(
-      currentUser,
-      id,
-    );
+    return this.stationsService.findOneStation(currentUser, id);
   }
 
   @Patch('update-station/:id')
@@ -67,8 +59,8 @@ export class StationsController {
     );
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.stationsService.remove(+id);
+  @Delete('delete-station/:id')
+  remove(@Param('id') id: string, @CurrentUser() currentUser: JwtPayload) {
+    return this.stationsService.remove(id, currentUser);
   }
 }
