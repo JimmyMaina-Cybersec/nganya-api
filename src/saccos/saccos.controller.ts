@@ -1,34 +1,54 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { SaccosService } from './saccos.service';
 import { CreateSaccoDto } from './dto/create-sacco.dto';
 import { UpdateSaccoDto } from './dto/update-sacco.dto';
+import { JwtGuard } from 'src/auth/guards/jwt.guard';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { JwtPayload } from 'src/types/jwt-payload';
 
+@UseGuards(JwtGuard)
 @Controller('saccos')
 export class SaccosController {
   constructor(private readonly saccosService: SaccosService) {}
 
   @Post()
-  create(@Body() createSaccoDto: CreateSaccoDto) {
-    return this.saccosService.create(createSaccoDto);
+  create(
+    @Body() createSaccoDto: CreateSaccoDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.saccosService.create(createSaccoDto, user);
   }
 
   @Get()
-  findAll() {
-    return this.saccosService.findAll();
+  findAll(@CurrentUser() user: JwtPayload) {
+    return this.saccosService.findAll(user);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.saccosService.findOne(+id);
+  findOne(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+    return this.saccosService.findOne(id, user);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateSaccoDto: UpdateSaccoDto) {
-    return this.saccosService.update(+id, updateSaccoDto);
+  @Patch('update-sacco/:id')
+  update(
+    @Param('id') id: string,
+    @Body() updateSaccoDto: UpdateSaccoDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.saccosService.updateSacco(id, updateSaccoDto, user);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.saccosService.remove(+id);
+  @Delete('delete-sacco/:id')
+  remove(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+    return this.saccosService.remove(id, user);
   }
 }
