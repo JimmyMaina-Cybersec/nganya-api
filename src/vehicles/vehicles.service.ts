@@ -76,7 +76,27 @@ export class VehiclesService {
   }
 
   findOne(id: string, user: JwtPayload) {
-    return `This action returns a #${id} vehicle`;
+    if (user.role === 'Super User') {
+      return this.vehicleModel.findById(id);
+    }
+    if (user.role === 'admin' || user.role === 'general admin') {
+      return this.vehicleModel.findOne({
+        _id: id,
+        sacco: user.sacco,
+      });
+    }
+    if (user.role === 'station agent' || user.role === 'station manager') {
+      return this.vehicleModel
+        .findOne({
+          _id: id,
+          sacco: user.sacco,
+        })
+        .select('-owner');
+    }
+    return new HttpException(
+      'You are not allowed to see Details of the selected vehicle',
+      HttpStatus.FORBIDDEN,
+    );
   }
 
   updateVehicle(
