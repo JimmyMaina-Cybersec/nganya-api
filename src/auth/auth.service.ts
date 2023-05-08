@@ -11,7 +11,6 @@ import { User, UserDocument } from 'src/users/schema/user.schema';
 
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
-import * as argon2 from 'argon2';
 import { JwtPayload } from 'src/types/jwt-payload';
 
 @Injectable()
@@ -71,9 +70,9 @@ export class AuthService {
       }),
     ]);
 
-    const hashedRefreshToken = await argon2.hash(refreshToken);
+    // const hashedRefreshToken = await argon2.hash(refreshToken);
 
-    await user.updateOne({ refreshToken: hashedRefreshToken }).exec();
+    await user.updateOne({ refreshToken: refreshToken }).exec();
     HttpStatus.OK;
     return {
       access_token: accessToken,
