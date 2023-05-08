@@ -1,14 +1,7 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateStationDto } from './dto/create-station.dto';
 import { UpdateStationDto } from './dto/update-station.dto';
-import {
-  Station,
-  StationDocument,
-} from './schema/station.schema';
+import { Station, StationDocument } from './schema/station.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { JwtPayload } from 'src/types/jwt-payload';
@@ -39,15 +32,8 @@ export class StationsService {
     }
   }
 
-  async createSacco(
-    createStationDto: CreateStationDto,
-    user: JwtPayload,
-  ) {
-    if (
-      user.role === 'Super User' ||
-      user.role === 'admin' ||
-      user.role === 'general admin'
-    ) {
+  async createSacco(createStationDto: CreateStationDto, user: JwtPayload) {
+    if (user.role == 'Super User' || 'admin' || 'general admin') {
       try {
         await this.stationModel.create({
           ...createStationDto,
@@ -59,10 +45,7 @@ export class StationsService {
           message: 'Station created successfully',
         };
       } catch (error) {
-        throw new HttpException(
-          error.message,
-          HttpStatus.BAD_REQUEST,
-        );
+        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
       }
     }
     return 'This action adds a new station';
@@ -93,10 +76,7 @@ export class StationsService {
             .select('_id name location street');
       }
     } catch (error) {
-      throw new HttpException(
-        error.message,
-        HttpStatus.BAD_REQUEST,
-      );
+      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
 
@@ -108,9 +88,7 @@ export class StationsService {
    * @returns Promise<Station>
    */
   async myStation(userStationID: string) {
-    const station = await this.stationModel.findById(
-      userStationID,
-    );
+    const station = await this.stationModel.findById(userStationID);
     if (!station) {
       return new HttpException(
         'You are not assigned to any station',
@@ -136,10 +114,10 @@ export class StationsService {
     stationID: string,
   ) {
     if (
-      user.role === 'Super User' ||
-      user.role === 'admin' ||
-      user.role === 'general admin' ||
-      user.role === 'station manager'
+      user.role == 'Super User' ||
+      'admin' ||
+      'general admin' ||
+      'station manager'
     ) {
       await this.stationModel.findByIdAndUpdate(stationID, {
         ...updateStationDto,
