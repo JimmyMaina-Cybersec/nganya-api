@@ -7,17 +7,12 @@ import {
 import { CreateAuthDto } from './dto/login.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import {
-  User,
-  UserDocument,
-} from 'src/users/schema/user.schema';
-import { compare } from 'bcrypt';
+import { User, UserDocument } from 'src/users/schema/user.schema';
+import * as bcrypt from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as argon2 from 'argon2';
-import { LogoutDto } from './dto/logout.dto';
 import { JwtPayload } from 'src/types/jwt-payload';
-import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 
 @Injectable()
 export class AuthService {
@@ -37,16 +32,10 @@ export class AuthService {
       throw new ForbiddenException('Invalid credentials');
     }
 
-    const isMatch = await compare(
-      createAuthDto.password,
-      user.password,
-    );
+    const isMatch = await bcrypt.compare(createAuthDto.password, user.password);
 
     if (!isMatch) {
-      throw new HttpException(
-        'Invalid credentials',
-        HttpStatus.UNAUTHORIZED,
-      );
+      throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
     }
 
     await user.updateOne({ lastLogin: new Date() }).exec();
@@ -72,30 +61,18 @@ export class AuthService {
 
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, {
-        secret: this.configService.get(
-          'ACCESS_TOKEN_SECRET',
-        ),
-        expiresIn: this.configService.get(
-          'JWT_EXPIRATION_TIME',
-        ),
+        secret: this.configService.get('ACCESS_TOKEN_SECRET'),
+        expiresIn: this.configService.get('JWT_EXPIRATION_TIME'),
       }),
       this.jwtService.signAsync(payload, {
-        secret: this.configService.get(
-          'REFRESH_TOKEN_SECRET',
-        ),
-        expiresIn: this.configService.get(
-          'REFRESH_TOKEN_EXPIRATION_TIME',
-        ),
+        secret: this.configService.get('REFRESH_TOKEN_SECRET'),
+        expiresIn: this.configService.get('REFRESH_TOKEN_EXPIRATION_TIME'),
       }),
     ]);
 
-    const hashedRefreshToken = await argon2.hash(
-      refreshToken,
-    );
+    const hashedRefreshToken = await argon2.hash(refreshToken);
 
-    await user
-      .updateOne({ refreshToken: hashedRefreshToken })
-      .exec();
+    await user.updateOne({ refreshToken: hashedRefreshToken }).exec();
     HttpStatus.OK;
     return {
       access_token: accessToken,
@@ -108,10 +85,7 @@ export class AuthService {
       refreshToken: refreshToken,
     });
     if (!user) {
-      throw new HttpException(
-        'Invalid token',
-        HttpStatus.UNAUTHORIZED,
-      );
+      throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
     }
     return this.signToken(user);
   }
