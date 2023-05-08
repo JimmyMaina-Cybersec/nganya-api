@@ -47,7 +47,6 @@ export class SaccosService {
       'You are not allowed to get all saccos',
       HttpStatus.FORBIDDEN,
     );
-    return `This action returns all saccos`;
   }
 
   findOne(id: string, user: JwtPayload) {
