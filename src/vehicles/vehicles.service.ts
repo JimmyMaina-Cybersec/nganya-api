@@ -116,6 +116,11 @@ export class VehiclesService {
           _id: id,
           sacco: user.sacco,
         });
+      } else {
+        return new HttpException(
+          'You are not allowed to delete this vehicle',
+          HttpStatus.FORBIDDEN,
+        );
       }
       return new HttpException('Vehicle deleted successfully', HttpStatus.OK);
     } catch (error) {
