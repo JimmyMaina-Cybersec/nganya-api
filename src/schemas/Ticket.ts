@@ -1,5 +1,5 @@
-import { ObjectId } from "bson";
-import { Schema, model } from "mongoose";
+import { ObjectId } from 'bson';
+import { Schema, model } from 'mongoose';
 
 const ticket = new Schema({
   bookedSeats: {
@@ -18,7 +18,7 @@ const ticket = new Schema({
 
   from: {
     type: ObjectId,
-    ref: "Station",
+    ref: 'Station',
     required: true,
   },
   to: {
@@ -27,7 +27,7 @@ const ticket = new Schema({
   },
   lastCustomerStation: {
     type: ObjectId,
-    ref: "Station",
+    ref: 'Station',
     required: true,
   },
 
@@ -51,25 +51,25 @@ const ticket = new Schema({
   },
   availability: {
     type: ObjectId,
-    ref: "Availability",
+    ref: 'Availability',
     immutable: true,
     required: true,
   },
   vehicle: {
     type: ObjectId,
-    ref: "Vehicle",
+    ref: 'Vehicle',
     required: true,
   },
   sacco: {
     type: ObjectId,
     immutable: true,
-    ref: "Sacco",
+    ref: 'Sacco',
     required: true,
   },
   status: {
     type: String,
     required: true,
-    default: "pending",
+    default: 'pending',
   },
   bookedOn: {
     type: Date,
@@ -78,18 +78,18 @@ const ticket = new Schema({
   },
   bookingAgent: {
     type: ObjectId,
-    ref: "User",
+    ref: 'User',
     required: true,
     immutable: true,
   },
-  updatedOn: {
+  upadatedAt: {
     type: Date,
     required: false,
   },
   updatedBy: {
     type: ObjectId,
-    ref: "User",
+    ref: 'User',
     required: false,
   },
 });
-const ticketModel = model("Ticket", ticket);
+const ticketModel = model('Ticket', ticket);

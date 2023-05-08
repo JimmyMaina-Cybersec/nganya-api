@@ -1,17 +1,8 @@
-import {
-  Prop,
-  Schema,
-  SchemaFactory,
-} from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { IsEmail } from 'class-validator';
-import {
-  HydratedDocument,
-  SchemaTypes,
-  Types,
-} from 'mongoose';
+import { HydratedDocument, SchemaTypes, Types } from 'mongoose';
 
-export type StationDocument =
-  HydratedDocument<Station>;
+export type StationDocument = HydratedDocument<Station>;
 
 @Schema({ timestamps: true })
 export class Station {
@@ -61,7 +52,7 @@ export class Station {
   addedBy: Types.ObjectId;
 
   @Prop({ required: false })
-  updatedOn: Date;
+  upadatedAt: Date;
 
   @Prop({
     required: false,
@@ -70,5 +61,4 @@ export class Station {
   updatedBy: Types.ObjectId | string;
 }
 
-export const StationSchema =
-  SchemaFactory.createForClass(Station);
+export const StationSchema = SchemaFactory.createForClass(Station);

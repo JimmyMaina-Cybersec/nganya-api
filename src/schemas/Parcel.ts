@@ -1,6 +1,6 @@
-import { ObjectId } from "bson";
-import { Prop, Schema } from "@nestjs/mongoose";
-import { HydratedDocument } from "mongoose";
+import { ObjectId } from 'bson';
+import { Prop, Schema } from '@nestjs/mongoose';
+import { HydratedDocument } from 'mongoose';
 
 export type ParcelDocument = HydratedDocument<Parcel>;
 
@@ -22,14 +22,9 @@ export class Parcel {
   seatNo: string;
 
   @Prop({ default: new Date() })
-
   @Prop()
-  updatedOn: Date;
+  upadatedAt: Date;
 }
-
-
-
-
 
 // const parcel = new Schema({
 //   paymentID: {

@@ -33,7 +33,11 @@ export class StationsService {
   }
 
   async createSacco(createStationDto: CreateStationDto, user: JwtPayload) {
-    if (user.role == 'Super User' || 'admin' || 'general admin') {
+    if (
+      user.role == 'Super User' ||
+      user.role === 'admin' ||
+      user.role === 'general admin'
+    ) {
       try {
         await this.stationModel.create({
           ...createStationDto,
@@ -115,9 +119,9 @@ export class StationsService {
   ) {
     if (
       user.role == 'Super User' ||
-      'admin' ||
-      'general admin' ||
-      'station manager'
+      user.role === 'admin' ||
+      user.role === 'general admin' ||
+      user.role === 'station manager'
     ) {
       await this.stationModel.findByIdAndUpdate(stationID, {
         ...updateStationDto,

@@ -1,13 +1,5 @@
-import {
-  Prop,
-  Schema,
-  SchemaFactory,
-} from '@nestjs/mongoose';
-import {
-  HydratedDocument,
-  SchemaTypes,
-  Types,
-} from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { HydratedDocument, SchemaTypes, Types } from 'mongoose';
 import { Sacco } from 'src/saccos/schema/sacco.schema';
 import { Permission } from 'src/types/permission';
 
@@ -86,7 +78,7 @@ export class User {
   addedOn: Date;
 
   @Prop({ default: () => Date.now() })
-  updatedOn: Date;
+  upadatedAt: Date;
 
   @Prop({
     type: SchemaTypes.ObjectId,
@@ -113,5 +105,4 @@ export class User {
   refreshToken: string;
 }
 
-export const UserSchema =
-  SchemaFactory.createForClass(User);
+export const UserSchema = SchemaFactory.createForClass(User);

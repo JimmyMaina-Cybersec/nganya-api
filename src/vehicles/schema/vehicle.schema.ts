@@ -39,7 +39,7 @@ export class Vehicle {
   addedOn: Date;
 
   @Prop({ default: () => Date.now() })
-  updatedOn: Date;
+  upadatedAt: Date;
 
   @Prop({ default: 'active' })
   status: string;

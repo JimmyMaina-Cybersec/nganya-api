@@ -1,12 +1,11 @@
-import { Prop, Schema } from "@nestjs/mongoose";
-import { HydratedDocument } from "mongoose";
+import { Prop, Schema } from '@nestjs/mongoose';
+import { HydratedDocument } from 'mongoose';
 
 export type CustomerDocument = HydratedDocument<Customer>;
 
-
 @Schema()
 export class Customer {
-  @Prop({required: true})
+  @Prop({ required: true })
   firstName: string;
 
   @Prop()
@@ -15,15 +14,15 @@ export class Customer {
   @Prop()
   customerID: string;
 
-  @Prop({required: true})
+  @Prop({ required: true })
   customerPhone: string;
 
-  @Prop({required: true})
+  @Prop({ required: true })
   seatNo: string;
 
-  @Prop({default: new Date()})
+  @Prop({ default: new Date() })
   addedOn: Date;
 
   @Prop()
-  updatedOn: Date;
+  upadatedAt: Date;
 }

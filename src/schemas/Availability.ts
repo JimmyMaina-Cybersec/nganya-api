@@ -1,37 +1,36 @@
-import {Prop, Schema} from "@nestjs/mongoose";
-import { ObjectId } from "bson";
-import { HydratedDocument } from "mongoose";
+import { Prop, Schema } from '@nestjs/mongoose';
+import { ObjectId } from 'bson';
+import { HydratedDocument } from 'mongoose';
 
 export type AvailabilityDocument = HydratedDocument<Availability>;
 
 @Schema()
 export class Availability {
-
-  @Prop({type:ObjectId, ref:"Station"})
+  @Prop({ type: ObjectId, ref: 'Station' })
   depatureStation: string;
 
-  @Prop({type:ObjectId})
+  @Prop({ type: ObjectId })
   finalDestinationStation: string;
 
-  @Prop({type:Array})
+  @Prop({ type: Array })
   dropOffLocations: Array<string>;
 
   @Prop()
   dropOffPrices: Array<Object>;
-  
+
   @Prop()
   depatureTime: Date;
 
   @Prop()
   arrivalTime: Date;
 
-  @Prop({type:ObjectId, ref:"Vehicle"})
+  @Prop({ type: ObjectId, ref: 'Vehicle' })
   vehicle: string;
 
-  @Prop({type:Array})
+  @Prop({ type: Array })
   bookedSeates: Array<string>;
 
-  @Prop({type:ObjectId, ref:"Sacco"})
+  @Prop({ type: ObjectId, ref: 'Sacco' })
   sacco: string;
 
   @Prop()
@@ -40,13 +39,12 @@ export class Availability {
   @Prop()
   addedOn: Date;
 
-  @Prop({type:ObjectId, ref:"User"})
+  @Prop({ type: ObjectId, ref: 'User' })
   addedBy: string;
 
   @Prop()
-  updatedOn: Date;
+  upadatedAt: Date;
 
-  @Prop({type:ObjectId, ref:"User"})
+  @Prop({ type: ObjectId, ref: 'User' })
   updatedBy: string;
 }
-

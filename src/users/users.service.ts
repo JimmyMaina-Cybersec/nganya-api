@@ -1,8 +1,4 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './schema/user.schema';
@@ -34,10 +30,7 @@ export class UsersService {
    * @param user
    * @returns Object
    */
-  async addUser(
-    createUserDto: CreateUserDto,
-    user: JwtPayload,
-  ) {
+  async addUser(createUserDto: CreateUserDto, user: JwtPayload) {
     if (await this.checkIfUserExists(createUserDto.idNo)) {
       if (user.role === 'Super User') {
         await this.userModel.create({
@@ -49,7 +42,7 @@ export class UsersService {
           'User created successfully',
           HttpStatus.CREATED,
         );
-      } else if (user.role === 'admin' || 'general admin') {
+      } else if (user.role === 'admin' || user.role === 'general admin') {
         await this.userModel.create({
           ...createUserDto,
           sacco: user.sacco,
@@ -81,10 +74,7 @@ export class UsersService {
         );
       }
     } else {
-      return new HttpException(
-        'User already exists',
-        HttpStatus.CONFLICT,
-      );
+      return new HttpException('User already exists', HttpStatus.CONFLICT);
     }
   }
 
@@ -97,14 +87,18 @@ export class UsersService {
     switch (currentUser.role) {
       case 'Super User':
         return await this.userModel.find();
-      case 'admin' || 'general admin':
+      case 'general admin':
         return await this.userModel
           .find({
             sacco: currentUser.sacco,
           })
-          .select(
-            '-password -refreshToken -updatedOn -updatedBy',
-          );
+          .select('-password -refreshToken -upadatedAt -updatedBy');
+      case 'admin':
+        return await this.userModel
+          .find({
+            sacco: currentUser.sacco,
+          })
+          .select('-password -refreshToken -upadatedAt -updatedBy');
       case 'station manager':
         return await this.userModel.find({
           station: currentUser.station,
@@ -114,9 +108,7 @@ export class UsersService {
           .find({
             _id: currentUser._id,
           })
-          .select(
-            '-password -refreshToken -updatedOn -updatedBy',
-          );
+          .select('-password -refreshToken -upadatedAt -updatedBy');
     }
   }
 
@@ -131,19 +123,23 @@ export class UsersService {
       case 'Super User':
         return this.userModel
           .findById(idNo)
-          .select(
-            '-password -refreshToken -updatedOn -updatedBy',
-          );
+          .select('-password -refreshToken -upadatedAt -updatedBy');
 
-      case 'admin' || 'general admin':
+      case 'general admin':
         return this.userModel
           .findOne({
             sacco: user.sacco,
             idNo,
           })
-          .select(
-            '-password -refreshToken -updatedOn -updatedBy',
-          );
+          .select('-password -refreshToken -upadatedAt -updatedBy');
+
+      case 'admin':
+        return this.userModel
+          .findOne({
+            sacco: user.sacco,
+            idNo,
+          })
+          .select('-password -refreshToken -upadatedAt -updatedBy');
 
       case 'station manager':
         return this.userModel
@@ -151,9 +147,7 @@ export class UsersService {
             station: user.station,
             idNo,
           })
-          .select(
-            '-password -refreshToken -updatedOn -updatedBy',
-          );
+          .select('-password -refreshToken -upadatedAt -updatedBy');
 
       default:
         return new HttpException(
@@ -173,11 +167,7 @@ export class UsersService {
    *
    * */
 
-  async updateUser(
-    id: string,
-    updateUserDto: UpdateUserDto,
-    user: JwtPayload,
-  ) {
+  async updateUser(id: string, updateUserDto: UpdateUserDto, user: JwtPayload) {
     if (user.role === 'Super User') {
       return await this.userModel
         .findByIdAndUpdate(id, {
@@ -185,13 +175,9 @@ export class UsersService {
           updatedAt: Date.now(),
           updatedBy: user._id,
         })
-        .select(
-          '-password -refreshToken -updatedOn -updatedBy',
-        );
-    } else if (user.role === 'admin' || 'general admin') {
-      const UpdatingUser = await this.userModel.findById(
-        id,
-      );
+        .select('-password -refreshToken -upadatedAt -updatedBy');
+    } else if (user.role === 'admin' || user.role === 'general admin') {
+      const UpdatingUser = await this.userModel.findById(id);
       if (UpdatingUser.sacco === user.sacco) {
         return await this.userModel
           .findByIdAndUpdate(id, {
@@ -199,18 +185,14 @@ export class UsersService {
             updatedAt: Date.now(),
             updatedBy: user._id,
           })
-          .select(
-            '-password -refreshToken -updatedOn -updatedBy',
-          );
+          .select('-password -refreshToken -upadatedAt -updatedBy');
       }
       return new HttpException(
         'You are not allowed to perform this action',
         HttpStatus.FORBIDDEN,
       );
     } else if (user.role === 'station manager') {
-      const UpdatingUser = await this.userModel.findById(
-        id,
-      );
+      const UpdatingUser = await this.userModel.findById(id);
       if (
         UpdatingUser.station === user.station &&
         UpdatingUser.role === 'station agent'
@@ -221,9 +203,7 @@ export class UsersService {
             updatedAt: Date.now(),
             updatedBy: user._id,
           })
-          .select(
-            '-password -refreshToken -updatedOn -updatedBy',
-          );
+          .select('-password -refreshToken -upadatedAt -updatedBy');
       }
     } else {
       return new HttpException(
@@ -255,8 +235,11 @@ export class UsersService {
       await this.userModel.findByIdAndDelete(id);
       return 'User deleted successfully';
     }
-    if (user.role === 'admin' || 'general admin') {
-      if (deletingUser.sacco === user.sacco) {
+    if (user.role === 'admin' || user.role === 'general admin') {
+      if (
+        deletingUser.sacco === user.sacco &&
+        deletingUser.role !== 'general admin'
+      ) {
         await this.userModel.findByIdAndDelete(id);
         return 'User deleted successfully';
       }

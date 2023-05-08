@@ -5,12 +5,15 @@ import { InjectModel } from '@nestjs/mongoose';
 import { VehicleOwner } from './schema/vehicle-owner.schema';
 import { Model } from 'mongoose';
 import { JwtPayload } from 'src/types/jwt-payload';
+import { Vehicle, VehicleSchema } from 'src/vehicles/schema/vehicle.schema';
 
 @Injectable()
 export class VehicleOwnersService {
   constructor(
     @InjectModel(VehicleOwner.name)
     private vehicleOwnerModel: Model<VehicleOwner>,
+    @InjectModel(Vehicle.name)
+    private vehicleModel: Model<Vehicle>,
   ) {}
 
   async addVehicleOwner(
@@ -83,7 +86,7 @@ export class VehicleOwnersService {
         {
           ...updateVehicleOwnerDto,
           updatedBy: user._id,
-          updatedOn: new Date(),
+          upadatedAt: new Date(),
         },
       );
     }
@@ -99,6 +102,15 @@ export class VehicleOwnersService {
       user.role === 'admin' ||
       user.role === 'general admin'
     ) {
+      const vehicleOwner = await this.vehicleOwnerModel.exists({
+        owner: id,
+      });
+      if (vehicleOwner) {
+        return new HttpException(
+          'Vehicle Owner Has existing Vehicles',
+          HttpStatus.FORBIDDEN,
+        );
+      }
       await this.vehicleOwnerModel.findByIdAndDelete(id);
       return new HttpException(
         'Vehicle Owner Deleted Successfully',

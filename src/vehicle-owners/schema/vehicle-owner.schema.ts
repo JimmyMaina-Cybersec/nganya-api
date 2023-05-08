@@ -1,16 +1,7 @@
-import {
-  Prop,
-  Schema,
-  SchemaFactory,
-} from '@nestjs/mongoose';
-import {
-  HydratedDocument,
-  SchemaTypes,
-  Types,
-} from 'mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { HydratedDocument, SchemaTypes, Types } from 'mongoose';
 
-export type VehicleOwnerDocument =
-  HydratedDocument<VehicleOwner>;
+export type VehicleOwnerDocument = HydratedDocument<VehicleOwner>;
 
 @Schema({ timestamps: true })
 export class VehicleOwner {
@@ -47,7 +38,7 @@ export class VehicleOwner {
   addedBy: Types.ObjectId;
 
   @Prop({ required: false })
-  updatedOn: Date;
+  upadatedAt: Date;
 
   @Prop({
     required: false,
@@ -56,5 +47,4 @@ export class VehicleOwner {
   updatedBy: Types.ObjectId;
 }
 
-export const VehicleOwnerSchema =
-  SchemaFactory.createForClass(VehicleOwner);
+export const VehicleOwnerSchema = SchemaFactory.createForClass(VehicleOwner);
