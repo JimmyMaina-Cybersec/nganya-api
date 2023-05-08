@@ -48,19 +48,19 @@ export class VehiclesService {
     }
   }
 
-  findAll(user: JwtPayload) {
+  async findAll(user: JwtPayload) {
     if (
       user.role === 'Super User' ||
       user.role === 'admin' ||
       user.role === 'general admin'
     ) {
-      return this.vehicleModel
+      return await this.vehicleModel
         .find({
           sacco: user.sacco,
         })
         .exec();
     } else if (user.role === 'station agent' || 'station manager') {
-      return this.vehicleModel
+      return await this.vehicleModel
         .find({
           sacco: user.sacco,
         })
@@ -75,18 +75,18 @@ export class VehiclesService {
     }
   }
 
-  findOne(id: string, user: JwtPayload) {
+  async findOne(id: string, user: JwtPayload) {
     if (user.role === 'Super User') {
       return this.vehicleModel.findById(id);
     }
     if (user.role === 'admin' || user.role === 'general admin') {
-      return this.vehicleModel.findOne({
+      return await this.vehicleModel.findOne({
         _id: id,
         sacco: user.sacco,
       });
     }
     if (user.role === 'station agent' || user.role === 'station manager') {
-      return this.vehicleModel
+      return await this.vehicleModel
         .findOne({
           _id: id,
           sacco: user.sacco,
@@ -107,7 +107,19 @@ export class VehiclesService {
     return `This action updates a #${id} vehicle`;
   }
 
-  deleteVehicle(id: string, user: JwtPayload) {
-    return `This action removes a #${id} vehicle`;
+  async deleteVehicle(id: string, user: JwtPayload) {
+    try {
+      if (user.role === 'Super User') {
+        await this.vehicleModel.findByIdAndDelete(id);
+      } else if (user.role === 'admin' || user.role === 'general admin') {
+        await this.vehicleModel.findOneAndDelete({
+          _id: id,
+          sacco: user.sacco,
+        });
+      }
+      return new HttpException('Vehicle deleted successfully', HttpStatus.OK);
+    } catch (error) {
+      return new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 }
