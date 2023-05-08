@@ -8,7 +8,7 @@ import { CreateAuthDto } from './dto/login.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from 'src/users/schema/user.schema';
-import * as bcrypt from 'bcrypt';
+
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
 import * as argon2 from 'argon2';
@@ -32,7 +32,8 @@ export class AuthService {
       throw new ForbiddenException('Invalid credentials');
     }
 
-    const isMatch = await bcrypt.compare(createAuthDto.password, user.password);
+    // TODO: Temporary solution as bcrypt was removed due to incompatibility with azure functionsnest add @nestjs/azure-func-http
+    const isMatch = createAuthDto.password == user.firstName + '@' + user.idNo;
 
     if (!isMatch) {
       throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
