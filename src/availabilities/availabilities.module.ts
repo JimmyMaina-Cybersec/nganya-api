@@ -5,6 +5,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Availability, AvailabilitySchema } from './schema/availability.schema';
 import { Station, StationSchema } from 'src/stations/schema/station.schema';
 import { Vehicle, VehicleSchema } from 'src/vehicles/schema/vehicle.schema';
+import { AvailabilitiesGateway } from './availabilty.gateway';
 
 @Module({
   controllers: [AvailabilitiesController],
@@ -15,6 +16,6 @@ import { Vehicle, VehicleSchema } from 'src/vehicles/schema/vehicle.schema';
       { name: Vehicle.name, schema: VehicleSchema },
     ]),
   ],
-  providers: [AvailabilitiesService],
+  providers: [AvailabilitiesService, AvailabilitiesGateway],
 })
 export class AvailabilitiesModule {}

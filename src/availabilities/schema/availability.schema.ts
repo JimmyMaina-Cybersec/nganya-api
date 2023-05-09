@@ -26,6 +26,17 @@ export class Availability {
   @Prop()
   depatureTime: Date;
 
+  @Prop({
+    type: Array,
+    default: [
+      ['A1', 'A2', 'DRIVER'],
+      ['B1', 'B2', 'B3'],
+      ['C1', 'C2', 'C3'],
+      ['D1', 'D2', 'D3'],
+    ],
+  })
+  seatLayout: Array<Array<string>>;
+
   @Prop()
   arrivalTime: Date;
 

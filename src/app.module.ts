@@ -12,6 +12,7 @@ import { AvailabilitiesModule } from './availabilities/availabilities.module';
 import { AuthModule } from './auth/auth.module';
 import { ProfileModule } from './profile/profile.module';
 import { BookingModule } from './booking/booking.module';
+import { TicketModule } from './ticket/ticket.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { BookingModule } from './booking/booking.module';
     AuthModule,
     ProfileModule,
     BookingModule,
+    TicketModule,
   ],
   controllers: [AppController],
   providers: [AppService],

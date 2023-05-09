@@ -152,4 +152,18 @@ export class AvailabilitiesService {
       return new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
   }
+
+  listenStationAvailabilities(stationId: string) {
+    console.log('Listening for station availabilities');
+    console.log('Station ID', stationId);
+
+    this.availabilityModel.watch().on('change', (data) => {
+      console.log('Change in availabilities', data);
+      return data;
+    });
+
+    // return {
+    //   message: 'Listening for station availabilities',
+    // };
+  }
 }
