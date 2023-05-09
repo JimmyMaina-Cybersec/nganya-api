@@ -1,6 +1,8 @@
 export class Permission {
   canBookSeats?: boolean;
   canAddAvailabilities?: boolean;
+  canUpdateAvailabilities?: boolean;
+  canDeleteAvailabilities?: boolean;
   canDeleteUser?: boolean;
   canViewAgentsBookings?: boolean;
   canChangeStationSettings?: boolean;

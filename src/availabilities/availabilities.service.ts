@@ -85,19 +85,71 @@ export class AvailabilitiesService {
     }
   }
 
-  findOne(id: string, user: JwtPayload) {
-    return `This action returns a #${id} availability`;
+  async findOne(id: string, user: JwtPayload) {
+    return await this.availabilityModel.findById(id);
   }
 
-  update(
+  async update(
     id: string,
     updateAvailabilityDto: UpdateAvailabilityDto,
     user: JwtPayload,
   ) {
-    return `This action updates a #${id} availability`;
+    try {
+      if (
+        user.role === 'admin' ||
+        user.role === 'Super User' ||
+        user.role === 'general admin' ||
+        user.role === 'station manager' ||
+        (user.role === 'station agent' &&
+          user.permission?.canUpdateAvailabilities)
+      ) {
+        await this.availabilityModel.findByIdAndUpdate(id, {
+          ...updateAvailabilityDto,
+          updatedBy: user._id,
+          updatedOn: new Date(),
+        });
+      } else {
+        return new HttpException(
+          'Only station managers and station agents with permission to update availabilities can update availabilities',
+          HttpStatus.FORBIDDEN,
+        );
+      }
+    } catch (error) {
+      return new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
+
+    return new HttpException(
+      'Availability updated successfully',
+      HttpStatus.OK,
+    );
   }
 
-  remove(id: string, user: JwtPayload) {
-    return `This action removes a #${id} availability`;
+  async deleteAvalablity(id: string, user: JwtPayload) {
+    try {
+      if (user.role === 'admin' || user.role === 'general admin') {
+        await this.availabilityModel.findByIdAndDelete(id);
+      } else if (
+        user.role === 'station manager' ||
+        (user.role === 'station agent' &&
+          user.permission?.canDeleteAvailabilities)
+      ) {
+        await this.availabilityModel.deleteOne({
+          _id: id,
+          // station: user.station,
+        });
+      } else {
+        return new HttpException(
+          'Only station managers and station agents with permission to delete availabilities can delete availabilities',
+          HttpStatus.FORBIDDEN,
+        );
+      }
+
+      return new HttpException(
+        'Availability deleted successfully',
+        HttpStatus.OK,
+      );
+    } catch (error) {
+      return new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 }

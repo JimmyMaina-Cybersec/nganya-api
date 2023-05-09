@@ -49,6 +49,6 @@ export class AvailabilitiesController {
 
   @Delete('delete-availability/:id')
   remove(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
-    return this.availabilitiesService.remove(id, user);
+    return this.availabilitiesService.deleteAvalablity(id, user);
   }
 }
