@@ -42,7 +42,7 @@ export class Ticket {
   mpesaTrasaction: Types.ObjectId;
 
   @Prop({ type: String, required: true })
-  paymentMode: string;
+  paymentMethode: string;
 
   @Prop({
     type: SchemaTypes.ObjectId,
