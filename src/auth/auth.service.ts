@@ -23,24 +23,29 @@ export class AuthService {
   ) {}
 
   async signIn(createAuthDto: CreateAuthDto) {
-    const user = await this.userModel.findOne({
-      idNo: createAuthDto.idNo,
-    });
+    try {
+      const user = await this.userModel.findOne({
+        idNo: createAuthDto.idNo,
+      });
 
-    if (!user) {
-      throw new ForbiddenException('Invalid credentials');
+      if (!user) {
+        throw new ForbiddenException('Invalid credentials');
+      }
+
+      // TODO: Temporary solution as bcrypt was removed due to incompatibility with azure functionsnest add @nestjs/azure-func-http
+      const isMatch =
+        createAuthDto.password == user.firstName + '@' + user.idNo;
+
+      if (!isMatch) {
+        throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
+      }
+
+      await user.updateOne({ lastLogin: new Date() }).exec();
+
+      return this.signToken(user);
+    } catch (error) {
+      return new HttpException(error.message, HttpStatus.BAD_REQUEST);
     }
-
-    // TODO: Temporary solution as bcrypt was removed due to incompatibility with azure functionsnest add @nestjs/azure-func-http
-    const isMatch = createAuthDto.password == user.firstName + '@' + user.idNo;
-
-    if (!isMatch) {
-      throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
-    }
-
-    await user.updateOne({ lastLogin: new Date() }).exec();
-
-    return this.signToken(user);
   }
 
   async signToken(user: UserDocument) {
