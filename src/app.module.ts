@@ -12,7 +12,7 @@ import { AvailabilitiesModule } from './availabilities/availabilities.module';
 import { AuthModule } from './auth/auth.module';
 import { ProfileModule } from './profile/profile.module';
 import { BookingModule } from './booking/booking.module';
-import { TicketModule } from './ticket/ticket.module';
+import { TicketModule } from './tickets/tickets.module';
 
 @Module({
   imports: [

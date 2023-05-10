@@ -17,9 +17,6 @@ export class Availability {
   @Prop({ type: Array, default: [], ref: 'Station' })
   stationsServiced: Array<Types.ObjectId>;
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: 'Vehicle' })
-  vehicleID: Types.ObjectId;
-
   @Prop()
   dropOffPrices: Map<string, number>;
 
