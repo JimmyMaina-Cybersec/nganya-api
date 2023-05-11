@@ -25,7 +25,12 @@ export class ProfileService {
     }
   }
 
-  update(updateProfileDto: UpdateProfileDto) {
-    return `This action updates my profile`;
+  async update(updateProfileDto: UpdateProfileDto, user: JwtPayload) {
+    try {
+      await this.userModel.findByIdAndUpdate(user._id, { ...updateProfileDto });
+      return new HttpException('Profile updated successfully', HttpStatus.OK);
+    } catch (error) {
+      return new HttpException(error.message, HttpStatus.BAD_REQUEST);
+    }
   }
 }
