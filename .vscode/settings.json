@@ -5,5 +5,10 @@
   "azureFunctions.projectRuntime": "~4",
   "debug.internalConsoleOptions": "neverOpen",
   "azureFunctions.preDeployTask": "npm prune (functions)",
-  "editor.stickyScroll.enabled": true
+  "editor.stickyScroll.enabled": true,
+  "zenMode.centerLayout": false,
+  "zenMode.hideActivityBar": true,
+  "zenMode.hideLineNumbers": false,
+  "zenMode.silentNotifications": false,
+  "zenMode.hideStatusBar": false
 }

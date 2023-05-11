@@ -21,16 +21,16 @@ export class ProfileService {
         .populate('sacco', '-__v')
         .select('-__v');
     } catch (error) {
-      throw new HttpException(error, HttpStatus.NOT_FOUND);
+      throw new HttpException(error, error.status);
     }
   }
 
   async update(updateProfileDto: UpdateProfileDto, user: JwtPayload) {
     try {
       await this.userModel.findByIdAndUpdate(user._id, { ...updateProfileDto });
-      return new HttpException('Profile updated successfully', HttpStatus.OK);
+      throw new HttpException('Profile updated successfully', HttpStatus.OK);
     } catch (error) {
-      return new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      throw new HttpException(error.message, error.status);
     }
   }
 }

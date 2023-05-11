@@ -36,18 +36,18 @@ export class AvailabilitiesService {
           addedOn: new Date(),
         });
       } else {
-        return new HttpException(
+        throw new HttpException(
           'Only station managers and station agents with permission to add availabilities can add availabilities',
           HttpStatus.FORBIDDEN,
         );
       }
 
-      return new HttpException(
+      throw new HttpException(
         'Availability added successfully',
         HttpStatus.CREATED,
       );
     } catch (error) {
-      return new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      throw new HttpException(error.message, error.status);
     }
   }
 
@@ -73,7 +73,7 @@ export class AvailabilitiesService {
           .populate('station')
           .populate('vehicle');
       } else {
-        return new HttpException(
+        throw new HttpException(
           'You are not authorized to view availabilities',
           HttpStatus.FORBIDDEN,
         );
@@ -81,7 +81,7 @@ export class AvailabilitiesService {
 
       return availabilities;
     } catch (error) {
-      return new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      throw new HttpException(error.message, error.status);
     }
   }
 
@@ -109,19 +109,16 @@ export class AvailabilitiesService {
           updatedOn: new Date(),
         });
       } else {
-        return new HttpException(
+        throw new HttpException(
           'Only station managers and station agents with permission to update availabilities can update availabilities',
           HttpStatus.FORBIDDEN,
         );
       }
     } catch (error) {
-      return new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      throw new HttpException(error.message, error.status);
     }
 
-    return new HttpException(
-      'Availability updated successfully',
-      HttpStatus.OK,
-    );
+    throw new HttpException('Availability updated successfully', HttpStatus.OK);
   }
 
   async deleteAvalablity(id: string, user: JwtPayload) {
@@ -138,18 +135,18 @@ export class AvailabilitiesService {
           // station: user.station,
         });
       } else {
-        return new HttpException(
+        throw new HttpException(
           'Only station managers and station agents with permission to delete availabilities can delete availabilities',
           HttpStatus.FORBIDDEN,
         );
       }
 
-      return new HttpException(
+      throw new HttpException(
         'Availability deleted successfully',
         HttpStatus.OK,
       );
     } catch (error) {
-      return new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      throw new HttpException(error.message, error.status);
     }
   }
 

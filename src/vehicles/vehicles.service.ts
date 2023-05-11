@@ -26,7 +26,7 @@ export class VehiclesService {
     vehicleOwner: string,
   ) {
     if (await this.checkVehicleRegNo(createVehicleDto.plateNo)) {
-      return new HttpException(
+      throw new HttpException(
         'Vehicle with this registration number already exists',
         HttpStatus.BAD_REQUEST,
       );
@@ -41,10 +41,7 @@ export class VehiclesService {
         ...createVehicleDto,
         vehicleOwner: user._id,
       });
-      return new HttpException(
-        'Vehicle added successfully',
-        HttpStatus.CREATED,
-      );
+      throw new HttpException('Vehicle added successfully', HttpStatus.CREATED);
     }
   }
 
@@ -93,7 +90,7 @@ export class VehiclesService {
         })
         .select('-owner');
     }
-    return new HttpException(
+    throw new HttpException(
       'You are not allowed to see Details of the selected vehicle',
       HttpStatus.FORBIDDEN,
     );
@@ -117,14 +114,14 @@ export class VehiclesService {
           sacco: user.sacco,
         });
       } else {
-        return new HttpException(
+        throw new HttpException(
           'You are not allowed to delete this vehicle',
           HttpStatus.FORBIDDEN,
         );
       }
-      return new HttpException('Vehicle deleted successfully', HttpStatus.OK);
+      throw new HttpException('Vehicle deleted successfully', HttpStatus.OK);
     } catch (error) {
-      return new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      throw new HttpException(error.message, error.status);
     }
   }
 }

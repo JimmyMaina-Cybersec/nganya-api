@@ -38,7 +38,7 @@ export class UsersService {
           createdBy: user._id,
           updatedBy: user._id,
         });
-        return new HttpException(
+        throw new HttpException(
           'User created successfully',
           HttpStatus.CREATED,
         );
@@ -49,7 +49,7 @@ export class UsersService {
           createdBy: user._id,
           updatedBy: user._id,
         });
-        return new HttpException(
+        throw new HttpException(
           'User created successfully',
           HttpStatus.CREATED,
         );
@@ -62,19 +62,19 @@ export class UsersService {
             createdBy: user._id,
             updatedBy: user._id,
           });
-          return new HttpException(
+          throw new HttpException(
             'User created successfully',
             HttpStatus.CREATED,
           );
         }
       } else {
-        return new HttpException(
+        throw new HttpException(
           'You are not allowed to perform this action',
           HttpStatus.FORBIDDEN,
         );
       }
     } else {
-      return new HttpException('User already exists', HttpStatus.CONFLICT);
+      throw new HttpException('User already exists', HttpStatus.CONFLICT);
     }
   }
 
@@ -150,7 +150,7 @@ export class UsersService {
           .select('-password -refreshToken -upadatedAt -updatedBy');
 
       default:
-        return new HttpException(
+        throw new HttpException(
           'You are not allowed to perform this action',
           HttpStatus.FORBIDDEN,
         );
@@ -187,7 +187,7 @@ export class UsersService {
           })
           .select('-password -refreshToken -upadatedAt -updatedBy');
       }
-      return new HttpException(
+      throw new HttpException(
         'You are not allowed to perform this action',
         HttpStatus.FORBIDDEN,
       );
@@ -206,7 +206,7 @@ export class UsersService {
           .select('-password -refreshToken -upadatedAt -updatedBy');
       }
     } else {
-      return new HttpException(
+      throw new HttpException(
         'You are not allowed to perform this action',
         HttpStatus.FORBIDDEN,
       );
@@ -225,7 +225,7 @@ export class UsersService {
   async deleteUser(id: string, user: JwtPayload) {
     const deletingUser = await this.userModel.findById(id);
     if (deletingUser.role === 'Super User') {
-      return new HttpException(
+      throw new HttpException(
         'You are not allowed to perform this action',
         HttpStatus.FORBIDDEN,
       );
@@ -243,7 +243,7 @@ export class UsersService {
         await this.userModel.findByIdAndDelete(id);
         return 'User deleted successfully';
       }
-      return new HttpException(
+      throw new HttpException(
         'You are not allowed to perform this action',
         HttpStatus.FORBIDDEN,
       );
@@ -256,7 +256,7 @@ export class UsersService {
         await this.userModel.findByIdAndDelete(id);
         return 'User deleted successfully';
       }
-      return new HttpException(
+      throw new HttpException(
         'You are not allowed to perform this action',
         HttpStatus.FORBIDDEN,
       );

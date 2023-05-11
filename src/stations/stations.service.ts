@@ -49,7 +49,7 @@ export class StationsService {
           message: 'Station created successfully',
         };
       } catch (error) {
-        throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+        throw new HttpException(error.message, error.status);
       }
     }
     return 'This action adds a new station';
@@ -80,7 +80,7 @@ export class StationsService {
             .select('_id name location street');
       }
     } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      throw new HttpException(error.message, error.status);
     }
   }
 
@@ -94,7 +94,7 @@ export class StationsService {
   async myStation(userStationID: string) {
     const station = await this.stationModel.findById(userStationID);
     if (!station) {
-      return new HttpException(
+      throw new HttpException(
         'You are not assigned to any station',
         HttpStatus.NOT_FOUND,
       );
@@ -152,14 +152,14 @@ export class StationsService {
           sacco: user.sacco,
         });
       } else {
-        return new HttpException(
+        throw new HttpException(
           'You are not allowed to perform this action',
           HttpStatus.FORBIDDEN,
         );
       }
-      return new HttpException('Station deleted successfully', HttpStatus.OK);
+      throw new HttpException('Station deleted successfully', HttpStatus.OK);
     } catch (error) {
-      throw new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      throw new HttpException(error.message, error.status);
     }
   }
 }
