@@ -1,10 +1,42 @@
 import { Injectable } from '@nestjs/common';
-import { CreateLipaNaMpesaDto } from './dto/create-lipa-na-mpesa.dto';
+import { CreateLipaNaMpesaDto as LipaNaMpesaDto } from './dto/create-lipa-na-mpesa.dto';
 import { UpdateLipaNaMpesaDto } from './dto/update-lipa-na-mpesa.dto';
+import { JwtPayload } from 'src/types/jwt-payload';
 
 @Injectable()
 export class LipaNaMpesaService {
-  create(createLipaNaMpesaDto: CreateLipaNaMpesaDto) {
+  readonly authorisationEndpoint =
+    'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials';
+
+  readonly stkEndpoint =
+    'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest';
+
+  /**
+   *
+   * # Initialise th push stk
+   * . it requres Auth
+   *
+   * @param createLipaNaMpesaDto
+   * @param user
+   * @returns
+   */
+  sendStk(createLipaNaMpesaDto: LipaNaMpesaDto, user: JwtPayload) {
+    console.log(createLipaNaMpesaDto);
+
+    return 'This action adds a new lipaNaMpesa';
+  }
+
+  /**
+   *
+   * # Mpesa callback url
+   *
+   * @param createLipaNaMpesaCallbackDto
+   * @returns
+   *
+   */
+  mpesaCallback(createLipaNaMpesaCallbackDto: any) {
+    console.log(createLipaNaMpesaCallbackDto);
+
     return 'This action adds a new lipaNaMpesa';
   }
 

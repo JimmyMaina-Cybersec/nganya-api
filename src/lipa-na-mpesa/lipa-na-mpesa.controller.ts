@@ -1,15 +1,36 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  UseGuards,
+} from '@nestjs/common';
 import { LipaNaMpesaService } from './lipa-na-mpesa.service';
 import { CreateLipaNaMpesaDto } from './dto/create-lipa-na-mpesa.dto';
 import { UpdateLipaNaMpesaDto } from './dto/update-lipa-na-mpesa.dto';
+import { JwtGuard } from 'src/auth/guards/jwt.guard';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { JwtPayload } from 'src/types/jwt-payload';
 
 @Controller('lipa-na-mpesa')
 export class LipaNaMpesaController {
   constructor(private readonly lipaNaMpesaService: LipaNaMpesaService) {}
 
-  @Post()
-  create(@Body() createLipaNaMpesaDto: CreateLipaNaMpesaDto) {
-    return this.lipaNaMpesaService.create(createLipaNaMpesaDto);
+  @UseGuards(JwtGuard)
+  @Post('send-stk')
+  sendStk(
+    @Body() createLipaNaMpesaDto: CreateLipaNaMpesaDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.lipaNaMpesaService.sendStk(createLipaNaMpesaDto, user);
+  }
+
+  @Post('callback')
+  mpesaCallback(@Body() createLipaNaMpesaDto: any) {
+    return this.lipaNaMpesaService.mpesaCallback(createLipaNaMpesaDto);
   }
 
   @Get()
@@ -23,7 +44,10 @@ export class LipaNaMpesaController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateLipaNaMpesaDto: UpdateLipaNaMpesaDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateLipaNaMpesaDto: UpdateLipaNaMpesaDto,
+  ) {
     return this.lipaNaMpesaService.update(+id, updateLipaNaMpesaDto);
   }
 
