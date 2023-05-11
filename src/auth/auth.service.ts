@@ -37,6 +37,7 @@ export class AuthService {
         createAuthDto.password == user.firstName + '@' + user.idNo;
 
       if (!isMatch) {
+        HttpStatus.UNAUTHORIZED;
         throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
       }
 

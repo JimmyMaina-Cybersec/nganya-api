@@ -1,17 +1,10 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { JwtPayload } from 'src/types/jwt-payload';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import {
-  User,
-  UserDocument,
-} from 'src/users/schema/user.schema';
+import { User, UserDocument } from 'src/users/schema/user.schema';
 import { ObjectId } from 'mongodb';
 
 @Injectable()
@@ -21,13 +14,12 @@ export class ProfileService {
     private userModel: Model<UserDocument>,
   ) {}
 
-  findAll() {
-    return `This action returns all profile`;
-  }
-
   async myProfile(_id: ObjectId) {
     try {
-      return await this.userModel.findById(_id);
+      return await this.userModel
+        .findById(_id)
+        .populate('sacco', '-__v')
+        .select('-__v');
     } catch (error) {
       throw new HttpException(error, HttpStatus.NOT_FOUND);
     }
