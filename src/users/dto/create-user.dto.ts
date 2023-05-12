@@ -1,34 +1,29 @@
-import {
-  IsString,
-  IsNotEmpty,
-  IsEmail,
-  IsPhoneNumber,
-} from 'class-validator';
+import { IsString, IsNotEmpty, IsEmail, IsPhoneNumber } from 'class-validator';
 
 export class CreateUserDto {
   @IsString()
   @IsNotEmpty()
-  readonly firstName: string;
+  firstName: string;
 
   @IsString()
   @IsNotEmpty()
-  readonly secondName: string;
+  secondName: string;
 
   @IsString()
   @IsNotEmpty()
-  readonly idNo: string;
+  idNo: string;
 
   @IsString()
   @IsPhoneNumber('KE')
-  readonly phone: string;
+  phone: string;
 
   @IsString()
   @IsNotEmpty()
-  readonly photoURL: string;
+  photoURL: string;
 
   @IsString()
   @IsNotEmpty()
-  readonly role:
+  role:
     | 'Super User'
     | 'general admin'
     | 'admin'
@@ -39,36 +34,8 @@ export class CreateUserDto {
 
   @IsString()
   @IsNotEmpty()
-  readonly status: string;
-
-  @IsString()
-  readonly level: number;
+  status: string;
 
   @IsEmail()
-  readonly email: string;
-
-  @IsString()
-  @IsNotEmpty()
-  readonly password: string;
-
-  @IsString()
-  readonly sacco: string;
-
-  @IsString()
-  readonly station: string;
-
-  @IsString()
-  readonly vehicle: string;
-
-  @IsString()
-  readonly roles: Record<string, boolean>;
-
-  @IsString()
-  readonly createdAt: Date;
-
-  @IsString()
-  readonly updatedAt: Date;
-
-  @IsString()
-  addedBy: string;
+  email: string;
 }
