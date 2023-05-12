@@ -18,7 +18,7 @@ export class SaccosService {
         name: createSaccoDto.name,
       });
       if (exists) {
-        return new HttpException(
+        throw new HttpException(
           `Sacco with name ${createSaccoDto.name} already exists`,
           HttpStatus.BAD_REQUEST,
         );
@@ -28,12 +28,9 @@ export class SaccosService {
         createdBy: user._id,
         updatedBy: user._id,
       });
-      return new HttpException(
-        'Sacco created successfully',
-        HttpStatus.CREATED,
-      );
+      throw new HttpException('Sacco created successfully', HttpStatus.CREATED);
     }
-    return new HttpException(
+    throw new HttpException(
       'You are not allowed to create a sacco',
       HttpStatus.FORBIDDEN,
     );
@@ -43,7 +40,7 @@ export class SaccosService {
     if (user.role === 'Super User') {
       return this.saccoModel.find().select('-__v');
     }
-    return new HttpException(
+    throw new HttpException(
       'You are not allowed to get all saccos',
       HttpStatus.FORBIDDEN,
     );
@@ -53,7 +50,7 @@ export class SaccosService {
     if (user.role === 'Super User' || user.sacco === id) {
       return this.saccoModel.findById(id).select('-__v');
     }
-    return new HttpException(
+    throw new HttpException(
       `You are not allowed to see Details of the selected  ${id} sacco`,
       HttpStatus.FORBIDDEN,
     );
@@ -67,7 +64,7 @@ export class SaccosService {
         updatedAt: new Date(),
       });
     }
-    return new HttpException(
+    throw new HttpException(
       'You are not allowed to update a sacco',
       HttpStatus.FORBIDDEN,
     );

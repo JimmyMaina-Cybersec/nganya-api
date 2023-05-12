@@ -13,6 +13,7 @@ import { AuthModule } from './auth/auth.module';
 import { ProfileModule } from './profile/profile.module';
 import { BookingModule } from './booking/booking.module';
 import { TicketModule } from './tickets/tickets.module';
+import { LipaNaMpesaModule } from './lipa-na-mpesa/lipa-na-mpesa.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { TicketModule } from './tickets/tickets.module';
     ProfileModule,
     BookingModule,
     TicketModule,
+    LipaNaMpesaModule,
   ],
   controllers: [AppController],
   providers: [AppService],

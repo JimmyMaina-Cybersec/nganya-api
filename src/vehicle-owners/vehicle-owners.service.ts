@@ -31,12 +31,12 @@ export class VehicleOwnersService {
         createdBy: user._id,
         updatedBy: user._id,
       });
-      return new HttpException(
+      throw new HttpException(
         'Vehicle Owner created successfully',
         HttpStatus.CREATED,
       );
     }
-    return new HttpException(
+    throw new HttpException(
       'You Do Not Have Permission Add Vehicle Owner',
       HttpStatus.FORBIDDEN,
     );
@@ -52,7 +52,7 @@ export class VehicleOwnersService {
         .find({ sacco: user.sacco })
         .select('-__v');
     }
-    return new HttpException(
+    throw new HttpException(
       'You Do Not Have Permission To View Vehicle Owners',
       HttpStatus.FORBIDDEN,
     );
@@ -66,7 +66,7 @@ export class VehicleOwnersService {
     ) {
       return this.vehicleOwnerModel.findOne({ _id: id });
     }
-    return new HttpException(
+    throw new HttpException(
       'You Do Not Have Permission To View Vehicle Owner',
       HttpStatus.FORBIDDEN,
     );
@@ -90,7 +90,7 @@ export class VehicleOwnersService {
         },
       );
     }
-    return new HttpException(
+    throw new HttpException(
       'You Do Not Have Permission To Update Vehicle Owner',
       HttpStatus.FORBIDDEN,
     );
@@ -106,18 +106,18 @@ export class VehicleOwnersService {
         owner: id,
       });
       if (vehicleOwner) {
-        return new HttpException(
+        throw new HttpException(
           'Vehicle Owner Has existing Vehicles',
           HttpStatus.FORBIDDEN,
         );
       }
       await this.vehicleOwnerModel.findByIdAndDelete(id);
-      return new HttpException(
+      throw new HttpException(
         'Vehicle Owner Deleted Successfully',
         HttpStatus.OK,
       );
     }
-    return new HttpException(
+    throw new HttpException(
       'You Do Not Have Permission To Delete Vehicle Owner',
       HttpStatus.FORBIDDEN,
     );

@@ -21,17 +21,17 @@ export class TicketService {
           addedBy: user._id,
           addedOn: new Date(),
         });
-        return new HttpException(
+        throw new HttpException(
           'Ticket booked successfully',
           HttpStatus.CREATED,
         );
       }
-      return new HttpException(
+      throw new HttpException(
         'You are not allowed to book a ticket',
         HttpStatus.FORBIDDEN,
       );
     } catch (error) {
-      return new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      throw new HttpException(error.message, error.status);
     }
   }
 
@@ -43,7 +43,7 @@ export class TicketService {
         })
         .select('-__v');
     } catch (error) {
-      return new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      throw new HttpException(error.message, error.status);
     }
   }
 
@@ -53,7 +53,9 @@ export class TicketService {
         .findById(id)
         .populate('addedBy', 'firstName secondName')
         .select('-__v');
-    } catch (error) {}
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
   }
 
   update(id: string, updateTicketDto: UpdateTicketDto, user: JwtPayload) {

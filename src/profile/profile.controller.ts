@@ -17,17 +17,18 @@ import { ObjectId } from 'mongodb';
 @UseGuards(JwtGuard)
 @Controller('profile')
 export class ProfileController {
-  constructor(
-    private readonly profileService: ProfileService,
-  ) {}
+  constructor(private readonly profileService: ProfileService) {}
 
   @Get()
   findOne(@CurrentUser('_id') id: ObjectId) {
     return this.profileService.myProfile(id);
   }
 
-  @Patch('update')
-  update(@Body() updateProfileDto: UpdateProfileDto) {
-    return this.profileService.update(updateProfileDto);
+  @Patch('update-profile')
+  update(
+    @Body() updateProfileDto: UpdateProfileDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.profileService.update(updateProfileDto, user);
   }
 }

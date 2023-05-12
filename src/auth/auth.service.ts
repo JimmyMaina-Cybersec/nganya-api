@@ -1,5 +1,6 @@
 import {
   ForbiddenException,
+  HttpCode,
   HttpException,
   HttpStatus,
   Injectable,
@@ -22,29 +23,22 @@ export class AuthService {
     private configService: ConfigService,
   ) {}
 
-  async signIn(createAuthDto: CreateAuthDto) {
+  async login(createAuthDto: CreateAuthDto) {
     try {
-      const user = await this.userModel.findOne({
-        idNo: createAuthDto.idNo,
-      });
-
+      const user = await this.userModel.findOne({ idNo: createAuthDto.idNo });
       if (!user) {
         throw new ForbiddenException('Invalid credentials');
       }
 
       // TODO: Temporary solution as bcrypt was removed due to incompatibility with azure functionsnest add @nestjs/azure-func-http
-      const isMatch =
-        createAuthDto.password == user.firstName + '@' + user.idNo;
-
-      if (!isMatch) {
-        throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
+      if (createAuthDto.password != `${user.firstName}@${user.idNo}`) {
+        throw new ForbiddenException('Invalid credentials');
       }
+      await user.updateOne({ lastLogin: new Date() });
 
-      await user.updateOne({ lastLogin: new Date() }).exec();
-
-      return this.signToken(user);
+      return await this.signToken(user);
     } catch (error) {
-      return new HttpException(error.message, HttpStatus.BAD_REQUEST);
+      throw new HttpException(error.message, error.status);
     }
   }
 
@@ -63,26 +57,28 @@ export class AuthService {
       station: user.station,
       permission: user.permission,
     };
+    try {
+      const [accessToken, refreshToken] = await Promise.all([
+        this.jwtService.signAsync(payload, {
+          secret: this.configService.get('ACCESS_TOKEN_SECRET'),
+          expiresIn: this.configService.get('JWT_EXPIRATION_TIME'),
+        }),
+        this.jwtService.signAsync(payload, {
+          secret: this.configService.get('REFRESH_TOKEN_SECRET'),
+          expiresIn: this.configService.get('REFRESH_TOKEN_EXPIRATION_TIME'),
+        }),
+      ]);
 
-    const [accessToken, refreshToken] = await Promise.all([
-      this.jwtService.signAsync(payload, {
-        secret: this.configService.get('ACCESS_TOKEN_SECRET'),
-        expiresIn: this.configService.get('JWT_EXPIRATION_TIME'),
-      }),
-      this.jwtService.signAsync(payload, {
-        secret: this.configService.get('REFRESH_TOKEN_SECRET'),
-        expiresIn: this.configService.get('REFRESH_TOKEN_EXPIRATION_TIME'),
-      }),
-    ]);
+      // TODO: const hashedRefreshToken = await argon2.hash(refreshToken);
 
-    // const hashedRefreshToken = await argon2.hash(refreshToken);
-
-    await user.updateOne({ refreshToken: refreshToken }).exec();
-    HttpStatus.OK;
-    return {
-      access_token: accessToken,
-      refresh_token: refreshToken,
-    };
+      await user.updateOne({ refreshToken: refreshToken });
+      return {
+        access_token: accessToken,
+        refresh_token: refreshToken,
+      };
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
   }
 
   async refresh(refreshToken: string) {
@@ -90,7 +86,10 @@ export class AuthService {
       refreshToken: refreshToken,
     });
     if (!user) {
-      throw new HttpException('Invalid token', HttpStatus.UNAUTHORIZED);
+      throw new HttpException(
+        'Invalid credentials or User doue not exist on Nganya',
+        HttpStatus.UNAUTHORIZED,
+      );
     }
     return this.signToken(user);
   }
