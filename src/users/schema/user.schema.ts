@@ -38,7 +38,7 @@ export class User {
     ref: 'Vehicle',
     required: false,
   })
-  vehicle: string;
+  vehicle: Types.ObjectId;
 
   @Prop({
     type: SchemaTypes.ObjectId,

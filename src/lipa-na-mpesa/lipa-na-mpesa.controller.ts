@@ -9,8 +9,8 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { LipaNaMpesaService } from './lipa-na-mpesa.service';
-import { CreateLipaNaMpesaDto } from './dto/create-lipa-na-mpesa.dto';
-import { UpdateLipaNaMpesaDto } from './dto/update-lipa-na-mpesa.dto';
+import { LipaDto } from './dto/create-lipa-na-mpesa.dto';
+import { UpdateLipaNaMpesaDto } from './dto/lipa-na-mpesa-callback.dto';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { JwtPayload } from 'src/types/jwt-payload';
@@ -22,7 +22,7 @@ export class LipaNaMpesaController {
   @UseGuards(JwtGuard)
   @Post('send-stk')
   sendStk(
-    @Body() createLipaNaMpesaDto: CreateLipaNaMpesaDto,
+    @Body() createLipaNaMpesaDto: LipaDto,
     @CurrentUser() user: JwtPayload,
   ) {
     return this.lipaNaMpesaService.sendStk(createLipaNaMpesaDto, user);
