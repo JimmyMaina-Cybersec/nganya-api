@@ -10,7 +10,7 @@ import {
 } from '@nestjs/common';
 import { LipaNaMpesaService } from './lipa-na-mpesa.service';
 import { LipaDto } from './dto/create-lipa-na-mpesa.dto';
-import { UpdateLipaNaMpesaDto } from './dto/lipa-na-mpesa-callback.dto';
+import { LipaNaMpesaCallbackDto } from './dto/lipa-na-mpesa-callback.dto';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { JwtPayload } from 'src/types/jwt-payload';
@@ -46,7 +46,7 @@ export class LipaNaMpesaController {
   @Patch(':id')
   update(
     @Param('id') id: string,
-    @Body() updateLipaNaMpesaDto: UpdateLipaNaMpesaDto,
+    @Body() updateLipaNaMpesaDto: LipaNaMpesaCallbackDto,
   ) {
     return this.lipaNaMpesaService.update(+id, updateLipaNaMpesaDto);
   }

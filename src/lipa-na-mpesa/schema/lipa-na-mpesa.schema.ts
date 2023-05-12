@@ -38,26 +38,29 @@ export class LipaNaMpesaTransaction {
   @Prop({ type: String, default: null })
   PhoneNumber: number;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, default: null })
   firstName: string;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, default: null })
   secondName: string;
 
   @Prop({ type: String, default: null })
   idNo: string;
 
-  @Prop({ type: String, required: true })
+  @Prop({ type: String, default: null })
   phone: string;
 
   @Prop({ type: SchemaTypes.ObjectId })
-  sacoo: Types.ObjectId;
+  sacoo: Types.ObjectId; 
 
   @Prop({ type: SchemaTypes.ObjectId, default: null })
   station: Types.ObjectId;
 
   @Prop({ type: String })
   agent: string;
+
+  @Prop({ type: Array, default: null })
+  transaction: object[];
 }
 
 export const LipaNaMpesaTransactionSchema = SchemaFactory.createForClass(

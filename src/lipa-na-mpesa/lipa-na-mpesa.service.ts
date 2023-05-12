@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { LipaDto } from './dto/create-lipa-na-mpesa.dto';
-import { UpdateLipaNaMpesaDto } from './dto/lipa-na-mpesa-callback.dto';
+import { LipaNaMpesaCallbackDto } from './dto/lipa-na-mpesa-callback.dto';
 import { JwtPayload } from 'src/types/jwt-payload';
 import axios from 'axios';
 import {
@@ -132,34 +132,29 @@ export class LipaNaMpesaService {
    *
    * # Mpesa callback url
    *
-   * @param createLipaNaMpesaCallbackDto
+   * @param mpesaResponse
    * @returns
    *
    */
-  async mpesaCallback(createLipaNaMpesaCallbackDto: any) {
+  async mpesaCallback(mpesaResponse: any) {
     try {
       await this.lipaNaMpesaTransaction.findOneAndUpdate(
         {
-          CheckoutRequestID:
-            createLipaNaMpesaCallbackDto.stkCallback.CheckoutRequestID,
+          CheckoutRequestID: mpesaResponse.Body.stkCallback.CheckoutRequestID,
         },
         {
-          MerchantRequestID:
-            createLipaNaMpesaCallbackDto.stkCallback.CheckoutRequestID,
-          ResultCode: createLipaNaMpesaCallbackDto.stkCallback.ResultCode,
-          ResultDesc: createLipaNaMpesaCallbackDto.stkCallback.ResultDesc,
+          MerchantRequestID: mpesaResponse.Body.stkCallback.CheckoutRequestID,
+          ResultCode: mpesaResponse.Body.stkCallback.ResultCode,
+          ResultDesc: mpesaResponse.Body.stkCallback.ResultDesc,
           MpesaReceiptNumber:
-            createLipaNaMpesaCallbackDto.stkCallback.CallbackMetadata[1]
-              .Value ?? null,
+            mpesaResponse.Body.stkCallback.CallbackMetadata[1].Value ?? null,
           Balance:
-            createLipaNaMpesaCallbackDto.stkCallback.CallbackMetadata[2]
-              .Value ?? null,
+            mpesaResponse.Body.stkCallback.CallbackMetadata[2].Value ?? null,
           TransactionDate:
-            createLipaNaMpesaCallbackDto.stkCallback.CallbackMetadata[3]
-              .Value ?? null,
+            mpesaResponse.Body.stkCallback.CallbackMetadata[3].Value ?? null,
           PhoneNumber:
-            createLipaNaMpesaCallbackDto.stkCallback.CallbackMetadata[4]
-              .Value ?? null,
+            mpesaResponse.Body.stkCallback.CallbackMetadata[4].Value ?? null,
+          transaction: [mpesaResponse],
         },
       );
       throw new HttpException('Transaction saved successfully', HttpStatus.OK);
@@ -176,7 +171,7 @@ export class LipaNaMpesaService {
     return `This action returns a #${id} lipaNaMpesa`;
   }
 
-  update(id: number, updateLipaNaMpesaDto: UpdateLipaNaMpesaDto) {
+  update(id: number, updateLipaNaMpesaDto: LipaNaMpesaCallbackDto) {
     return `This action updates a #${id} lipaNaMpesa`;
   }
 
