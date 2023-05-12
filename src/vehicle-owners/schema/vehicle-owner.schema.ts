@@ -30,6 +30,12 @@ export class VehicleOwner {
   })
   addedOn: Date;
 
+  @Prop({ required: true, type: SchemaTypes.ObjectId })
+  sacco: Types.ObjectId;
+
+  @Prop({ required: true })
+  status: string;
+
   @Prop({
     required: false,
     immutable: true,
