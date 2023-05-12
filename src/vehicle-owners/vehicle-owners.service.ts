@@ -28,6 +28,7 @@ export class VehicleOwnersService {
       await this.vehicleOwnerModel.create({
         ...createVehicleOwnerDto,
         sacco: user.sacco,
+        status: 'active',
         createdBy: user._id,
         updatedBy: user._id,
       });
