@@ -115,8 +115,9 @@ export class LipaNaMpesaService {
         Amount: lipaDTO.amount,
         firstName: lipaDTO.firstName,
         secondName: lipaDTO.secondName,
-        phone: lipaDTO.phone,
+        idNo: lipaDTO.idNo,
 
+        phone: lipaDTO.phone,
         sacco: user.sacco,
         agent: user._id,
         station: user.station,
@@ -138,23 +139,27 @@ export class LipaNaMpesaService {
    */
   async mpesaCallback(mpesaResponse: any) {
     try {
-      await this.lipaNaMpesaTransaction.create(
-        // {
-        //   CheckoutRequestID: mpesaResponse.Body.stkCallback.CheckoutRequestID,
-        // },
+      await this.lipaNaMpesaTransaction.findOneAndUpdate(
         {
-          MerchantRequestID: mpesaResponse.Body?.stkCallback?.CheckoutRequestID,
+          CheckoutRequestID: mpesaResponse.Body?.stkCallback.CheckoutRequestID,
+        },
+        {
+          MerchantRequestID: mpesaResponse.Body?.stkCallback?.MerchantRequestID,
           CheckoutRequestID: mpesaResponse.Body?.stkCallback?.CheckoutRequestID,
           ResultCode: mpesaResponse.Body?.stkCallback?.ResultCode,
           ResultDesc: mpesaResponse.Body?.stkCallback?.ResultDesc,
           MpesaReceiptNumber:
-            mpesaResponse.Body?.stkCallback?.CallbackMetadata[1]?.Value ?? null,
+            mpesaResponse.Body?.stkCallback?.CallbackMetadata?.Item[1]?.Value ??
+            null,
           Balance:
-            mpesaResponse.Body?.stkCallback?.CallbackMetadata[2]?.Value ?? null,
+            mpesaResponse.Body?.stkCallback?.CallbackMetadata?.Item[2]?.Value ??
+            null,
           TransactionDate:
-            mpesaResponse.Body?.stkCallback?.CallbackMetadata[3]?.Value ?? null,
+            mpesaResponse.Body?.stkCallback?.CallbackMetadata?.Item[3]?.Value ??
+            null,
           PhoneNumber:
-            mpesaResponse.Body?.stkCallback?.CallbackMetadata[4]?.Value ?? null,
+            mpesaResponse.Body?.stkCallback?.CallbackMetadata?.Item[4]?.Value ??
+            null,
           transaction: [mpesaResponse],
         },
       );
