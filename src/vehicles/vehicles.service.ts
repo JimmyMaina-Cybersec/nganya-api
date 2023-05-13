@@ -25,7 +25,8 @@ export class VehiclesService {
     user: JwtPayload,
     vehicleOwner: string,
   ) {
-    if (await this.checkVehicleRegNo(createVehicleDto.plateNo)) {
+    try {
+      if (await this.checkVehicleRegNo(createVehicleDto.plateNo)) {
       throw new HttpException(
         'Vehicle with this registration number already exists',
         HttpStatus.BAD_REQUEST,
@@ -39,10 +40,18 @@ export class VehiclesService {
     ) {
       await this.vehicleModel.create({
         ...createVehicleDto,
+        sacco:user.sacco,
         vehicleOwner: user._id,
       });
       throw new HttpException('Vehicle added successfully', HttpStatus.CREATED);
     }
+    throw new HttpException('You dont have permision to creat vehicles', HttpStatus.FORBIDDEN);
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+      
+    }
+    
+
   }
 
   async findAll(user: JwtPayload) {
