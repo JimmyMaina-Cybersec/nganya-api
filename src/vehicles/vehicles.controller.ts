@@ -33,6 +33,14 @@ export class VehiclesController {
     );
   }
 
+  @Get('vehicle-owner/:vehicleOwnerID')
+  getOwnerVehicles(
+    @CurrentUser() user: JwtPayload,
+    @Param('vehicleOwnerID') vehicleOwner: string,
+  ) {
+    return this.vehiclesService.getOwnerVehicles(user, vehicleOwner);
+  }
+
   @Get()
   findAll(@CurrentUser() user: JwtPayload) {
     return this.vehiclesService.findAll(user);
