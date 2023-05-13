@@ -72,6 +72,32 @@ export class VehiclesService {
     }
   }
 
+  async getOwnerVehicles(user: JwtPayload, vehicleOwnerID) {
+    try {
+      if (user.role === 'Super User') {
+        return await this.vehicleModel
+          .find({
+            vehicleOwner: vehicleOwnerID,
+          })
+          .exec();
+      } else if (user.role === 'admin' || user.role === 'general admin') {
+        return await this.vehicleModel
+          .find({
+            vehicleOwner: vehicleOwnerID,
+            sacco: user.sacco,
+          })
+          .exec();
+      } else {
+        throw new HttpException(
+          'You are not allowed to see Details of the selected vehicle',
+          HttpStatus.FORBIDDEN,
+        );
+      }
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
+  }
+
   async findOne(id: string, user: JwtPayload) {
     if (user.role === 'Super User') {
       return this.vehicleModel.findById(id);
