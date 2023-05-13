@@ -32,9 +32,6 @@ export class CreateUserDto {
     | 'station agent'
     | 'driver';
 
-  @IsString()
-  @IsNotEmpty()
-  status: string;
 
   @IsEmail()
   email: string;

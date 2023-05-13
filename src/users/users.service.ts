@@ -35,6 +35,7 @@ export class UsersService {
       if (user.role === 'Super User') {
         await this.userModel.create({
           ...createUserDto,
+          status:'active',
           createdBy: user._id,
           updatedBy: user._id,
         });
@@ -45,6 +46,7 @@ export class UsersService {
       } else if (user.role === 'admin' || user.role === 'general admin') {
         await this.userModel.create({
           ...createUserDto,
+          status:'active',
           sacco: user.sacco,
           createdBy: user._id,
           updatedBy: user._id,
@@ -57,6 +59,7 @@ export class UsersService {
         if (createUserDto.role === 'station agent') {
           await this.userModel.create({
             ...createUserDto,
+            status:'active',
             station: user.station,
             sacco: user.sacco,
             createdBy: user._id,
