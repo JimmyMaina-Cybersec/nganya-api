@@ -20,7 +20,7 @@ import { JwtPayload } from 'src/types/jwt-payload';
 export class VehiclesController {
   constructor(private readonly vehiclesService: VehiclesService) {}
 
-  @Post('add-vehicle/:vehicleOwnerID')
+  @Post('add-vehicle')
   addVehicle(
     @Body() createVehicleDto: CreateVehicleDto,
     @CurrentUser() user: JwtPayload,
