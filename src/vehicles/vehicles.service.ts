@@ -5,11 +5,14 @@ import { JwtPayload } from 'src/types/jwt-payload';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Vehicle, VehicleDocument } from './schema/vehicle.schema';
+import { User, UserDocument } from 'src/users/schema/user.schema';
+import { UpdateDriverDto } from './dto/update-driver.dto';
 
 @Injectable()
 export class VehiclesService {
   constructor(
     @InjectModel(Vehicle.name) private vehicleModel: Model<VehicleDocument>,
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
   ) {}
 
   async checkVehicleRegNo(regNo: string) {
@@ -27,31 +30,44 @@ export class VehiclesService {
   ) {
     try {
       if (await this.checkVehicleRegNo(createVehicleDto.plateNo)) {
-      throw new HttpException(
-        'Vehicle with this registration number already exists',
-        HttpStatus.BAD_REQUEST,
-      );
-    }
+        throw new HttpException(
+          'Vehicle with this registration number already exists',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
 
-    if (
-      user.role === 'Super User' ||
-      user.role === 'admin' ||
-      user.role === 'general admin'
-    ) {
-      await this.vehicleModel.create({
-        ...createVehicleDto,
-        sacco:user.sacco,
-        vehicleOwner: user._id,
-      });
-      throw new HttpException('Vehicle added successfully', HttpStatus.CREATED);
-    }
-    throw new HttpException('You dont have permision to creat vehicles', HttpStatus.FORBIDDEN);
+      if (
+        user.role === 'Super User' ||
+        user.role === 'admin' ||
+        user.role === 'general admin'
+      ) {
+        const vehicleExists = await this.vehicleModel.exists({
+          plateNo: createVehicleDto.plateNo,
+        });
+        if (vehicleExists) {
+          throw new HttpException(
+            'Vehicle with this registration number already exists',
+            HttpStatus.BAD_REQUEST,
+          );
+        }
+
+        await this.vehicleModel.create({
+          ...createVehicleDto,
+          sacco: user.sacco,
+          vehicleOwner: user._id,
+        });
+        throw new HttpException(
+          'Vehicle added successfully',
+          HttpStatus.CREATED,
+        );
+      }
+      throw new HttpException(
+        'You dont have permision to creat vehicles',
+        HttpStatus.FORBIDDEN,
+      );
     } catch (error) {
       throw new HttpException(error.message, error.status);
-      
     }
-    
-
   }
 
   async findAll(user: JwtPayload) {
@@ -86,13 +102,13 @@ export class VehiclesService {
       if (user.role === 'Super User') {
         return await this.vehicleModel
           .find({
-            vehicleOwner: vehicleOwnerID,
+            owner: vehicleOwnerID,
           })
           .exec();
       } else if (user.role === 'admin' || user.role === 'general admin') {
         return await this.vehicleModel
           .find({
-            vehicleOwner: vehicleOwnerID,
+            owner: vehicleOwnerID,
             sacco: user.sacco,
           })
           .exec();
@@ -129,6 +145,89 @@ export class VehiclesService {
       'You are not allowed to see Details of the selected vehicle',
       HttpStatus.FORBIDDEN,
     );
+  }
+
+  async hasDriver(user: JwtPayload, vehicleID: string) {
+    try {
+      const exists = await this.userModel.exists({
+        vehicle: vehicleID,
+      });
+
+      if (exists) {
+        return true;
+      }
+      return false;
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
+  }
+
+  async assignDriver(user: JwtPayload, updateDriverDto: UpdateDriverDto) {
+    if (await this.hasDriver(user, updateDriverDto.vehicleID)) {
+      throw new HttpException(
+        'You are already assigned to this vehicle',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+    try {
+      const isDriver = await this.userModel.exists({
+        _id: updateDriverDto.driverID,
+        role: 'driver',
+      });
+      if (!isDriver) {
+        throw new HttpException(
+          'The selected user is not a driver',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      if (
+        (user.role === 'admin' || user.role === 'general admin',
+        user.role === 'Super User')
+      ) {
+        await this.userModel.findOneAndUpdate(
+          {
+            _id: updateDriverDto.driverID,
+            sacco: user.sacco,
+          },
+          {
+            vehicle: updateDriverDto.vehicleID,
+          },
+        );
+        throw new HttpException('Driver assigned successfully', HttpStatus.OK);
+      } else {
+        throw new HttpException(
+          'You are not allowed to assign a driver to this vehicle',
+          HttpStatus.FORBIDDEN,
+        );
+      }
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
+  }
+
+  async getDriver(user: JwtPayload, vehicleID: string) {
+    try {
+      if (user.role === 'Super User') {
+        return await this.userModel
+
+          .findOne({
+            vehicle: vehicleID,
+          })
+          .select('firstName secondName photoURL phone')
+          .exec();
+      } else {
+        return await this.userModel
+          .findOne({
+            vehicle: vehicleID,
+            sacco: user.sacco,
+          })
+          .select('firstName secondName photoURL phone')
+          .exec();
+      }
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
   }
 
   updateVehicle(

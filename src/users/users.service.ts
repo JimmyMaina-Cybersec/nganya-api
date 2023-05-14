@@ -32,21 +32,14 @@ export class UsersService {
    */
   async addUser(createUserDto: CreateUserDto, user: JwtPayload) {
     if (await this.checkIfUserExists(createUserDto.idNo)) {
-      if (user.role === 'Super User') {
+      if (
+        user.role === 'Super User' ||
+        user.role === 'admin' ||
+        user.role === 'general admin'
+      ) {
         await this.userModel.create({
           ...createUserDto,
-          status:'active',
-          createdBy: user._id,
-          updatedBy: user._id,
-        });
-        throw new HttpException(
-          'User created successfully',
-          HttpStatus.CREATED,
-        );
-      } else if (user.role === 'admin' || user.role === 'general admin') {
-        await this.userModel.create({
-          ...createUserDto,
-          status:'active',
+          status: 'active',
           sacco: user.sacco,
           createdBy: user._id,
           updatedBy: user._id,
@@ -59,7 +52,7 @@ export class UsersService {
         if (createUserDto.role === 'station agent') {
           await this.userModel.create({
             ...createUserDto,
-            status:'active',
+            status: 'active',
             station: user.station,
             sacco: user.sacco,
             createdBy: user._id,
@@ -89,7 +82,11 @@ export class UsersService {
   async findAllUsers(currentUser: JwtPayload) {
     switch (currentUser.role) {
       case 'Super User':
-        return await this.userModel.find();
+        return await this.userModel
+          .find({
+            sacco: currentUser.sacco,
+          })
+          .select('-password -refreshToken');
       case 'general admin':
         return await this.userModel
           .find({
@@ -125,7 +122,10 @@ export class UsersService {
     switch (user.role) {
       case 'Super User':
         return this.userModel
-          .findById(idNo)
+          .findOne({
+            sacco: user.sacco,
+            idNo,
+          })
           .select('-password -refreshToken -upadatedAt -updatedBy');
 
       case 'general admin':
@@ -171,15 +171,11 @@ export class UsersService {
    * */
 
   async updateUser(id: string, updateUserDto: UpdateUserDto, user: JwtPayload) {
-    if (user.role === 'Super User') {
-      return await this.userModel
-        .findByIdAndUpdate(id, {
-          ...updateUserDto,
-          updatedAt: Date.now(),
-          updatedBy: user._id,
-        })
-        .select('-password -refreshToken -upadatedAt -updatedBy');
-    } else if (user.role === 'admin' || user.role === 'general admin') {
+    if (
+      user.role === 'Super User' ||
+      user.role === 'admin' ||
+      user.role === 'general admin'
+    ) {
       const UpdatingUser = await this.userModel.findById(id);
       if (UpdatingUser.sacco === user.sacco) {
         return await this.userModel

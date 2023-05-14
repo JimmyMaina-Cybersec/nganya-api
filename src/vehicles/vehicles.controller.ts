@@ -14,6 +14,7 @@ import { UpdateVehicleDto } from './dto/update-vehicle.dto';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { JwtPayload } from 'src/types/jwt-payload';
+import { UpdateDriverDto } from './dto/update-driver.dto';
 
 @UseGuards(JwtGuard)
 @Controller('vehicles')
@@ -39,6 +40,22 @@ export class VehiclesController {
     @Param('vehicleOwnerID') vehicleOwner: string,
   ) {
     return this.vehiclesService.getOwnerVehicles(user, vehicleOwner);
+  }
+
+  @Get('driver/:vehicleID')
+  getDriverVehicles(
+    @CurrentUser() user: JwtPayload,
+    @Param('vehicleID') driver: string,
+  ) {
+    return this.vehiclesService.getDriver(user, driver);
+  }
+
+  @Patch('assign-driver')
+  assignDriver(
+    @CurrentUser() user: JwtPayload,
+    @Body() updateVehicleDto: UpdateDriverDto,
+  ) {
+    return this.vehiclesService.assignDriver(user, updateVehicleDto);
   }
 
   @Get()
