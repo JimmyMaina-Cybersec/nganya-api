@@ -18,7 +18,13 @@ export class StationsService {
       case 'Super User':
         return this.stationModel.findById(id);
 
-      case 'admin' || 'general admin':
+      case 'general admin':
+        return this.stationModel.findOne({
+          _id: id,
+          sacco: user.sacco,
+        });
+      
+        case 'admin' :
         return this.stationModel.findOne({
           _id: id,
           sacco: user.sacco,
@@ -68,7 +74,12 @@ export class StationsService {
           return await this.stationModel
             .find()
             .select('_id name location street');
-        case 'admin' || 'general admin':
+        case  'general admin':
+          return await this.stationModel.find({
+            sacco: user.sacco,
+          });
+      
+       case 'admin' :
           return await this.stationModel.find({
             sacco: user.sacco,
           });
