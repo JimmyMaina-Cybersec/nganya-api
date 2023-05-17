@@ -18,19 +18,14 @@ import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 @UseGuards(JwtGuard)
 @Controller('users')
 export class UsersController {
-  constructor(
-    private readonly usersService: UsersService,
-  ) {}
+  constructor(private readonly usersService: UsersService) {}
 
   @Post('add-user')
   create(
     @Body() createUserDto: CreateUserDto,
     @CurrentUser() currentUser: JwtPayload,
   ) {
-    return this.usersService.addUser(
-      createUserDto,
-      currentUser,
-    );
+    return this.usersService.addUser(createUserDto, currentUser);
   }
 
   @Get()
@@ -39,11 +34,16 @@ export class UsersController {
   }
 
   @Get(':id')
-  findOne(
-    @Param('id') id: string,
+  findOne(@Param('id') id: string, @CurrentUser() currentUser: JwtPayload) {
+    return this.usersService.findUser(id, currentUser);
+  }
+
+  @Get('find-by-id')
+  findById(
+    @Body() idNo: { idNo: string },
     @CurrentUser() currentUser: JwtPayload,
   ) {
-    return this.usersService.findUser(id, currentUser);
+    return this.usersService.findUserById(idNo, currentUser);
   }
 
   @Patch('update-user/:id')
@@ -52,18 +52,11 @@ export class UsersController {
     @Body() updateUserDto: UpdateUserDto,
     @CurrentUser() currentUser: JwtPayload,
   ) {
-    return this.usersService.updateUser(
-      id,
-      updateUserDto,
-      currentUser,
-    );
+    return this.usersService.updateUser(id, updateUserDto, currentUser);
   }
 
   @Delete('delete-user/:id')
-  deleteUser(
-    @Param('id') id: string,
-    @CurrentUser() currentUser: JwtPayload,
-  ) {
+  deleteUser(@Param('id') id: string, @CurrentUser() currentUser: JwtPayload) {
     return this.usersService.deleteUser(id, currentUser);
   }
 }

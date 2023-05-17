@@ -122,8 +122,52 @@ export class UsersService {
     switch (user.role) {
       case 'Super User':
         return this.userModel
+          .findById(idNo)
+          .select('-password -refreshToken -upadatedAt -updatedBy');
+
+      case 'general admin':
+        return this.userModel
           .findOne({
             sacco: user.sacco,
+            _id: idNo,
+          })
+          .select('-password -refreshToken -upadatedAt -updatedBy');
+
+      case 'admin':
+        return this.userModel
+          .findOne({
+            sacco: user.sacco,
+            _id: idNo,
+          })
+          .select('-password -refreshToken -upadatedAt -updatedBy');
+
+      case 'station manager':
+        return this.userModel
+          .findOne({
+            station: user.station,
+            __id: idNo,
+          })
+          .select('-password -refreshToken -upadatedAt -updatedBy');
+
+      default:
+        throw new HttpException(
+          'You are not allowed to perform this action',
+          HttpStatus.FORBIDDEN,
+        );
+    }
+  }
+
+  /**
+   * ### Find a User
+   * @param idNo
+   * @param user
+   * @returns Object<UserDocument>
+   * */
+  async findUserById(idNo: { idNo: string }, user: JwtPayload) {
+    switch (user.role) {
+      case 'Super User':
+        return this.userModel
+          .findOne({
             idNo,
           })
           .select('-password -refreshToken -upadatedAt -updatedBy');
