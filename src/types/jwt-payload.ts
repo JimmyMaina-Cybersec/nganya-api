@@ -2,8 +2,8 @@ import { ObjectId } from 'mongodb';
 import { Permission } from './permission';
 
 export class JwtPayload {
-  _id: ObjectId;
-  sub: ObjectId;
+  _id: ObjectId | string;
+  sub: ObjectId | string;
   firstName: string;
   secondName: string;
   idNo: string;

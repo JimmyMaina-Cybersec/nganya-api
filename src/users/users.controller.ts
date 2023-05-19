@@ -33,7 +33,7 @@ export class UsersController {
     return this.usersService.findAllUsers(currentUser);
   }
 
-  @Get(':id')
+  @Get('user/:id')
   findOne(@Param('id') id: string, @CurrentUser() currentUser: JwtPayload) {
     return this.usersService.findUser(id, currentUser);
   }
