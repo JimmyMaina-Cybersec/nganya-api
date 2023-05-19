@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { VehiclesService } from './vehicles.service';
 import { CreateVehicleDto } from './dto/create-vehicle.dto';
@@ -59,8 +60,8 @@ export class VehiclesController {
   }
 
   @Get()
-  findAll(@CurrentUser() user: JwtPayload) {
-    return this.vehiclesService.findAll(user);
+  findAll(@CurrentUser() user: JwtPayload, @Query() query: any) {
+    return this.vehiclesService.findAll(user, query);
   }
 
   @Get(':id')
@@ -74,11 +75,18 @@ export class VehiclesController {
     @Body() updateVehicleDto: UpdateVehicleDto,
     @CurrentUser() user: JwtPayload,
   ) {
-    return this.vehiclesService.updateVehicle(id, updateVehicleDto, user);
+    return this.vehiclesService.updateVehicle(
+      id,
+      updateVehicleDto,
+      user,
+    );
   }
 
   @Delete('delete-vehicle/:id')
-  deleteVehicle(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+  deleteVehicle(
+    @Param('id') id: string,
+    @CurrentUser() user: JwtPayload,
+  ) {
     return this.vehiclesService.deleteVehicle(id, user);
   }
 }

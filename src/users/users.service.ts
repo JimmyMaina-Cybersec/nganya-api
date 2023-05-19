@@ -18,6 +18,56 @@ export class UsersService {
     private userModel: Model<UserDocument>,
   ) {}
 
+  async assingManager(
+    queryData: { station: string; userId: string },
+    currentUser: JwtPayload,
+  ) {
+    try {
+      const user = await this.userModel.findById(queryData.userId);
+      if (!user) {
+        throw new HttpException(
+          'User not found',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+
+      if (user.role !== 'station manager') {
+        throw new HttpException(
+          'You can only assign station manager to as managers',
+          HttpStatus.FORBIDDEN,
+        );
+      }
+
+      if (user.station) {
+        throw new HttpException(
+          'User already assigned to a station',
+          HttpStatus.FORBIDDEN,
+        );
+      }
+
+      if (
+        currentUser.role == 'admin' ||
+        currentUser.role == 'Super User' ||
+        currentUser.role == 'general admin'
+      ) {
+        await this.userModel.findByIdAndUpdate(queryData.userId, {
+          station: queryData.station,
+        });
+      } else {
+        throw new HttpException(
+          'You are not allowed to assign station manager',
+          HttpStatus.FORBIDDEN,
+        );
+      }
+      throw new HttpException(
+        'User Added to station successfully',
+        HttpStatus.OK,
+      );
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
+  }
+
   async checkIfUserExists(idNo: string): Promise<boolean> {
     const exists = await this.userModel.exists({
       idNo: idNo,
@@ -87,29 +137,33 @@ export class UsersService {
    * @param currentUser
    * @returns Array<UserDocument>
    */
-  async findAllUsers(currentUser: JwtPayload) {
+  async findAllUsers(currentUser: JwtPayload, query: any) {
     switch (currentUser.role) {
       case 'Super User':
         return await this.userModel
           .find({
             sacco: currentUser.sacco,
+            ...query,
           })
           .select('-password -refreshToken');
       case 'general admin':
         return await this.userModel
           .find({
             sacco: currentUser.sacco,
+            ...query,
           })
           .select('-password -refreshToken -upadatedAt -updatedBy');
       case 'admin':
         return await this.userModel
           .find({
             sacco: currentUser.sacco,
+            ...query,
           })
           .select('-password -refreshToken -upadatedAt -updatedBy');
       case 'station manager':
         return await this.userModel.find({
           station: currentUser.station,
+          ...query,
         });
       default:
         return await this.userModel
