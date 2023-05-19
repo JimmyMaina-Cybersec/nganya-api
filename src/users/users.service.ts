@@ -332,11 +332,9 @@ export class UsersService {
           .find({
             sacco: user.sacco,
             station: station.station,
+            role: 'station agent',
           })
-          .or([
-            { role: 'station agent' },
-            { role: 'station manager' },
-          ])
+
           .select('-password -refreshToken -upadatedAt -updatedBy');
       } else if (user.role === 'station manager') {
         return await this.userModel
