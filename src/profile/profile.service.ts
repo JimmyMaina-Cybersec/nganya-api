@@ -14,10 +14,24 @@ export class ProfileService {
     private userModel: Model<UserDocument>,
   ) {}
 
-  async myProfile(_id: ObjectId) {
+  async myProfile(user: JwtPayload) {
     try {
+      if (user.station) {
+        return await this.userModel
+          .findById(user._id)
+          .populate('sacco', '-__v')
+          .populate('station', '-__v')
+          .select('-__v');
+      }
+      if (user.vehicle) {
+        return await this.userModel
+          .findById(user._id)
+          .populate('sacco', '-__v')
+          .populate('vehicle', '-__v')
+          .select('-__v');
+      }
       return await this.userModel
-        .findById(_id)
+        .findById(user._id)
         .populate('sacco', '-__v')
         .select('-__v');
     } catch (error) {

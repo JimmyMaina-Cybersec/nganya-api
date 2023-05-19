@@ -56,6 +56,7 @@ export class AuthService {
       sacco: user.sacco,
       station: user.station,
       permission: user.permission,
+      vehicle: user.vehicle,
     };
     try {
       const [accessToken, refreshToken] = await Promise.all([

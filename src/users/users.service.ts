@@ -305,4 +305,49 @@ export class UsersService {
       );
     }
   }
+
+  async findAgentsInStation(user: JwtPayload, station: { station: string }) {
+    if (
+      user.role === 'admin' ||
+      user.role === 'general admin' ||
+      user.role === 'Super User'
+    ) {
+      return await this.userModel
+        .find({
+          sacco: user.sacco,
+          station: station.station,
+        })
+        .or([{ role: 'station agent' }, { role: 'station manager' }])
+        .select('-password -refreshToken -upadatedAt -updatedBy');
+    } else if (user.role === 'station manager') {
+      return await this.userModel
+        .find({
+          station: user.station,
+          role: 'station agent',
+        })
+        .select('-password -refreshToken -upadatedAt -updatedBy');
+    }
+
+    throw new HttpException(
+      'You are not allowed to perform this action',
+      HttpStatus.FORBIDDEN,
+    );
+  }
+
+  async findStationManager(user: JwtPayload, station: { station: string }) {
+    try {
+      return await this.userModel
+        .findOne({
+          sacco: user.sacco,
+          station: station.station,
+          role: 'station manager',
+        })
+        .select('phone photoURL firstName secondName email idNo');
+    } catch (error) {
+      throw new HttpException(
+        error.message,
+        error.status ?? HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
 }

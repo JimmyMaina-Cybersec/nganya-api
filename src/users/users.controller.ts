@@ -59,4 +59,20 @@ export class UsersController {
   deleteUser(@Param('id') id: string, @CurrentUser() currentUser: JwtPayload) {
     return this.usersService.deleteUser(id, currentUser);
   }
+
+  @Get('find-agents-in-station')
+  findAgentsInStation(
+    @CurrentUser() currentUser: JwtPayload,
+    @Body() station: { station: string },
+  ) {
+    return this.usersService.findAgentsInStation(currentUser, station);
+  }
+
+  @Get('find-station-manager')
+  findStationManager(
+    @CurrentUser() currentUser: JwtPayload,
+    @Body() station: { station: string },
+  ) {
+    return this.usersService.findStationManager(currentUser, station);
+  }
 }

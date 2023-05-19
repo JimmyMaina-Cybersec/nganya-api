@@ -20,5 +20,6 @@ export class JwtPayload {
     | 'driver';
   sacco: ObjectId | string;
   station?: ObjectId | string;
+  vehicle?: ObjectId | string;
   permission?: Permission;
 }
