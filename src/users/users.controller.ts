@@ -45,7 +45,7 @@ export class UsersController {
 
   @Get('find-by-id')
   findById(
-    @Body() idNo: { idNo: string },
+    @Query() idNo: { idNo: string },
     @CurrentUser() currentUser: JwtPayload,
   ) {
     return this.usersService.findUserById(idNo, currentUser);
