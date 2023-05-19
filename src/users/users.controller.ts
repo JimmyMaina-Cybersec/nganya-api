@@ -31,8 +31,11 @@ export class UsersController {
   }
 
   @Get()
-  findAll(@CurrentUser() currentUser: JwtPayload) {
-    return this.usersService.findAllUsers(currentUser);
+  findAll(
+    @CurrentUser() currentUser: JwtPayload,
+    @Query() query: any,
+  ) {
+    return this.usersService.findAllUsers(currentUser, query);
   }
 
   @Get('user/:id')
@@ -89,5 +92,13 @@ export class UsersController {
     @Query() station: { station: string },
   ) {
     return this.usersService.findStationManager(currentUser, station);
+  }
+
+  @Patch('assign-station-manager')
+  assingManager(
+    @Query() queryData: { station: string; userId: string },
+    @CurrentUser() currentUser: JwtPayload,
+  ) {
+    return this.usersService.assingManager(queryData, currentUser);
   }
 }
