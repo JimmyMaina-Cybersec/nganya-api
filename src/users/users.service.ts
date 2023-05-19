@@ -1,10 +1,15 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './schema/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { JwtPayload } from 'src/types/jwt-payload';
+import { FindStationAgentsDto } from './dto/find-station-agents.dto';
 
 @Injectable()
 export class UsersService {
@@ -70,7 +75,10 @@ export class UsersService {
         );
       }
     } else {
-      throw new HttpException('User already exists', HttpStatus.CONFLICT);
+      throw new HttpException(
+        'User already exists',
+        HttpStatus.CONFLICT,
+      );
     }
   }
 
@@ -214,7 +222,11 @@ export class UsersService {
    *
    * */
 
-  async updateUser(id: string, updateUserDto: UpdateUserDto, user: JwtPayload) {
+  async updateUser(
+    id: string,
+    updateUserDto: UpdateUserDto,
+    user: JwtPayload,
+  ) {
     if (
       user.role === 'Super User' ||
       user.role === 'admin' ||
@@ -306,35 +318,51 @@ export class UsersService {
     }
   }
 
-  async findAgentsInStation(user: JwtPayload, station: { station: string }) {
-    if (
-      user.role === 'admin' ||
-      user.role === 'general admin' ||
-      user.role === 'Super User'
-    ) {
-      return await this.userModel
-        .find({
-          sacco: user.sacco,
-          station: station.station,
-        })
-        .or([{ role: 'station agent' }, { role: 'station manager' }])
-        .select('-password -refreshToken -upadatedAt -updatedBy');
-    } else if (user.role === 'station manager') {
-      return await this.userModel
-        .find({
-          station: user.station,
-          role: 'station agent',
-        })
-        .select('-password -refreshToken -upadatedAt -updatedBy');
-    }
+  async findAgentsInStation(
+    user: JwtPayload,
+    station: FindStationAgentsDto,
+  ) {
+    try {
+      if (
+        user.role === 'admin' ||
+        user.role === 'general admin' ||
+        user.role === 'Super User'
+      ) {
+        return await this.userModel
+          .find({
+            sacco: user.sacco,
+            station: station.station,
+          })
+          .or([
+            { role: 'station agent' },
+            { role: 'station manager' },
+          ])
+          .select('-password -refreshToken -upadatedAt -updatedBy');
+      } else if (user.role === 'station manager') {
+        return await this.userModel
+          .find({
+            station: user.station,
+            role: 'station agent',
+          })
+          .select('-password -refreshToken -upadatedAt -updatedBy');
+      }
 
-    throw new HttpException(
-      'You are not allowed to perform this action',
-      HttpStatus.FORBIDDEN,
-    );
+      throw new HttpException(
+        'You are not allowed to perform this action',
+        HttpStatus.FORBIDDEN,
+      );
+    } catch (error) {
+      throw new HttpException(
+        error.message,
+        error.status ?? HttpStatus.NOT_FOUND,
+      );
+    }
   }
 
-  async findStationManager(user: JwtPayload, station: { station: string }) {
+  async findStationManager(
+    user: JwtPayload,
+    station: { station: string },
+  ) {
     try {
       return await this.userModel
         .findOne({

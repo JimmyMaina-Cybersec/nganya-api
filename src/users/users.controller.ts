@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
@@ -14,6 +15,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { JwtPayload } from 'src/types/jwt-payload';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { FindStationAgentsDto } from './dto/find-station-agents.dto';
 
 @UseGuards(JwtGuard)
 @Controller('users')
@@ -34,7 +36,10 @@ export class UsersController {
   }
 
   @Get('user/:id')
-  findOne(@Param('id') id: string, @CurrentUser() currentUser: JwtPayload) {
+  findOne(
+    @Param('id') id: string,
+    @CurrentUser() currentUser: JwtPayload,
+  ) {
     return this.usersService.findUser(id, currentUser);
   }
 
@@ -52,26 +57,36 @@ export class UsersController {
     @Body() updateUserDto: UpdateUserDto,
     @CurrentUser() currentUser: JwtPayload,
   ) {
-    return this.usersService.updateUser(id, updateUserDto, currentUser);
+    return this.usersService.updateUser(
+      id,
+      updateUserDto,
+      currentUser,
+    );
   }
 
   @Delete('delete-user/:id')
-  deleteUser(@Param('id') id: string, @CurrentUser() currentUser: JwtPayload) {
+  deleteUser(
+    @Param('id') id: string,
+    @CurrentUser() currentUser: JwtPayload,
+  ) {
     return this.usersService.deleteUser(id, currentUser);
   }
 
-  @Get('find-agents-in-station')
+  @Get('station-agents')
   findAgentsInStation(
     @CurrentUser() currentUser: JwtPayload,
-    @Body() station: { station: string },
+    @Query() station: FindStationAgentsDto,
   ) {
-    return this.usersService.findAgentsInStation(currentUser, station);
+    return this.usersService.findAgentsInStation(
+      currentUser,
+      station,
+    );
   }
 
-  @Get('find-station-manager')
+  @Get('station-manager')
   findStationManager(
     @CurrentUser() currentUser: JwtPayload,
-    @Body() station: { station: string },
+    @Query() station: { station: string },
   ) {
     return this.usersService.findStationManager(currentUser, station);
   }
