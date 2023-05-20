@@ -14,6 +14,7 @@ import { ProfileModule } from './profile/profile.module';
 import { BookingModule } from './booking/booking.module';
 import { TicketModule } from './tickets/tickets.module';
 import { LipaNaMpesaModule } from './lipa-na-mpesa/lipa-na-mpesa.module';
+import { PercelModule } from './percel/percel.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { LipaNaMpesaModule } from './lipa-na-mpesa/lipa-na-mpesa.module';
     BookingModule,
     TicketModule,
     LipaNaMpesaModule,
+    PercelModule,
   ],
   controllers: [AppController],
   providers: [AppService],
