@@ -64,12 +64,12 @@ export class VehiclesController {
     return this.vehiclesService.findAll(user, query);
   }
 
-  @Get('search-vehicle')
-  searchVehicle(
+  @Post('add-to-station')
+  addToStation(
     @CurrentUser() user: JwtPayload,
-    @Query() query: { palteNo: string },
+    @Body() vehicle: { palteNo: string },
   ) {
-    return this.vehiclesService.searchVehicle(user, query);
+    return this.vehiclesService.addToStation(user, vehicle);
   }
 
   @Get('vehicle/:id')

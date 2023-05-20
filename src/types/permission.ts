@@ -13,4 +13,5 @@ export class Permission {
   canAddAgents?: boolean;
   canAddRoutes?: boolean;
   canAddTrips?: boolean;
+  canAddVehicleToStation?: boolean;
 }

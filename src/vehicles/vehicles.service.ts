@@ -164,21 +164,47 @@ export class VehiclesService {
     );
   }
 
-  async searchVehicle(user: JwtPayload, query: { palteNo: string }) {
+  async addToStation(user: JwtPayload, query: { palteNo: string }) {
     try {
-      if (user.role === 'Super User') {
-        return await this.vehicleModel
-          .findOne({
-            plateNo: query.palteNo,
-          })
+      if (
+        user.role === 'station manager' ||
+        user.role === 'admin' ||
+        user.role === 'general admin' ||
+        (user.role === 'station agent' &&
+          user.permission.canAddVehicleToStation)
+      ) {
+        const exists = await this.vehicleModel.exists({
+          plateNo: query.palteNo,
+          sacco: user.sacco,
+        });
+        if (!exists) {
+          throw new HttpException(
+            'Vehicle with this registration number does not exist in your sacco',
+            HttpStatus.NOT_FOUND,
+          );
+        }
+
+        await this.vehicleModel
+          .findOneAndUpdate(
+            {
+              plateNo: query.palteNo,
+              sacco: user.sacco,
+            },
+            {
+              currentStation: user.station,
+              status: 'in station',
+            },
+          )
           .exec();
+        throw new HttpException(
+          'Vehicle added to station successfully',
+          HttpStatus.OK,
+        );
       } else {
-        return await this.vehicleModel
-          .findOne({
-            plateNo: query.palteNo,
-            sacco: user.sacco,
-          })
-          .exec();
+        throw new HttpException(
+          'You are not allowed to add vehicles to station',
+          HttpStatus.FORBIDDEN,
+        );
       }
     } catch (error) {
       throw new HttpException(error.message, error.status);
