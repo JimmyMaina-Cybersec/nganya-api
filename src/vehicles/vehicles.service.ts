@@ -160,6 +160,27 @@ export class VehiclesService {
     );
   }
 
+  async searchVehicle(user: JwtPayload, query: { palteNo: string }) {
+    try {
+      if (user.role === 'Super User') {
+        return await this.vehicleModel
+          .findOne({
+            plateNo: query.palteNo,
+          })
+          .exec();
+      } else {
+        return await this.vehicleModel
+          .findOne({
+            plateNo: query.palteNo,
+            sacco: user.sacco,
+          })
+          .exec();
+      }
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
+  }
+
   async hasDriver(user: JwtPayload, vehicleID: string) {
     try {
       const exists = await this.userModel.exists({
