@@ -60,6 +60,7 @@ export class VehiclesService {
           ...createVehicleDto,
           sacco: user.sacco,
           vehicleOwner: user._id,
+          addedBy: user._id,
         });
         throw new HttpException(
           'Vehicle added successfully',

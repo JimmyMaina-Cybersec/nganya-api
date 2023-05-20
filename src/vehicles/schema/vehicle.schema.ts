@@ -35,6 +35,9 @@ export class Vehicle {
   @Prop({ type: SchemaTypes.ObjectId, ref: 'Sacco', required: true })
   sacco: Types.ObjectId;
 
+  @Prop({ type: SchemaTypes.ObjectId, ref: 'User', required: true })
+  addedBy: Types.ObjectId;
+
   @Prop({ default: () => Date.now() })
   addedOn: Date;
 
