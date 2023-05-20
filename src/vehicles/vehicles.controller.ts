@@ -64,7 +64,7 @@ export class VehiclesController {
     return this.vehiclesService.findAll(user, query);
   }
 
-  @Get()
+  @Get('search-vehicle')
   searchVehicle(
     @CurrentUser() user: JwtPayload,
     @Query() query: { palteNo: string },
