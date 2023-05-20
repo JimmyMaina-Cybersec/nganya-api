@@ -67,7 +67,7 @@ export class VehiclesController {
   @Post('add-to-station')
   addToStation(
     @CurrentUser() user: JwtPayload,
-    @Body() vehicle: { palteNo: string },
+    @Body() vehicle: { plateNo: string },
   ) {
     return this.vehiclesService.addToStation(user, vehicle);
   }

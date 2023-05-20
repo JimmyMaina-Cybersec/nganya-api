@@ -165,7 +165,7 @@ export class VehiclesService {
     );
   }
 
-  async addToStation(user: JwtPayload, query: { palteNo: string }) {
+  async addToStation(user: JwtPayload, query: { plateNo: string }) {
     try {
       if (
         user.role === 'station manager' ||
@@ -174,10 +174,14 @@ export class VehiclesService {
         (user.role === 'station agent' &&
           user.permission.canAddVehicleToStation)
       ) {
+        console.log(user.sacco);
+
         const exists = await this.vehicleModel.exists({
-          plateNo: query.palteNo,
+          plateNo: query.plateNo,
           sacco: user.sacco,
         });
+        console.log(exists);
+
         if (!exists) {
           throw new HttpException(
             'Vehicle with this registration number does not exist in your sacco',
@@ -188,12 +192,14 @@ export class VehiclesService {
         await this.vehicleModel
           .findOneAndUpdate(
             {
-              plateNo: query.palteNo,
+              plateNo: query.plateNo,
               sacco: user.sacco,
             },
             {
-              currentStation: user.station,
-              status: 'in station',
+              $set: {
+                currentStation: user.station,
+                status: 'in station',
+              },
             },
           )
           .exec();
