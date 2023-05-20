@@ -76,31 +76,35 @@ export class VehiclesService {
   }
 
   async findAll(user: JwtPayload, query: any) {
-    if (
-      user.role === 'Super User' ||
-      user.role === 'admin' ||
-      user.role === 'general admin'
-    ) {
-      return await this.vehicleModel
-        .find({
-          sacco: user.sacco,
-          ...query,
-        })
-        .exec();
-    } else if (user.role === 'station agent' || 'station manager') {
-      return await this.vehicleModel
-        .find({
-          sacco: user.sacco,
-          ...query,
-        })
-        .or([
-          { lastStation: user.station },
-          { currentStation: user.station },
-          { nextStation: user.station },
-        ])
-        .exec();
-    } else {
-      return [];
+    try {
+      if (
+        user.role === 'Super User' ||
+        user.role === 'admin' ||
+        user.role === 'general admin'
+      ) {
+        return await this.vehicleModel
+          .find({
+            sacco: user.sacco,
+            ...query,
+          })
+          .exec();
+      } else if (user.role === 'station agent' || 'station manager') {
+        return await this.vehicleModel
+          .find({
+            sacco: user.sacco,
+            ...query,
+          })
+          .or([
+            { lastStation: user.station },
+            { currentStation: user.station },
+            { nextStation: user.station },
+          ])
+          .exec();
+      } else {
+        return [];
+      }
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
     }
   }
 
