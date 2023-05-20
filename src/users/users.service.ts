@@ -161,10 +161,16 @@ export class UsersService {
           })
           .select('-password -refreshToken -upadatedAt -updatedBy');
       case 'station manager':
-        return await this.userModel.find({
-          station: currentUser.station,
-          ...query,
-        });
+        return await this.userModel
+          .find({
+            station: currentUser.station,
+            ...query,
+          })
+          .or([
+            { role: 'station agent' },
+            { role: 'driver' },
+            { role: 'station manager' },
+          ]);
       default:
         return await this.userModel
           .find({
