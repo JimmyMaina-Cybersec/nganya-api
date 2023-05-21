@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from "class-validator";
 
 export class CreatePercelDto {
   @IsString()
@@ -15,6 +15,10 @@ export class CreatePercelDto {
 
   @IsString()
   @IsNotEmpty()
+  readonly senderIdNo: string;
+
+  @IsString()
+  @IsNotEmpty()
   readonly senderLocation: string;
 
   @IsString()
@@ -28,6 +32,10 @@ export class CreatePercelDto {
   @IsString()
   @IsNotEmpty()
   readonly reciverPhone: string;
+
+  @IsString()
+  @IsNotEmpty()
+  readonly reciverIdNo: string;
 
   @IsString()
   @IsNotEmpty()
