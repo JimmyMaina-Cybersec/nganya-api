@@ -8,23 +8,23 @@ import {
   Delete,
   UseGuards,
   Query,
-} from '@nestjs/common';
-import { PercelService } from './percel.service';
-import { CreatePercelDto } from './dto/create-percel.dto';
-import { UpdatePercelDto } from './dto/update-percel.dto';
-import { JwtGuard } from 'src/auth/guards/jwt.guard';
-import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import { JwtPayload } from 'src/types/jwt-payload';
+} from "@nestjs/common";
+import { PercelService } from "./percel.service";
+import { CreatePercelDto } from "./dto/create-percel.dto";
+import { UpdatePercelDto } from "./dto/update-percel.dto";
+import { JwtGuard } from "src/auth/guards/jwt.guard";
+import { CurrentUser } from "src/common/decorators/current-user.decorator";
+import { JwtPayload } from "src/types/jwt-payload";
 
 @UseGuards(JwtGuard)
-@Controller('percel')
+@Controller("percels")
 export class PercelController {
   constructor(private readonly percelService: PercelService) {}
 
-  @Post('send')
+  @Post("send")
   sendPercel(
     @Body() createPercelDto: CreatePercelDto,
-    @CurrentUser() agent: JwtPayload,
+    @CurrentUser() agent: JwtPayload
   ) {
     return this.percelService.sendPercel(createPercelDto, agent);
   }
@@ -34,11 +34,11 @@ export class PercelController {
     return this.percelService.findAll(user, query);
   }
 
-  @Patch('upadate/:id')
+  @Patch("upadate/:id")
   update(
-    @Param('id') id: string,
+    @Param("id") id: string,
     @Body() updatePercelDto: UpdatePercelDto,
-    @CurrentUser() user: JwtPayload,
+    @CurrentUser() user: JwtPayload
   ) {
     return this.percelService.update(user, id, updatePercelDto);
   }

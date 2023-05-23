@@ -35,10 +35,6 @@ export class CreatePercelDto {
 
   @IsString()
   @IsNotEmpty()
-  readonly reciverIdNo: string;
-
-  @IsString()
-  @IsNotEmpty()
   readonly reciverLocation: string;
 
   @IsString()
