@@ -18,14 +18,19 @@ import { JwtPayload } from 'src/types/jwt-payload';
 @UseGuards(JwtGuard)
 @Controller('availabilities')
 export class AvailabilitiesController {
-  constructor(private readonly availabilitiesService: AvailabilitiesService) {}
+  constructor(
+    private readonly availabilitiesService: AvailabilitiesService,
+  ) {}
 
   @Post('add-availability')
   create(
     @Body() createAvailabilityDto: CreateAvailabilityDto,
     @CurrentUser() user: JwtPayload,
   ) {
-    return this.availabilitiesService.create(createAvailabilityDto, user);
+    return this.availabilitiesService.create(
+      createAvailabilityDto,
+      user,
+    );
   }
 
   @Get()
@@ -34,7 +39,10 @@ export class AvailabilitiesController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+  findOne(
+    @Param('availability/id') id: string,
+    @CurrentUser() user: JwtPayload,
+  ) {
     return this.availabilitiesService.findOne(id, user);
   }
 
@@ -44,7 +52,11 @@ export class AvailabilitiesController {
     @Body() updateAvailabilityDto: UpdateAvailabilityDto,
     @CurrentUser() user: JwtPayload,
   ) {
-    return this.availabilitiesService.update(id, updateAvailabilityDto, user);
+    return this.availabilitiesService.update(
+      id,
+      updateAvailabilityDto,
+      user,
+    );
   }
 
   @Delete('delete-availability/:id')

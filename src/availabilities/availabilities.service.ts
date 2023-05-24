@@ -1,4 +1,8 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+} from '@nestjs/common';
 import { CreateAvailabilityDto } from './dto/create-availability.dto';
 import { UpdateAvailabilityDto } from './dto/update-availability.dto';
 import { JwtPayload } from 'src/types/jwt-payload';
@@ -8,8 +12,14 @@ import {
   Availability,
   AvailabilityDocument,
 } from './schema/availability.schema';
-import { Station, StationDocument } from 'src/stations/schema/station.schema';
-import { Vehicle, VehicleDocument } from 'src/vehicles/schema/vehicle.schema';
+import {
+  Station,
+  StationDocument,
+} from 'src/stations/schema/station.schema';
+import {
+  Vehicle,
+  VehicleDocument,
+} from 'src/vehicles/schema/vehicle.schema';
 
 @Injectable()
 export class AvailabilitiesService {
@@ -22,14 +32,19 @@ export class AvailabilitiesService {
     private readonly vehicleModel: Model<VehicleDocument>,
   ) {}
 
-  async create(createAvailabilityDto: CreateAvailabilityDto, user: JwtPayload) {
+  async create(
+    createAvailabilityDto: CreateAvailabilityDto,
+    user: JwtPayload,
+  ) {
     try {
       if (
         user.role === 'station manager' ||
-        (user.role === 'station agent' && user.permission?.canAddAvailabilities)
+        (user.role === 'station agent' &&
+          user.permission?.canAddAvailabilities)
       ) {
         await this.availabilityModel.create({
           ...createAvailabilityDto,
+          depatureStation: user.station,
           station: user.station,
           sacco: user.sacco,
           addedBy: user._id,
@@ -57,21 +72,31 @@ export class AvailabilitiesService {
       if (user.role === 'Super User') {
         availabilities = await this.availabilityModel
           .find()
-          .populate('station')
-          .populate('vehicle');
-      } else if (user.role === 'general admin' || user.role === 'admin') {
+          .populate(
+            'vehicle',
+            'plateNo seatLayout destinationStation currentStation nextStation nextStation',
+          );
+        // .populate('station')
+      } else if (
+        user.role === 'general admin' ||
+        user.role === 'admin'
+      ) {
         availabilities = await this.availabilityModel
-          .where({ sacco: user.sacco })
-          .populate('station')
+          .where({
+            sacco: user.sacco,
+          })
           .populate('vehicle');
+        // .populate('station')
       } else if (
         user.role === 'station manager' ||
         user.role === 'station agent'
       ) {
         availabilities = await this.availabilityModel
-          .where({ sacco: user.sacco })
-          .populate('station')
+          .where({
+            sacco: user.sacco,
+          })
           .populate('vehicle');
+        // .populate('station')
       } else {
         throw new HttpException(
           'You are not authorized to view availabilities',
@@ -118,7 +143,10 @@ export class AvailabilitiesService {
       throw new HttpException(error.message, error.status);
     }
 
-    throw new HttpException('Availability updated successfully', HttpStatus.OK);
+    throw new HttpException(
+      'Availability updated successfully',
+      HttpStatus.OK,
+    );
   }
 
   async deleteAvalablity(id: string, user: JwtPayload) {
