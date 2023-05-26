@@ -43,12 +43,16 @@ export class RoutesService {
         error.status || HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
-
-    return 'This action adds a new route';
   }
 
   findAll(query: any, user: JwtPayload) {
     try {
+      if (user.role === 'admin' || user.role === 'general admin') {
+        return this.routeModel.find({
+          ...query,
+          sacco: user.sacco,
+        });
+      }
       return this.routeModel.find({
         ...query,
         station: user.station,
