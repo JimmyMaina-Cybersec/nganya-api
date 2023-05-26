@@ -30,7 +30,7 @@ export class Availability {
   vehicle: Types.ObjectId;
 
   @Prop({ type: Array, default: [] })
-  bookedSeates: Array<string>;
+  bookedSeats: Array<string>;
 
   @Prop({ type: SchemaTypes.ObjectId, ref: 'Sacco' })
   sacco: Types.ObjectId;
