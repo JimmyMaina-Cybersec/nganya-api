@@ -101,27 +101,36 @@ export class LipaNaMpesaService {
           TransactionDesc: 'Ticket',
         },
       })
-        .then((res) => {
+        .then(async (res) => {
           result = res.data;
+
+          await this.listenToPaymentUpdates({
+            CheckoutRequestID: result.CheckoutRequestID,
+            data: {
+              ...result,
+              dto: lipaDTO,
+            },
+          });
+
+          await this.lipaNaMpesaTransaction.create({
+            CheckoutRequestID: result.CheckoutRequestID,
+            ...result,
+            Amount: lipaDTO.amount,
+            firstName: lipaDTO.firstName,
+            secondName: lipaDTO.secondName,
+            idNo: lipaDTO.idNo,
+
+            phone: lipaDTO.phone,
+            sacco: user.sacco,
+            agent: user._id,
+            station: user.station,
+          });
         })
         .catch((err) => {
           console.log(err);
 
           throw new HttpException(err.message, HttpStatus.BAD_GATEWAY);
         });
-      await this.lipaNaMpesaTransaction.create({
-        CheckoutRequestID: result.CheckoutRequestID,
-        ...result,
-        Amount: lipaDTO.amount,
-        firstName: lipaDTO.firstName,
-        secondName: lipaDTO.secondName,
-        idNo: lipaDTO.idNo,
-
-        phone: lipaDTO.phone,
-        sacco: user.sacco,
-        agent: user._id,
-        station: user.station,
-      });
 
       return result;
     } catch (error) {
@@ -164,6 +173,10 @@ export class LipaNaMpesaService {
           transaction: [mpesaResponse],
         },
       );
+      await this.listenToPaymentUpdates({
+        CheckoutRequestID: mpesaResponse.Body?.stkCallback.CheckoutRequestID,
+        data: mpesaResponse,
+      });
       throw new HttpException('Transaction saved successfully', HttpStatus.OK);
     } catch (error) {
       throw new HttpException(error.message, error.status);
@@ -184,5 +197,14 @@ export class LipaNaMpesaService {
 
   remove(id: number) {
     return `This action removes a #${id} lipaNaMpesa`;
+  }
+
+  async listenToPaymentUpdates(mpesaData: {
+    CheckoutRequestID: string;
+    data: any;
+  }) {
+    console.log(mpesaData);
+
+    return mpesaData;
   }
 }

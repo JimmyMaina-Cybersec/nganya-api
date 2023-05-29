@@ -1,10 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { CreatePresenceDto } from './dto/create-presence.dto';
-import { UpdatePresenceDto } from './dto/update-presence.dto';
+import { Socket } from 'socket.io';
 
 @Injectable()
 export class PresenceService {
-  joinRoom(createPresenceDto: CreatePresenceDto) {
-    return 'This action adds a new presence';
+  joinRoom(user: { _id: string }, client: Socket) {
+    // TODO: implement precence here
   }
 }

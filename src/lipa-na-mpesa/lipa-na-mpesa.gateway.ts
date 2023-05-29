@@ -12,7 +12,6 @@ import {
   LipaNaMpesaTransaction,
   LipaNaMpesaTransactionDocument,
 } from './schema/lipa-na-mpesa.schema';
-import {} from 'mongodb';
 
 @WebSocketGateway({ namespace: 'mpesa' })
 export class LipaNaMpesaGateway {
@@ -33,33 +32,16 @@ export class LipaNaMpesaGateway {
   }
 
   @SubscribeMessage('lipaNaMpesa')
-  async handleMessage(@MessageBody() CheckoutRequestID: string) {
-    let trans = await this.lipaNaMpesaTransaction.findOne({
-      CheckoutRequestID: CheckoutRequestID,
-    });
+  async handleMessage(
+    @MessageBody() mpesaData: { CheckoutRequestID: string; data: any },
+  ) {
     this.server.emit('onLipaNaMpesaTransaction', {
-      trans,
+      status: 'connection established',
     });
-    const transaction = this.lipaNaMpesaTransaction.watch();
-    console.log('after watch');
-
-    transaction.on('connection', (data) => {
-      console.log('data');
-      this.server.emit('onLipaNaMpesaTransaction', 'data.fullDocument');
-      if (data.operationType === 'update') {
-        // TODO:Remember to remove this console.log
-        console.log(data.fullDocument);
-
-        this.server
-          // .to(CheckoutRequestID)
-          .emit('onLipaNaMpesaTransaction', data.fullDocument);
-
-        //   if (
-        //     (data.fullDocument as LipaNaMpesaTransactionDocument).ResultCode
-        //   ) {
-        //     transaction.close();
-        //   }
-      }
-    });
+    const updates = await this.lipaNaMpesaService.listenToPaymentUpdates(
+      mpesaData,
+    );
+    this.server.emit('onLipaNaMpesaTransaction', updates);
+    return updates;
   }
 }
