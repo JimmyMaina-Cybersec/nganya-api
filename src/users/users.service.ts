@@ -355,6 +355,8 @@ export class UsersService {
         user.role === 'general admin'
       ) {
         if (
+          // TODO: only delete user in a sacoo
+          // !currently not working
           // deletingUser.sacco === user.sacco &&
           deletingUser.role !== 'general admin'
         ) {
@@ -367,6 +369,8 @@ export class UsersService {
         );
       } else if (user.role === 'station manager') {
         if (
+          // TODO: only delete user in a station
+          // !currently not working
           // deletingUser.station === user.station &&
           deletingUser.role === 'station agent'
         ) {
