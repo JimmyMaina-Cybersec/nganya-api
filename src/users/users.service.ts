@@ -338,43 +338,53 @@ export class UsersService {
    */
 
   async deleteUser(id: string, user: JwtPayload) {
-    const deletingUser = await this.userModel.findById(id);
-    if (deletingUser.role === 'Super User') {
-      throw new HttpException(
-        'You are not allowed to perform this action',
-        HttpStatus.FORBIDDEN,
-      );
-    }
+    try {
+      const deletingUser = await this.userModel.findById(id);
+      if (deletingUser.role === 'Super User') {
+        throw new HttpException(
+          'You are not allowed to perform this action',
+          HttpStatus.FORBIDDEN,
+        );
+      }
 
-    if (user.role === 'Super User') {
-      await this.userModel.findByIdAndDelete(id);
-      return 'User deleted successfully';
-    }
-    if (user.role === 'admin' || user.role === 'general admin') {
-      if (
-        deletingUser.sacco === user.sacco &&
-        deletingUser.role !== 'general admin'
-      ) {
+      if (user.role === 'Super User') {
         await this.userModel.findByIdAndDelete(id);
         return 'User deleted successfully';
-      }
-      throw new HttpException(
-        'You are not allowed to perform this action',
-        HttpStatus.FORBIDDEN,
-      );
-    }
-    if (user.role === 'station manager') {
-      if (
-        deletingUser.station === user.station &&
-        deletingUser.role === 'station agent'
+      } else if (
+        user.role === 'admin' ||
+        user.role === 'general admin'
       ) {
-        await this.userModel.findByIdAndDelete(id);
-        return 'User deleted successfully';
+        if (
+          // deletingUser.sacco === user.sacco &&
+          deletingUser.role !== 'general admin'
+        ) {
+          await this.userModel.findByIdAndDelete(id);
+          throw new HttpException('Delete Success', HttpStatus.OK);
+        }
+        throw new HttpException(
+          'You are not allowed to perform this action',
+          HttpStatus.FORBIDDEN,
+        );
+      } else if (user.role === 'station manager') {
+        if (
+          // deletingUser.station === user.station &&
+          deletingUser.role === 'station agent'
+        ) {
+          await this.userModel.findByIdAndDelete(id);
+          return 'User deleted successfully';
+        }
+        throw new HttpException(
+          'You are not allowed to perform this action',
+          HttpStatus.FORBIDDEN,
+        );
+      } else {
+        throw new HttpException(
+          'You are not allowed to perform this action',
+          HttpStatus.FORBIDDEN,
+        );
       }
-      throw new HttpException(
-        'You are not allowed to perform this action',
-        HttpStatus.FORBIDDEN,
-      );
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
     }
   }
 
