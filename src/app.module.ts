@@ -16,6 +16,8 @@ import { TicketModule } from './tickets/tickets.module';
 import { LipaNaMpesaModule } from './lipa-na-mpesa/lipa-na-mpesa.module';
 import { PercelModule } from './percel/percel.module';
 import { RoutesModule } from './routes/routes.module';
+import { ChatModule } from './chat/chat.module';
+import { NotificationsModule } from './notifications/notifications.module';
 
 @Module({
   imports: [
@@ -36,6 +38,8 @@ import { RoutesModule } from './routes/routes.module';
     LipaNaMpesaModule,
     PercelModule,
     RoutesModule,
+    ChatModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

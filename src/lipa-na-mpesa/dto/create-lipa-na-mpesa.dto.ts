@@ -10,15 +10,15 @@ export class LipaDto {
   amount: number;
 
   @IsString()
-  @IsEmpty()
+  @IsNotEmpty()
   firstName: string;
 
   @IsString()
-  @IsEmpty()
+  @IsNotEmpty()
   secondName: string;
 
   @IsString()
-  @IsEmpty()
+  @IsNotEmpty()
   idNo: string;
   //   @IsString()
   //   description: string;
