@@ -13,7 +13,7 @@ export class LipaNaMpesaTransaction {
   CheckoutRequestID: string;
 
   @Prop({ type: String })
-  ResultCode: string;
+  ResultCode?: string;
 
   @Prop({ type: String })
   ResultDesc: string;
@@ -51,10 +51,16 @@ export class LipaNaMpesaTransaction {
   phone: string;
 
   @Prop({ type: SchemaTypes.ObjectId })
-  sacoo: Types.ObjectId; 
+  sacoo: Types.ObjectId;
 
   @Prop({ type: SchemaTypes.ObjectId, default: null })
   station: Types.ObjectId;
+
+  @Prop({ type: String, default: 'pending' })
+  status: string;
+
+  @Prop({ type: String, default: 'pending' })
+  claimed: string;
 
   @Prop({ type: String })
   agent: string;

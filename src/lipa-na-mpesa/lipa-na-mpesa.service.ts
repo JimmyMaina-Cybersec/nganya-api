@@ -10,6 +10,8 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { StkInitResponce } from './types/stk-init-reponce.type';
+import { WebSocketServer } from '@nestjs/websockets';
+import { Server } from 'socket.io';
 
 @Injectable()
 export class LipaNaMpesaService {
@@ -37,8 +39,6 @@ export class LipaNaMpesaService {
    * @returns
    */
   async sendStk(lipaDTO: LipaDto, user: JwtPayload) {
-    console.log(lipaDTO);
-
     const shortCode = '174379';
 
     const account_reference = null;
@@ -160,6 +160,7 @@ export class LipaNaMpesaService {
           PhoneNumber:
             mpesaResponse.Body?.stkCallback?.CallbackMetadata?.Item[4]?.Value ??
             null,
+
           transaction: [mpesaResponse],
         },
       );
