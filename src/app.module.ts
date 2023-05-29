@@ -18,6 +18,7 @@ import { PercelModule } from './percel/percel.module';
 import { RoutesModule } from './routes/routes.module';
 import { ChatModule } from './chat/chat.module';
 import { NotificationsModule } from './notifications/notifications.module';
+import { PresenceModule } from './presence/presence.module';
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { NotificationsModule } from './notifications/notifications.module';
     RoutesModule,
     ChatModule,
     NotificationsModule,
+    PresenceModule,
   ],
   controllers: [AppController],
   providers: [AppService],
