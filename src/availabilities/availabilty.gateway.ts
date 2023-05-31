@@ -44,14 +44,7 @@ export class AvailabilitiesGateway {
   }
 
   @SubscribeMessage('stationAvailabilities')
-  async handleMessage(@MessageBody() stationId: string) {
-    console.log('Station ID:', stationId);
-
-    let availabilities = await this.availabilityModel
-      .find({
-        depatureStation: stationId,
-      })
-      .populate('vehicle');
-    this.server.emit('onStationAvailabilities', availabilities);
+  async handleMessage(@MessageBody() stationId: string, availability: any) {
+    this.server.to(stationId).emit('onStationAvailabilities', availability);
   }
 }
