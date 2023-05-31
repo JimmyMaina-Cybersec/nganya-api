@@ -11,8 +11,8 @@ export class Route {
   @Prop({ type: Array, default: [] })
   destinations: Array<string>;
 
-  @Prop({ type: Map, default: new Map() })
-  prices: Map<string, number>;
+  @Prop({ type: Array, default: [] })
+  prices: [];
 
   @Prop({ type: SchemaTypes.ObjectId, ref: 'Sacco' })
   sacco: Types.ObjectId;
