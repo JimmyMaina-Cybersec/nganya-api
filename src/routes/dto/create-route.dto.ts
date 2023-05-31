@@ -5,6 +5,6 @@ export class CreateRouteDto {
   @IsArray()
   destinations: string[];
 
-  @IsNotEmpty()
-  prices: Map<string, number>;
+  @IsArray()
+  prices: { destination: string; price: number }[];
 }
