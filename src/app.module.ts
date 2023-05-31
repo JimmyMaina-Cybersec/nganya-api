@@ -19,6 +19,7 @@ import { RoutesModule } from './routes/routes.module';
 import { ChatModule } from './chat/chat.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { PresenceModule } from './presence/presence.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -26,6 +27,12 @@ import { PresenceModule } from './presence/presence.module';
       isGlobal: true,
     }),
     MongooseModule.forRoot(process.env.MONGO_URI),
+    EventEmitterModule.forRoot({
+      wildcard: true,
+      delimiter: '.',
+      verboseMemoryLeak: false,
+      ignoreErrors: false,
+    }),
     StationsModule,
     UsersModule,
     VehiclesModule,
