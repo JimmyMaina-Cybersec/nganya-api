@@ -10,12 +10,14 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { StkInitResponce } from './types/stk-init-reponce.type';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class LipaNaMpesaService {
   constructor(
     @InjectModel(LipaNaMpesaTransaction.name)
     private lipaNaMpesaTransaction: Model<LipaNaMpesaTransactionDocument>,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   readonly authorisationEndpoint =
@@ -37,8 +39,6 @@ export class LipaNaMpesaService {
    * @returns
    */
   async sendStk(lipaDTO: LipaDto, user: JwtPayload) {
-    console.log(lipaDTO);
-
     const shortCode = '174379';
 
     const account_reference = null;
@@ -101,27 +101,33 @@ export class LipaNaMpesaService {
           TransactionDesc: 'Ticket',
         },
       })
-        .then((res) => {
+        .then(async (res) => {
           result = res.data;
+
+          this.eventEmitter.emit('mpesapayment.created', {
+            CheckoutRequestID: result.CheckoutRequestID,
+            data: result,
+          });
+
+          await this.lipaNaMpesaTransaction.create({
+            CheckoutRequestID: result.CheckoutRequestID,
+            ...result,
+            Amount: lipaDTO.amount,
+            firstName: lipaDTO.firstName,
+            secondName: lipaDTO.secondName,
+            idNo: lipaDTO.idNo,
+
+            phone: lipaDTO.phone,
+            sacco: user.sacco,
+            agent: user._id,
+            station: user.station,
+          });
         })
         .catch((err) => {
           console.log(err);
 
           throw new HttpException(err.message, HttpStatus.BAD_GATEWAY);
         });
-      await this.lipaNaMpesaTransaction.create({
-        CheckoutRequestID: result.CheckoutRequestID,
-        ...result,
-        Amount: lipaDTO.amount,
-        firstName: lipaDTO.firstName,
-        secondName: lipaDTO.secondName,
-        idNo: lipaDTO.idNo,
-
-        phone: lipaDTO.phone,
-        sacco: user.sacco,
-        agent: user._id,
-        station: user.station,
-      });
 
       return result;
     } catch (error) {
@@ -160,9 +166,16 @@ export class LipaNaMpesaService {
           PhoneNumber:
             mpesaResponse.Body?.stkCallback?.CallbackMetadata?.Item[4]?.Value ??
             null,
+
           transaction: [mpesaResponse],
         },
       );
+
+      this.eventEmitter.emit('mpesapayment.created', {
+        CheckoutRequestID: mpesaResponse.Body?.stkCallback.CheckoutRequestID,
+        data: mpesaResponse,
+      });
+
       throw new HttpException('Transaction saved successfully', HttpStatus.OK);
     } catch (error) {
       throw new HttpException(error.message, error.status);
@@ -183,5 +196,14 @@ export class LipaNaMpesaService {
 
   remove(id: number) {
     return `This action removes a #${id} lipaNaMpesa`;
+  }
+
+  async listenToPaymentUpdates(mpesaData: {
+    CheckoutRequestID: string;
+    data: any;
+  }) {
+    console.log(mpesaData);
+
+    return mpesaData;
   }
 }

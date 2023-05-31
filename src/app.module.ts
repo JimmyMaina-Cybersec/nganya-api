@@ -16,6 +16,10 @@ import { TicketModule } from './tickets/tickets.module';
 import { LipaNaMpesaModule } from './lipa-na-mpesa/lipa-na-mpesa.module';
 import { PercelModule } from './percel/percel.module';
 import { RoutesModule } from './routes/routes.module';
+import { ChatModule } from './chat/chat.module';
+import { NotificationsModule } from './notifications/notifications.module';
+import { PresenceModule } from './presence/presence.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -23,6 +27,12 @@ import { RoutesModule } from './routes/routes.module';
       isGlobal: true,
     }),
     MongooseModule.forRoot(process.env.MONGO_URI),
+    EventEmitterModule.forRoot({
+      wildcard: true,
+      delimiter: '.',
+      verboseMemoryLeak: false,
+      ignoreErrors: false,
+    }),
     StationsModule,
     UsersModule,
     VehiclesModule,
@@ -36,6 +46,9 @@ import { RoutesModule } from './routes/routes.module';
     LipaNaMpesaModule,
     PercelModule,
     RoutesModule,
+    ChatModule,
+    NotificationsModule,
+    PresenceModule,
   ],
   controllers: [AppController],
   providers: [AppService],

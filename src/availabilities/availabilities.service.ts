@@ -1,8 +1,4 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateAvailabilityDto } from './dto/create-availability.dto';
 import { UpdateAvailabilityDto } from './dto/update-availability.dto';
 import { JwtPayload } from 'src/types/jwt-payload';
@@ -12,14 +8,8 @@ import {
   Availability,
   AvailabilityDocument,
 } from './schema/availability.schema';
-import {
-  Station,
-  StationDocument,
-} from 'src/stations/schema/station.schema';
-import {
-  Vehicle,
-  VehicleDocument,
-} from 'src/vehicles/schema/vehicle.schema';
+import { Station, StationDocument } from 'src/stations/schema/station.schema';
+import { Vehicle, VehicleDocument } from 'src/vehicles/schema/vehicle.schema';
 
 @Injectable()
 export class AvailabilitiesService {
@@ -32,15 +22,11 @@ export class AvailabilitiesService {
     private readonly vehicleModel: Model<VehicleDocument>,
   ) {}
 
-  async create(
-    createAvailabilityDto: CreateAvailabilityDto,
-    user: JwtPayload,
-  ) {
+  async create(createAvailabilityDto: CreateAvailabilityDto, user: JwtPayload) {
     try {
       if (
         user.role === 'station manager' ||
-        (user.role === 'station agent' &&
-          user.permission?.canAddAvailabilities)
+        (user.role === 'station agent' && user.permission?.canAddAvailabilities)
       ) {
         await this.availabilityModel.create({
           ...createAvailabilityDto,
@@ -77,10 +63,7 @@ export class AvailabilitiesService {
             'plateNo seatLayout destinationStation currentStation nextStation nextStation',
           );
         // .populate('station')
-      } else if (
-        user.role === 'general admin' ||
-        user.role === 'admin'
-      ) {
+      } else if (user.role === 'general admin' || user.role === 'admin') {
         availabilities = await this.availabilityModel
           .where({
             sacco: user.sacco,
@@ -143,10 +126,7 @@ export class AvailabilitiesService {
       throw new HttpException(error.message, error.status);
     }
 
-    throw new HttpException(
-      'Availability updated successfully',
-      HttpStatus.OK,
-    );
+    throw new HttpException('Availability updated successfully', HttpStatus.OK);
   }
 
   async deleteAvalablity(id: string, user: JwtPayload) {
@@ -178,17 +158,18 @@ export class AvailabilitiesService {
     }
   }
 
-  listenStationAvailabilities(stationId: string) {
-    console.log('Listening for station availabilities');
-    console.log('Station ID', stationId);
+  // listenStationAvailabilities(stationId: string) {
+  //   console.log('Listening for station availabilities');
+  //   console.log('Station ID', stationId);
 
-    this.availabilityModel.watch().on('change', (data) => {
-      console.log('Change in availabilities', data);
-      return data;
-    });
+  //   this.availabilityModel
+  //     .find({
+  //       station: stationId,
+  //     })
+  //     .populate('vehicle');
 
-    // return {
-    //   message: 'Listening for station availabilities',
-    // };
-  }
+  //   // return {
+  //   //   message: 'Listening for station availabilities',
+  //   // };
+  // }
 }

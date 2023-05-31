@@ -6,6 +6,7 @@ import {
   LipaNaMpesaTransaction,
   LipaNaMpesaTransactionSchema,
 } from './schema/lipa-na-mpesa.schema';
+import { LipaNaMpesaGateway } from './lipa-na-mpesa.gateway';
 
 @Module({
   controllers: [LipaNaMpesaController],
@@ -17,6 +18,6 @@ import {
       },
     ]),
   ],
-  providers: [LipaNaMpesaService],
+  providers: [LipaNaMpesaService, LipaNaMpesaGateway],
 })
 export class LipaNaMpesaModule {}
