@@ -39,16 +39,13 @@ export class RoutesController {
     return this.routesService.findOne(+id);
   }
 
-  @Patch(':id')
-  update(
-    @Param('id') id: string,
-    @Body() updateRouteDto: UpdateRouteDto,
-  ) {
+  @Patch('update-route/:id')
+  update(@Param('id') id: string, @Body() updateRouteDto: UpdateRouteDto) {
     return this.routesService.update(+id, updateRouteDto);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.routesService.remove(+id);
+  @Delete('delete-route/:id')
+  remove(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+    return this.routesService.remove(id, user);
   }
 }
