@@ -12,6 +12,7 @@ import {
   LipaNaMpesaTransaction,
   LipaNaMpesaTransactionDocument,
 } from './schema/lipa-na-mpesa.schema';
+import { OnEvent } from '@nestjs/event-emitter';
 
 @WebSocketGateway({ namespace: 'mpesa' })
 export class LipaNaMpesaGateway {
@@ -35,13 +36,22 @@ export class LipaNaMpesaGateway {
   async handleMessage(
     @MessageBody() mpesaData: { CheckoutRequestID: string; data: any },
   ) {
-    this.server.emit('onLipaNaMpesaTransaction', {
-      status: 'connection established',
-    });
-    const updates = await this.lipaNaMpesaService.listenToPaymentUpdates(
-      mpesaData,
-    );
-    this.server.emit('onLipaNaMpesaTransaction', updates);
-    return updates;
+    this.server
+      .to(mpesaData.CheckoutRequestID)
+      .emit('onLipaNaMpesaTransaction', {
+        status: `Loading ${mpesaData.CheckoutRequestID}...`,
+      });
+
+    return 'Loading...';
+  }
+
+  @OnEvent('mpesapayment.created')
+  async handleMpesaPaymentCreatedEvent(mpesaData: {
+    CheckoutRequestID: string;
+    data: any;
+  }) {
+    this.server
+      .to(mpesaData.CheckoutRequestID)
+      .emit('onLipaNaMpesaTransaction', mpesaData.data);
   }
 }

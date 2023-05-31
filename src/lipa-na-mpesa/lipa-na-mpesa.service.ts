@@ -10,14 +10,14 @@ import {
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { StkInitResponce } from './types/stk-init-reponce.type';
-import { WebSocketServer } from '@nestjs/websockets';
-import { Server } from 'socket.io';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Injectable()
 export class LipaNaMpesaService {
   constructor(
     @InjectModel(LipaNaMpesaTransaction.name)
     private lipaNaMpesaTransaction: Model<LipaNaMpesaTransactionDocument>,
+    private eventEmitter: EventEmitter2,
   ) {}
 
   readonly authorisationEndpoint =
@@ -104,12 +104,9 @@ export class LipaNaMpesaService {
         .then(async (res) => {
           result = res.data;
 
-          await this.listenToPaymentUpdates({
+          this.eventEmitter.emit('mpesapayment.created', {
             CheckoutRequestID: result.CheckoutRequestID,
-            data: {
-              ...result,
-              dto: lipaDTO,
-            },
+            data: result,
           });
 
           await this.lipaNaMpesaTransaction.create({
@@ -173,10 +170,12 @@ export class LipaNaMpesaService {
           transaction: [mpesaResponse],
         },
       );
-      await this.listenToPaymentUpdates({
+
+      this.eventEmitter.emit('mpesapayment.created', {
         CheckoutRequestID: mpesaResponse.Body?.stkCallback.CheckoutRequestID,
         data: mpesaResponse,
       });
+
       throw new HttpException('Transaction saved successfully', HttpStatus.OK);
     } catch (error) {
       throw new HttpException(error.message, error.status);
