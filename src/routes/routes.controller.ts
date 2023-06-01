@@ -40,8 +40,12 @@ export class RoutesController {
   }
 
   @Patch('update-route/:id')
-  update(@Param('id') id: string, @Body() updateRouteDto: UpdateRouteDto) {
-    return this.routesService.update(+id, updateRouteDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateRouteDto: UpdateRouteDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.routesService.update(id, updateRouteDto, user);
   }
 
   @Delete('delete-route/:id')
