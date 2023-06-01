@@ -82,6 +82,7 @@ export class RoutesService {
           {
             ...updateRouteDto,
             updatedBy: user._id,
+            updatedAt: new Date(),
           },
           {
             new: true,
