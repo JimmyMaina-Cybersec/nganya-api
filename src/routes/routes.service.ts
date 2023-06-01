@@ -67,8 +67,38 @@ export class RoutesService {
     return `This action returns a #${id} route`;
   }
 
-  update(id: number, updateRouteDto: UpdateRouteDto) {
-    return `This action updates a #${id} route`;
+  update(id: string, updateRouteDto: UpdateRouteDto, user: JwtPayload) {
+    try {
+      if (
+        user.role === 'Super User' ||
+        user.role === 'station manager' ||
+        user.role === 'admin' ||
+        user.role === 'general admin'
+      ) {
+        return this.routeModel.updateOne(
+          {
+            _id: id,
+          },
+          {
+            ...updateRouteDto,
+            updatedBy: user._id,
+          },
+          {
+            new: true,
+          },
+        );
+      }
+
+      throw new HttpException(
+        'You do not have permission to update routes',
+        HttpStatus.FORBIDDEN,
+      );
+    } catch (error) {
+      throw new HttpException(
+        error.message || 'Something went wrong',
+        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   remove(_id: string, user: JwtPayload) {
