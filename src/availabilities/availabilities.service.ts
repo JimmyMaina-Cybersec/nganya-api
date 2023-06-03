@@ -55,31 +55,27 @@ export class AvailabilitiesService {
   async findAll(user: JwtPayload) {
     let availabilities = [];
     try {
-      if (user.role === 'Super User') {
-        availabilities = await this.availabilityModel
-          .find()
-          .populate(
-            'vehicle',
-            'plateNo seatLayout destinationStation currentStation nextStation nextStation',
-          );
-        // .populate('station')
-      } else if (user.role === 'general admin' || user.role === 'admin') {
+      if (
+        user.role === 'general admin' ||
+        user.role === 'admin' ||
+        user.role === 'Super User'
+      ) {
         availabilities = await this.availabilityModel
           .where({
             sacco: user.sacco,
           })
-          .populate('vehicle');
-        // .populate('station')
+          .populate('vehicle')
+          .populate('route');
       } else if (
         user.role === 'station manager' ||
         user.role === 'station agent'
       ) {
         availabilities = await this.availabilityModel
           .where({
-            sacco: user.sacco,
+            station: user.station,
           })
-          .populate('vehicle');
-        // .populate('station')
+          .populate('vehicle')
+          .populate('route');
       } else {
         throw new HttpException(
           'You are not authorized to view availabilities',
@@ -111,11 +107,15 @@ export class AvailabilitiesService {
         (user.role === 'station agent' &&
           user.permission?.canUpdateAvailabilities)
       ) {
-        await this.availabilityModel.findByIdAndUpdate(id, {
-          ...updateAvailabilityDto,
-          updatedBy: user._id,
-          updatedOn: new Date(),
-        });
+        return await this.availabilityModel.findByIdAndUpdate(
+          id,
+          {
+            ...updateAvailabilityDto,
+            updatedBy: user._id,
+            updatedOn: new Date(),
+          },
+          { new: true },
+        );
       } else {
         throw new HttpException(
           'Only station managers and station agents with permission to update availabilities can update availabilities',
@@ -125,8 +125,6 @@ export class AvailabilitiesService {
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
-
-    throw new HttpException('Availability updated successfully', HttpStatus.OK);
   }
 
   async deleteAvalablity(id: string, user: JwtPayload) {
@@ -142,6 +140,10 @@ export class AvailabilitiesService {
           _id: id,
           // station: user.station,
         });
+        throw new HttpException(
+          'Availability deleted successfully',
+          HttpStatus.OK,
+        );
       } else {
         throw new HttpException(
           'Only station managers and station agents with permission to delete availabilities can delete availabilities',
@@ -157,19 +159,4 @@ export class AvailabilitiesService {
       throw new HttpException(error.message, error.status);
     }
   }
-
-  // listenStationAvailabilities(stationId: string) {
-  //   console.log('Listening for station availabilities');
-  //   console.log('Station ID', stationId);
-
-  //   this.availabilityModel
-  //     .find({
-  //       station: stationId,
-  //     })
-  //     .populate('vehicle');
-
-  //   // return {
-  //   //   message: 'Listening for station availabilities',
-  //   // };
-  // }
 }
