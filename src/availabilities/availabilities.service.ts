@@ -28,9 +28,8 @@ export class AvailabilitiesService {
         user.role === 'station manager' ||
         (user.role === 'station agent' && user.permission?.canAddAvailabilities)
       ) {
-        await this.availabilityModel.create({
+        return await this.availabilityModel.create({
           ...createAvailabilityDto,
-          depatureStation: user.station,
           station: user.station,
           sacco: user.sacco,
           addedBy: user._id,
@@ -42,11 +41,6 @@ export class AvailabilitiesService {
           HttpStatus.FORBIDDEN,
         );
       }
-
-      throw new HttpException(
-        'Availability added successfully',
-        HttpStatus.CREATED,
-      );
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
