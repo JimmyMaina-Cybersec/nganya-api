@@ -1,33 +1,19 @@
-import {
-  IsArray,
-  IsDateString,
-  IsNotEmpty,
-  IsString,
-} from 'class-validator';
+import { IsArray, IsDateString, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateAvailabilityDto {
-  @IsNotEmpty()
   @IsString()
-  destinationStation: string;
-
-  @IsArray()
-  dropOffLocations: string[];
+  @IsNotEmpty()
+  route: string[];
 
   @IsArray()
   stationsServiced: string[];
-
-  @IsNotEmpty()
-  dropOffPrices: Map<string, number>;
 
   @IsString()
   vehicle: string;
 
   @IsDateString()
-  depatureTime?: Date;
+  depatureTime: Date;
 
   @IsDateString()
-  arrivalTime?: Date;
-
-  @IsNotEmpty()
-  destinations: string;
+  arrivalTime: Date;
 }

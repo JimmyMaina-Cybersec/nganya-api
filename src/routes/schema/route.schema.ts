@@ -22,6 +22,9 @@ export class Route {
 
   @Prop({ type: SchemaTypes.ObjectId, ref: 'User' })
   addedBy: Types.ObjectId;
+
+  @Prop({ type: SchemaTypes.ObjectId, ref: 'User' })
+  updatedBy: Types.ObjectId;
 }
 
 export const RouteSchema = SchemaFactory.createForClass(Route);

@@ -6,24 +6,18 @@ export type AvailabilityDocument = HydratedDocument<Availability>;
 @Schema({ timestamps: true })
 export class Availability {
   @Prop({ type: SchemaTypes.ObjectId, ref: 'Station' })
-  depatureStation: string;
+  station: string;
 
-  @Prop({ type: SchemaTypes.ObjectId })
-  destinationStation: Types.ObjectId;
-
-  @Prop({ type: Array })
-  dropOffLocations: Array<string>;
+  @Prop({ type: SchemaTypes.ObjectId, ref: 'Route' })
+  route: Types.ObjectId;
 
   @Prop({ type: Array, default: [], ref: 'Station' })
   stationsServiced: Array<Types.ObjectId>;
 
-  @Prop()
-  dropOffPrices: Map<string, number>;
-
-  @Prop()
+  @Prop({ default: null })
   depatureTime: Date;
 
-  @Prop()
+  @Prop({ default: null })
   arrivalTime: Date;
 
   @Prop({ type: SchemaTypes.ObjectId, ref: 'Vehicle' })
@@ -35,11 +29,8 @@ export class Availability {
   @Prop({ type: SchemaTypes.ObjectId, ref: 'Sacco' })
   sacco: Types.ObjectId;
 
-  @Prop()
+  @Prop({ default: 'available' })
   status: string;
-
-  @Prop()
-  addedOn: Date;
 
   @Prop({ type: SchemaTypes.ObjectId, ref: 'User' })
   addedBy: Types.ObjectId;
@@ -51,5 +42,4 @@ export class Availability {
   updatedBy: Types.ObjectId;
 }
 
-export const AvailabilitySchema =
-  SchemaFactory.createForClass(Availability);
+export const AvailabilitySchema = SchemaFactory.createForClass(Availability);
