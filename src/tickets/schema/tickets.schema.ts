@@ -1,12 +1,12 @@
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument, SchemaTypes, Types } from 'mongoose';
+import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { HydratedDocument, SchemaTypes, Types } from "mongoose";
 
 export type TicketDocument = HydratedDocument<Ticket>;
 
 @Schema({ timestamps: true })
 export class Ticket {
   @Prop({ type: String, required: true })
-  bookedSeats: string;
+  bookedSeat: string;
 
   @Prop({ type: Number, required: true })
   pricePerSeat: number;
@@ -17,37 +17,36 @@ export class Ticket {
   @Prop({ type: String, required: true })
   to: string;
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: 'Station', required: true })
-  destinationStation: Types.ObjectId;
+  @Prop({ type: SchemaTypes.ObjectId, ref: "Station", required: true })
+  station: Types.ObjectId;
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: 'Station', required: true })
-  depatureStation: Types.ObjectId;
-
-  @Prop({ type: String, required: false })
-  phone: string;
-
-  @Prop({ type: String, required: false })
-  firstName: string;
-
-  @Prop({ type: String, required: false })
-  secondName: string;
-
-  @Prop({ type: String, required: false })
-  idNumber: string;
-
-  @Prop({ type: String, required: false })
-  email: string;
-
-  @Prop({ type: SchemaTypes.ObjectId, required: false })
-  mpesaTrasaction: Types.ObjectId;
+  @Prop({ type: SchemaTypes.ObjectId, ref: "Sacco", required: true })
+  sacco: Types.ObjectId;
 
   @Prop({ type: String, required: true })
-  paymentMethode: string;
+  customerPhone: string;
+
+  @Prop({ type: String, required: true })
+  customerFirstName: string;
+
+  @Prop({ type: String, required: true })
+  customersecondName: string;
+
+  @Prop({ type: String, default: null })
+  customerIdNumber: string;
+
+  @Prop({ type: String, required: false, default: null })
+  customerEmail: string;
+
+  @Prop({ type: SchemaTypes.ObjectId, required: false, default: null })
+  mpesaTrasaction: Types.ObjectId;
+
+  @Prop({ type: String, required: true, default: "Cash" })
+  paymentMethod: string;
 
   @Prop({
     type: SchemaTypes.ObjectId,
-    ref: 'Availability',
-    immutable: true,
+    ref: "Availability",
     required: true,
   })
   availability: Types.ObjectId;
@@ -55,22 +54,13 @@ export class Ticket {
   @Prop({ type: String, required: true })
   vehicle: string;
 
-  @Prop({ type: String, required: true, immutable: true })
-  sacco: string;
-
   @Prop({ type: String, required: true })
   status: string;
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: 'User', required: true })
+  @Prop({ type: SchemaTypes.ObjectId, ref: "User", required: true })
   addedBy: Types.ObjectId;
 
-  @Prop({ type: Date, required: true, immutable: true })
-  addedOn: Date;
-
-  @Prop({ type: Date, required: false })
-  updatedOn: Date;
-
-  @Prop({ type: SchemaTypes.ObjectId, ref: 'User', required: false })
+  @Prop({ type: SchemaTypes.ObjectId, ref: "User", required: false })
   updatedBy: Types.ObjectId;
 }
 
