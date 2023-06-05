@@ -1,4 +1,5 @@
 import { ObjectId } from 'mongodb';
+import { Types } from 'mongoose';
 import { Permission } from './permission';
 
 export class JwtPayload {
@@ -18,7 +19,7 @@ export class JwtPayload {
     | 'accountant'
     | 'station agent'
     | 'driver';
-  sacco: ObjectId | string;
+  sacco: Types.ObjectId | string;
   station?: ObjectId | string;
   vehicle?: ObjectId | string;
   permission?: Permission;

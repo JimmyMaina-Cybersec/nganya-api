@@ -3,13 +3,13 @@ import {
   HttpStatus,
   Injectable,
 } from '@nestjs/common';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { User, UserDocument } from './schema/user.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { JwtPayload } from 'src/types/jwt-payload';
+import { CreateUserDto } from './dto/create-user.dto';
 import { FindStationAgentsDto } from './dto/find-station-agents.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { User, UserDocument } from './schema/user.schema';
 
 @Injectable()
 export class UsersService {
@@ -293,7 +293,7 @@ export class UsersService {
       user.role === 'general admin'
     ) {
       const UpdatingUser = await this.userModel.findById(id);
-      if (UpdatingUser.sacco === user.sacco) {
+      if (UpdatingUser.sacco == user.sacco) {
         return await this.userModel
           .findByIdAndUpdate(id, {
             ...updateUserDto,
@@ -303,14 +303,14 @@ export class UsersService {
           .select('-password -refreshToken -upadatedAt -updatedBy');
       }
       throw new HttpException(
-        'You are not allowed to perform this action',
+        'You are not allowed to perform this action as a general admin',
         HttpStatus.FORBIDDEN,
       );
     } else if (user.role === 'station manager') {
       const UpdatingUser = await this.userModel.findById(id);
       if (
-        UpdatingUser.station === user.station &&
-        UpdatingUser.role === 'station agent'
+        UpdatingUser.station == user.station &&
+        UpdatingUser.role == 'station agent'
       ) {
         return await this.userModel
           .findByIdAndUpdate(id, {
