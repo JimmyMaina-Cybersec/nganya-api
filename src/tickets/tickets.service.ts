@@ -6,7 +6,6 @@ import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { Ticket, TicketDocument } from './schema/tickets.schema';
 
-import { Model } from 'mongoose';
 import { Availability, AvailabilityDocument } from 'src/schemas/Availability';
 
 
@@ -23,7 +22,7 @@ export class TicketService {
     try {
 
       if (user.role == 'station agent' || user.role == 'station manager') {
-        await this.ticketModel.create({
+       const ticket= await this.ticketModel.create({
 
     
           ...createTicketDto,
