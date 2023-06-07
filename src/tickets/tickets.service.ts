@@ -1,10 +1,10 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { JwtPayload } from 'src/types/jwt-payload';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
-import { JwtPayload } from 'src/types/jwt-payload';
-import { InjectModel } from '@nestjs/mongoose';
 import { Ticket, TicketDocument } from './schema/tickets.schema';
-import { Model } from 'mongoose';
 
 @Injectable()
 export class TicketService {
@@ -15,7 +15,7 @@ export class TicketService {
 
   async book(createTicketDto: CreateTicketDto, user: JwtPayload) {
     try {
-      if (user.role === 'station agent' || user.role === 'station manager') {
+      if (user.role == 'station agent' || user.role == 'station manager') {
         await this.ticketModel.create({
           ...createTicketDto,
           addedBy: user._id,
