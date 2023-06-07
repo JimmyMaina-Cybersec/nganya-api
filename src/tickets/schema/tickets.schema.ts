@@ -1,5 +1,5 @@
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { HydratedDocument, SchemaTypes, Types } from "mongoose";
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { HydratedDocument, SchemaTypes, Types } from 'mongoose';
 
 export type TicketDocument = HydratedDocument<Ticket>;
 
@@ -17,10 +17,10 @@ export class Ticket {
   @Prop({ type: String, required: true })
   to: string;
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: "Station", required: true })
+  @Prop({ type: SchemaTypes.ObjectId, ref: 'Station', required: true })
   station: Types.ObjectId;
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: "Sacco", required: true })
+  @Prop({ type: SchemaTypes.ObjectId, ref: 'Sacco', required: true })
   sacco: Types.ObjectId;
 
   @Prop({ type: String, required: true })
@@ -41,26 +41,26 @@ export class Ticket {
   @Prop({ type: SchemaTypes.ObjectId, required: false, default: null })
   mpesaTrasaction: Types.ObjectId;
 
-  @Prop({ type: String, required: true, default: "Cash" })
+  @Prop({ type: String, required: true, default: 'Cash' })
   paymentMethod: string;
 
   @Prop({
     type: SchemaTypes.ObjectId,
-    ref: "Availability",
+    ref: 'Availability',
     required: true,
   })
   availability: Types.ObjectId;
 
   @Prop({ type: String, required: true })
-  vehicle: string;
+  plateNo: string;
 
   @Prop({ type: String, required: true })
   status: string;
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: "User", required: true })
+  @Prop({ type: SchemaTypes.ObjectId, ref: 'User', required: true })
   addedBy: Types.ObjectId;
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: "User", required: false })
+  @Prop({ type: SchemaTypes.ObjectId, ref: 'User', required: false })
   updatedBy: Types.ObjectId;
 }
 
