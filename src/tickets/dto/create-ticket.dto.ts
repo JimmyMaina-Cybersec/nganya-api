@@ -1,9 +1,9 @@
-import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString } from "class-validator";
 
 export class CreateTicketDto {
   @IsString()
   @IsNotEmpty()
-  bookedSeats: string;
+  bookedSeat: string;
 
   @IsString()
   @IsNotEmpty()
@@ -16,14 +16,6 @@ export class CreateTicketDto {
   @IsString()
   @IsNotEmpty()
   to: string;
-
-  @IsString()
-  @IsNotEmpty()
-  destinationStation: string;
-
-  @IsString()
-  @IsNotEmpty()
-  depatureStation: string;
 
   @IsString()
   @IsNotEmpty()
@@ -41,16 +33,12 @@ export class CreateTicketDto {
   @IsNotEmpty()
   idNumber: string;
 
-  @IsString()
   @IsEmail()
   email: string;
 
   @IsString()
-  mpesaTrasaction: string;
-
-  @IsString()
   @IsNotEmpty()
-  paymentMethode: string;
+  paymentMethod: string;
 
   @IsString()
   @IsNotEmpty()
@@ -58,13 +46,13 @@ export class CreateTicketDto {
 
   @IsString()
   @IsNotEmpty()
-  vehicle: string;
+  plateNo: string;
 
   @IsString()
   status:
-    | 'payment pending'
-    | 'payment confirmed'
-    | 'cancelled'
-    | 'completed'
-    | 'payment failed';
+    | "payment pending"
+    | "payment confirmed"
+    | "cancelled"
+    | "completed"
+    | "payment failed";
 }

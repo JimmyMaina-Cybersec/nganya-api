@@ -1,25 +1,21 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreatePercelDto } from './dto/create-percel.dto';
 import { UpdatePercelDto } from './dto/update-percel.dto';
 import { JwtPayload } from 'src/types/jwt-payload';
 import { Model } from 'mongoose';
 import { Percel, PercelDocument } from './schema/percel.schema';
 import { InjectModel } from '@nestjs/mongoose';
+import { Availability, AvailabilityDocument } from 'src/schemas/Availability';
 
 @Injectable()
 export class PercelService {
   constructor(
     @InjectModel(Percel.name)
     private readonly percelModel: Model<PercelDocument>,
+    @InjectModel(Availability.name)
+    private readonly availabilityModel: Model<AvailabilityDocument>,
   ) {}
-  async sendPercel(
-    createPercelDto: CreatePercelDto,
-    agent: JwtPayload,
-  ) {
+  async sendPercel(createPercelDto: CreatePercelDto, agent: JwtPayload) {
     try {
       if (agent.station) {
         await this.percelModel.create({
@@ -29,10 +25,8 @@ export class PercelService {
           status: 'awaiting transit',
           sacco: agent.sacco,
         });
-        throw new HttpException(
-          'Percel sent successfully',
-          HttpStatus.CREATED,
-        );
+
+        throw new HttpException('Percel sent successfully', HttpStatus.CREATED);
       } else {
         throw new HttpException(
           'Only station managers and station agents with permission to add availabilities can add availabilities',
@@ -62,18 +56,9 @@ export class PercelService {
             { sendingStation: user.station },
             { recivingStation: user.station },
           ])
-          .populate(
-            'sendingAgent',
-            'firstName secondName photoURL -sacco',
-          )
-          .populate(
-            'recivingAgent',
-            'firstName secondName photoURL -sacco',
-          )
-          .populate(
-            'sendingStation',
-            'firstName secondName photoURL',
-          );
+          .populate('sendingAgent', 'firstName secondName photoURL -sacco')
+          .populate('recivingAgent', 'firstName secondName photoURL -sacco')
+          .populate('sendingStation', 'firstName secondName photoURL');
       }
       if (user.role === 'station agent') {
         return this.percelModel
@@ -95,11 +80,7 @@ export class PercelService {
     }
   }
 
-  update(
-    user: JwtPayload,
-    id: string,
-    updatePercelDto: UpdatePercelDto,
-  ) {
+  update(user: JwtPayload, id: string, updatePercelDto: UpdatePercelDto) {
     try {
       return this.percelModel.findByIdAndUpdate(
         id,
