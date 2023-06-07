@@ -1,8 +1,4 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateVehicleDto } from './dto/create-vehicle.dto';
 import { UpdateVehicleDto } from './dto/update-vehicle.dto';
 import { JwtPayload } from 'src/types/jwt-payload';
@@ -117,10 +113,7 @@ export class VehiclesService {
             owner: vehicleOwnerID,
           })
           .exec();
-      } else if (
-        user.role === 'admin' ||
-        user.role === 'general admin'
-      ) {
+      } else if (user.role === 'admin' || user.role === 'general admin') {
         return await this.vehicleModel
           .find({
             owner: vehicleOwnerID,
@@ -148,10 +141,7 @@ export class VehiclesService {
         sacco: user.sacco,
       });
     }
-    if (
-      user.role === 'station agent' ||
-      user.role === 'station manager'
-    ) {
+    if (user.role === 'station agent' || user.role === 'station manager') {
       return await this.vehicleModel
         .findOne({
           _id: id,
@@ -170,9 +160,7 @@ export class VehiclesService {
       if (
         user.role === 'station manager' ||
         user.role === 'admin' ||
-        user.role === 'general admin' ||
-        (user.role === 'station agent' &&
-          user.permission.canAddVehicleToStation)
+        user.role === 'general admin'
       ) {
         console.log(user.sacco);
 
@@ -233,10 +221,7 @@ export class VehiclesService {
     }
   }
 
-  async assignDriver(
-    user: JwtPayload,
-    updateDriverDto: UpdateDriverDto,
-  ) {
+  async assignDriver(user: JwtPayload, updateDriverDto: UpdateDriverDto) {
     if (await this.hasDriver(user, updateDriverDto.vehicleID)) {
       throw new HttpException(
         'You are already assigned to this vehicle',
@@ -268,10 +253,7 @@ export class VehiclesService {
             vehicle: updateDriverDto.vehicleID,
           },
         );
-        throw new HttpException(
-          'Driver assigned successfully',
-          HttpStatus.OK,
-        );
+        throw new HttpException('Driver assigned successfully', HttpStatus.OK);
       } else {
         throw new HttpException(
           'You are not allowed to assign a driver to this vehicle',
@@ -319,10 +301,7 @@ export class VehiclesService {
     try {
       if (user.role === 'Super User') {
         await this.vehicleModel.findByIdAndDelete(id);
-      } else if (
-        user.role === 'admin' ||
-        user.role === 'general admin'
-      ) {
+      } else if (user.role === 'admin' || user.role === 'general admin') {
         await this.vehicleModel.findOneAndDelete({
           _id: id,
           sacco: user.sacco,
@@ -333,10 +312,7 @@ export class VehiclesService {
           HttpStatus.FORBIDDEN,
         );
       }
-      throw new HttpException(
-        'Vehicle deleted successfully',
-        HttpStatus.OK,
-      );
+      throw new HttpException('Vehicle deleted successfully', HttpStatus.OK);
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
