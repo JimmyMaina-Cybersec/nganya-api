@@ -9,12 +9,10 @@ import { PresenceService } from './presence.service';
 import { CreatePresenceDto } from './dto/create-presence.dto';
 import { UpdatePresenceDto } from './dto/update-presence.dto';
 import { Server, Socket } from 'socket.io';
-import { forwardRef, Inject } from "@nestjs/common";
 
 @WebSocketGateway()
 export class PresenceGateway {
   constructor(
-    @Inject(forwardRef(() => PresenceService))
     private readonly presenceService: PresenceService
     ) {}
 
