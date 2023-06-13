@@ -9,10 +9,14 @@ import { PresenceService } from './presence.service';
 import { CreatePresenceDto } from './dto/create-presence.dto';
 import { UpdatePresenceDto } from './dto/update-presence.dto';
 import { Server, Socket } from 'socket.io';
+import { forwardRef, Inject } from "@nestjs/common";
 
 @WebSocketGateway()
 export class PresenceGateway {
-  constructor(private readonly presenceService: PresenceService) {}
+  constructor(
+    @Inject(forwardRef(() => PresenceService))
+    private readonly presenceService: PresenceService
+    ) {}
 
   @WebSocketServer()
   server: Server;
@@ -25,10 +29,18 @@ export class PresenceGateway {
   }
 
   @SubscribeMessage('onlineStatus')
-  joinRoom(
-    @MessageBody() user: { _id: string },
+  async joinRoom(
+    @MessageBody() createPresenceDto: CreatePresenceDto,
     @ConnectedSocket() client: Socket,
-  ) {
-    return this.presenceService.joinRoom(user, client);
+  ): Promise<void> {
+    await this.presenceService.joinRoom(createPresenceDto, client);
+  }
+
+  @SubscribeMessage('offlineStatus')
+  async leaveRoom(
+    @MessageBody() updatePresenceDto: UpdatePresenceDto,
+    @ConnectedSocket() client: Socket,
+  ): Promise<void> {
+    await this.presenceService.leaveRoom(updatePresenceDto);
   }
 }
