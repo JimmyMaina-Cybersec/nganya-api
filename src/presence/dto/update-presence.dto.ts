@@ -1,6 +1,15 @@
 import { PartialType } from '@nestjs/mapped-types';
 import { CreatePresenceDto } from './create-presence.dto';
+import { IsBoolean, IsDate, IsString } from 'class-validator';
 
 export class UpdatePresenceDto extends PartialType(CreatePresenceDto) {
-  id: number;
+  @IsString()
+  _id: string;
+
+  @IsBoolean()
+  online: boolean;
+
+  @IsDate()
+  updatedAt: Date;
+  
 }
