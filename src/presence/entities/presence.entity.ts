@@ -3,13 +3,16 @@ import {
     Schema,
     SchemaFactory
 } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, SchemaTypes, Types } from 'mongoose';
 
 export type PresenceDocument = Presence & Document;
 @Schema({ timestamps: true })
 export class Presence extends Document {
-    @Prop({ required: true })
-    user: string;
+    @Prop({
+        type: SchemaTypes.ObjectId,
+        required: true,
+      })
+      user: Types.ObjectId | string;
 
     @Prop({ default: false })
     online: boolean;
