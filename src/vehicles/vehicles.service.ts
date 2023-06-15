@@ -165,10 +165,9 @@ export class VehiclesService {
         console.log(user.sacco);
 
         const exists = await this.vehicleModel.exists({
-          plateNo: query.plateNo,
+          plateNo: query.plateNo.toLowerCase(),
           sacco: user.sacco,
         });
-        console.log(exists);
 
         if (!exists) {
           throw new HttpException(
@@ -177,24 +176,26 @@ export class VehiclesService {
           );
         }
 
-        await this.vehicleModel
-          .findOneAndUpdate(
-            {
-              plateNo: query.plateNo,
-              sacco: user.sacco,
-            },
-            {
-              $set: {
-                currentStation: user.station,
-                status: 'in station',
-              },
-            },
-          )
-          .exec();
-        throw new HttpException(
-          'Vehicle added to station successfully',
-          HttpStatus.OK,
+        let result = await this.vehicleModel.findOneAndUpdate(
+          {
+            plateNo: query.plateNo.toLowerCase(),
+          },
+          {
+            currentStation: user.station,
+            status: 'in station',
+          },
+          {
+            new: true,
+          },
         );
+
+        if (!result) {
+          throw new HttpException(
+            'Vehicle with this registration number does not exist in your sacco',
+            HttpStatus.NOT_FOUND,
+          );
+        }
+        return result;
       } else {
         throw new HttpException(
           'You are not allowed to add vehicles to station',
@@ -202,6 +203,7 @@ export class VehiclesService {
         );
       }
     } catch (error) {
+      console.error(error);
       throw new HttpException(error.message, error.status);
     }
   }

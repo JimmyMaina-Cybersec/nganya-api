@@ -45,9 +45,7 @@ export class PercelService {
         user.role === 'admin' ||
         user.role === 'general admin'
       ) {
-        return this.percelModel
-          .find({ ...query, sacco: user.sacco })
-          .select('-sacco');
+        return this.percelModel.find({ ...query, sacco: user.sacco });
       }
       if (user.role === 'station manager') {
         return this.percelModel
@@ -56,8 +54,8 @@ export class PercelService {
             { sendingStation: user.station },
             { recivingStation: user.station },
           ])
-          .populate('sendingAgent', 'firstName secondName photoURL -sacco')
-          .populate('recivingAgent', 'firstName secondName photoURL -sacco')
+          .populate('sendingAgent', 'firstName secondName photoURL ')
+          .populate('recivingAgent', 'firstName secondName photoURL ')
           .populate('sendingStation', 'firstName secondName photoURL');
       }
       if (user.role === 'station agent') {
