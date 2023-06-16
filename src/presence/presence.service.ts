@@ -42,7 +42,7 @@ async joinRoom(userId: string, sacco: string, client: Socket): Promise<void> {
   }
 }
 
-async leaveRoom(userId: string, sacco: string): Promise<void> {
+async leaveRoom(userId: string): Promise<void> {
   try {
     const sacco = this.userRooms.get(userId);
     if (sacco) {
@@ -67,7 +67,7 @@ async leaveRoom(userId: string, sacco: string): Promise<void> {
   }
 }
 
-private emitPresenceUpdate(userId, sacco, online): void {
+private emitPresenceUpdate(userId: string, sacco: string, online: boolean): void {
   const roomName = `sacco_${sacco}`; 
   this.presenceGateway.server.to(roomName).emit('presenceUpdate', { userId, online });
 }
