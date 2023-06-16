@@ -1,8 +1,4 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { JwtPayload } from 'src/types/jwt-payload';
@@ -16,7 +12,7 @@ export class UsersService {
   constructor(
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
-  ) {}
+  ) { }
 
   async assingManager(
     queryData: { station: string; userId: string },
@@ -25,10 +21,7 @@ export class UsersService {
     try {
       const user = await this.userModel.findById(queryData.userId);
       if (!user) {
-        throw new HttpException(
-          'User not found',
-          HttpStatus.NOT_FOUND,
-        );
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
       }
 
       if (user.role !== 'station manager') {
@@ -76,6 +69,7 @@ export class UsersService {
       return true;
     }
     return false;
+
   }
 
   /**
@@ -86,7 +80,11 @@ export class UsersService {
    * @returns Object
    */
   async addUser(createUserDto: CreateUserDto, user: JwtPayload) {
-    if (await this.checkIfUserExists(createUserDto.idNo)) {
+    try {
+      if (await this.checkIfUserExists(createUserDto.idNo)) {
+        throw new HttpException('User already exists', HttpStatus.CONFLICT);
+      }
+
       if (
         user.role === 'Super User' ||
         user.role === 'admin' ||
@@ -105,7 +103,7 @@ export class UsersService {
         );
       } else if (user.role === 'station manager') {
         if (createUserDto.role === 'station agent') {
-          await this.userModel.create({
+          return await this.userModel.create({
             ...createUserDto,
             status: 'active',
             station: user.station,
@@ -113,10 +111,7 @@ export class UsersService {
             createdBy: user._id,
             updatedBy: user._id,
           });
-          throw new HttpException(
-            'User created successfully',
-            HttpStatus.CREATED,
-          );
+
         }
       } else {
         throw new HttpException(
@@ -124,12 +119,15 @@ export class UsersService {
           HttpStatus.FORBIDDEN,
         );
       }
-    } else {
+
+
+    } catch (error) {
       throw new HttpException(
-        'User already exists',
-        HttpStatus.CONFLICT,
+        error.message,
+        error.status,
       );
     }
+
   }
 
   /**
@@ -282,11 +280,7 @@ export class UsersService {
    *
    * */
 
-  async updateUser(
-    id: string,
-    updateUserDto: UpdateUserDto,
-    user: JwtPayload,
-  ) {
+  async updateUser(id: string, updateUserDto: UpdateUserDto, user: JwtPayload) {
     if (
       user.role === 'Super User' ||
       user.role === 'admin' ||
@@ -350,10 +344,7 @@ export class UsersService {
       if (user.role === 'Super User') {
         await this.userModel.findByIdAndDelete(id);
         return 'User deleted successfully';
-      } else if (
-        user.role === 'admin' ||
-        user.role === 'general admin'
-      ) {
+      } else if (user.role === 'admin' || user.role === 'general admin') {
         if (
           // TODO: only delete user in a sacoo
           // !currently not working
@@ -392,10 +383,7 @@ export class UsersService {
     }
   }
 
-  async findAgentsInStation(
-    user: JwtPayload,
-    station: FindStationAgentsDto,
-  ) {
+  async findAgentsInStation(user: JwtPayload, station: FindStationAgentsDto) {
     try {
       if (
         user.role === 'admin' ||
@@ -431,10 +419,7 @@ export class UsersService {
     }
   }
 
-  async findStationManager(
-    user: JwtPayload,
-    station: { station: string },
-  ) {
+  async findStationManager(user: JwtPayload, station: { station: string }) {
     try {
       return await this.userModel
         .findOne({
