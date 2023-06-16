@@ -6,10 +6,11 @@ import {
   ConnectedSocket,
 } from '@nestjs/websockets';
 import { PresenceService } from './presence.service';
-import { CreatePresenceDto } from './dto/create-presence.dto';
-import { UpdatePresenceDto } from './dto/update-presence.dto';
+// import { CreatePresenceDto } from './dto/create-presence.dto';
+// import { UpdatePresenceDto } from './dto/update-presence.dto';
 import { Server, Socket } from 'socket.io';
-
+import { UseGuards } from "@nestjs/common";
+import { AuthGuard } from './presenceGuards/auth.guard';
 @WebSocketGateway()
 export class PresenceGateway {
   constructor(
@@ -26,19 +27,21 @@ export class PresenceGateway {
     });
   }
 
+  @UseGuards(AuthGuard)
   @SubscribeMessage('onlineStatus')
   async joinRoom(
-    @MessageBody() createPresenceDto: CreatePresenceDto,
+    @MessageBody() data: { _id: string; sacco: string },
     @ConnectedSocket() client: Socket,
   ): Promise<void> {
-    await this.presenceService.joinRoom(createPresenceDto, client);
+    await this.presenceService.joinRoom(data._id, data.sacco, client);
   }
 
+  @UseGuards(AuthGuard)
   @SubscribeMessage('offlineStatus')
   async leaveRoom(
-    @MessageBody() updatePresenceDto: UpdatePresenceDto,
+    @MessageBody() data: { _id: string; sacco: string },
     @ConnectedSocket() client: Socket,
   ): Promise<void> {
-    await this.presenceService.leaveRoom(updatePresenceDto);
+    await this.presenceService.leaveRoom(data._id, data.sacco);
   }
 }

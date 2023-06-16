@@ -1,65 +1,74 @@
-import { Injectable, Inject, forwardRef } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { Socket } from 'socket.io';
-import { Model } from "mongoose";
-import { Presence, PresenceDocument } from "./entities/presence.entity";
+import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { CreatePresenceDto } from "./dto/create-presence.dto";
-import { UpdatePresenceDto } from "./dto/update-presence.dto";
+import { Presence, PresenceDocument } from './entities/presence.entity';
+import { CreatePresenceDto } from './dto/create-presence.dto';
+import { UpdatePresenceDto } from './dto/update-presence.dto';
 import { PresenceGateway } from './presence.gateway';
 
 @Injectable()
 export class PresenceService {
-  constructor(
-    @InjectModel(Presence.name) 
-    private readonly presenceModel: Model<PresenceDocument>,
-    @Inject(forwardRef(() => PresenceGateway))
-    private readonly presenceGateway: PresenceGateway,
-    ) {}
+  private userRooms: Map<string, string>;
 
-  async joinRoom(user: { _id: string }, client: Socket): Promise<void> {
-    try {
-      const createPresenceDto: CreatePresenceDto = {
-        _id: user._id,
-        online: true,
-      };
-      
-      await this.presenceModel.findOneAndUpdate(
-        { user: user._id},
-        createPresenceDto,
-        { upsert: true },
-      );
-  
-      this.emitPresenceUpdate(user._id, true);
-      
-    } catch (error) {
-      const errorMessage = 'Error occured while joining the room';
-      throw new Error(errorMessage);
-    }
+  constructor(
+    @InjectModel(Presence.name)
+    private readonly presenceModel: Model<PresenceDocument>,
+    private readonly presenceGateway: PresenceGateway,
+  ) {
+    this.userRooms = new Map<string, string>();
   }
-  async leaveRoom(user: { _id: string }): Promise<void> {
-    try {
+
+async joinRoom(userId: string, sacco: string, client: Socket): Promise<void> {
+  try {
+    const createPresenceDto: CreatePresenceDto = {
+      userId,
+      lastActiveTime: null, 
+    };
+
+    await this.presenceModel.findOneAndUpdate(
+      { userId },
+      createPresenceDto,
+      { upsert: true },
+    );
+
+    this.userRooms.set(userId, sacco);
+
+    this.emitPresenceUpdate(userId, sacco, true);
+
+  } catch (error) {
+    const errorMessage = 'Error occurred while joining the room';
+    throw new Error(errorMessage);
+  }
+}
+
+async leaveRoom(userId: string, sacco: string): Promise<void> {
+  try {
+    const sacco = this.userRooms.get(userId);
+    if (sacco) {
+
       const updatePresenceDto: Partial<UpdatePresenceDto> = {
-        online:false,
-        updatedAt: new Date(),
+        lastActiveTime: new Date(), 
       };
   
       await this.presenceModel.findOneAndUpdate(
-        { user: user._id},
+        { userId, sacco },
         updatePresenceDto,
         { upsert: true },
       );
+      this.userRooms.delete(userId);
   
-      this.emitPresenceUpdate(user._id, false);
-      
-    } catch (error) {
-      const errorMessage = 'Error occured while leaving the room';
-      throw new Error(errorMessage);
+      this.emitPresenceUpdate(userId, sacco, false);
     }
-  }
 
-  private emitPresenceUpdate(userId: string, online: boolean): void {
-    this.presenceGateway.server.emit('presenceUpdate', { userId, online });
+  } catch (error) {
+    const errorMessage = 'Error occurred while leaving the room';
+    throw new Error(errorMessage);
   }
-
 }
 
+private emitPresenceUpdate(userId, sacco, online): void {
+  const roomName = `sacco_${sacco}`; 
+  this.presenceGateway.server.to(roomName).emit('presenceUpdate', { userId, online });
+}
+}
