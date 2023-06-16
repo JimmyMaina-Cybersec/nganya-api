@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   UseGuards,
+  Query,
 } from '@nestjs/common';
 import { TicketService } from './tickets.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
@@ -18,7 +19,7 @@ import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 @UseGuards(JwtGuard)
 @Controller('tickets')
 export class TicketController {
-  constructor(private readonly ticketService: TicketService) {}
+  constructor(private readonly ticketService: TicketService) { }
 
   @Post('book-ticket')
   create(
@@ -29,11 +30,11 @@ export class TicketController {
   }
 
   @Get()
-  findAll(user: JwtPayload) {
-    return this.ticketService.findAll(user);
+  findAll(user: JwtPayload, @Query() query: Object) {
+    return this.ticketService.findAll(user, query);
   }
 
-  @Get(':id')
+  @Get('ticket/:id')
   findOne(@Param('id') id: string) {
     return this.ticketService.findOne(id);
   }

@@ -16,15 +16,15 @@ export class TicketService {
     private readonly ticketModel: Model<TicketDocument>,
     @InjectModel(Availability.name)
     private readonly availabilityModel: Model<AvailabilityDocument>,
-  ) {}
+  ) { }
 
   async book(createTicketDto: CreateTicketDto, user: JwtPayload) {
     try {
 
       if (user.role == 'station agent' || user.role == 'station manager') {
-       const ticket= await this.ticketModel.create({
+        const ticket = await this.ticketModel.create({
 
-    
+
           ...createTicketDto,
           station: user.station,
           sacco: user.sacco,
@@ -52,13 +52,37 @@ export class TicketService {
     }
   }
 
-  async findAll(user: JwtPayload) {
+  async findAll(user: JwtPayload, query: Object) {
     try {
-      return await this.ticketModel
-        .find({
+      if (user.role == 'station agent') {
+        return await this.ticketModel
+          .find({
+            addedBy: user._id,
+            ...query,
+          })
+          .select('-__v');
+      }
+      if (user.role == 'station manager') {
+        return await this.ticketModel
+          .find({
+            station: user.station,
+            ...query,
+          })
+          .select('-__v');
+      }
+      if (user.role == 'admin' || user.role == "general admin") {
+        return await this.ticketModel.find({
           sacco: user.sacco,
+          ...query,
+
         })
-        .select('-__v');
+          .populate('addedBy', 'firstName secondName photoURL')
+          .select('-__v');
+      }
+      throw new HttpException(
+        'You are not allowed to view tickets',
+        HttpStatus.FORBIDDEN,
+      );
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
