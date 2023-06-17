@@ -6,8 +6,6 @@ import {
   ConnectedSocket,
 } from '@nestjs/websockets';
 import { PresenceService } from './presence.service';
-// import { CreatePresenceDto } from './dto/create-presence.dto';
-// import { UpdatePresenceDto } from './dto/update-presence.dto';
 import { Server, Socket } from 'socket.io';
 import { UseGuards } from "@nestjs/common";
 import { AuthGuard } from './presenceGuards/auth.guard';
