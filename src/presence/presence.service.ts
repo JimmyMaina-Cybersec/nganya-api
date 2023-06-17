@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
@@ -10,6 +10,7 @@ import { PresenceGateway } from './presence.gateway';
 @Injectable()
 export class PresenceService {
   private userRooms: Map<string, string>;
+  private logger = new Logger(PresenceService.name);
 
   constructor(
     @InjectModel(Presence.name)
@@ -27,26 +28,24 @@ async joinRoom(userId: string, sacco: string, client: Socket): Promise<void> {
     };
 
     await this.presenceModel.findOneAndUpdate(
-      { userId },
+      { userId, sacco },
       createPresenceDto,
       { upsert: true },
     );
 
-    this.userRooms.set(userId, sacco);
+    client.join('sacco_${sacco}');
 
     this.emitPresenceUpdate(userId, sacco, true);
 
   } catch (error) {
     const errorMessage = 'Error occurred while joining the room';
+    this.logger.error(errorMessage, error);
     throw new Error(errorMessage);
   }
 }
 
-async leaveRoom(userId: string): Promise<void> {
+async leaveRoom(userId: string, sacco: string, client: Socket): Promise<void> {
   try {
-    const sacco = this.userRooms.get(userId);
-    if (sacco) {
-
       const updatePresenceDto: Partial<UpdatePresenceDto> = {
         lastActiveTime: new Date(), 
       };
@@ -56,13 +55,15 @@ async leaveRoom(userId: string): Promise<void> {
         updatePresenceDto,
         { upsert: true },
       );
-      this.userRooms.delete(userId);
   
+      client.leave('sacco_${sacco}');
+
       this.emitPresenceUpdate(userId, sacco, false);
-    }
+    
 
   } catch (error) {
     const errorMessage = 'Error occurred while leaving the room';
+    this.logger.error(errorMessage, error);
     throw new Error(errorMessage);
   }
 }
