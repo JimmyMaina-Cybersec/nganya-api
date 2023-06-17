@@ -9,34 +9,30 @@ import { PresenceGateway } from './presence.gateway';
 
 @Injectable()
 export class PresenceService {
-  private userRooms: Map<string, string>;
   private logger = new Logger(PresenceService.name);
 
   constructor(
     @InjectModel(Presence.name)
     private readonly presenceModel: Model<PresenceDocument>,
     private readonly presenceGateway: PresenceGateway,
-  ) {
-    this.userRooms = new Map<string, string>();
-  }
+  ) {}
 
-async joinRoom(userId: string, sacco: string, client: Socket): Promise<void> {
+async joinRoom(userId: string, saccoId: string, client: Socket): Promise<void> {
   try {
     const createPresenceDto: CreatePresenceDto = {
       userId,
-      sacco,
       lastActiveTime: null, 
     };
 
     await this.presenceModel.findOneAndUpdate(
-      { userId, sacco },
+      { userId },
       createPresenceDto,
       { upsert: true },
     );
 
-    client.join('sacco_${sacco}');
+    client.join('sacco_${saccoId}');
 
-    this.emitPresenceUpdate(userId, sacco, true);
+    this.emitPresenceUpdate(userId, saccoId, true);
 
   } catch (error) {
     const errorMessage = 'Error occurred while joining the room';
@@ -45,21 +41,21 @@ async joinRoom(userId: string, sacco: string, client: Socket): Promise<void> {
   }
 }
 
-async leaveRoom(userId: string, sacco: string, client: Socket): Promise<void> {
+async leaveRoom(userId: string, saccoId: string, client: Socket): Promise<void> {
   try {
       const updatePresenceDto: Partial<UpdatePresenceDto> = {
         lastActiveTime: new Date(), 
       };
   
       await this.presenceModel.findOneAndUpdate(
-        { userId, sacco },
+        { userId },
         updatePresenceDto,
         { upsert: true },
       );
   
-      client.leave('sacco_${sacco}');
+      client.leave('sacco_${saccoId}');
 
-      this.emitPresenceUpdate(userId, sacco, false);
+      this.emitPresenceUpdate(userId, saccoId, false);
     
 
   } catch (error) {
@@ -69,8 +65,13 @@ async leaveRoom(userId: string, sacco: string, client: Socket): Promise<void> {
   }
 }
 
-private emitPresenceUpdate(userId: string, sacco: string, online: boolean): void {
-  const roomName = `sacco_${sacco}`; 
-  this.presenceGateway.server.to(roomName).emit('presenceUpdate', { userId, online });
+private emitPresenceUpdate(userId: string, saccoId: string, online: boolean): void {
+  const roomName = `sacco_${saccoId}`; 
+  const message = {
+    userId,
+    online,
+    message: online ? '${userId} is now online' : '${userId} is now offline',
+  };
+  this.presenceGateway.server.to(roomName).emit('presenceUpdate', message);
 }
 }

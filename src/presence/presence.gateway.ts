@@ -12,7 +12,7 @@ import { Server, Socket } from 'socket.io';
 import { UseGuards } from "@nestjs/common";
 import { AuthGuard } from './presenceGuards/auth.guard';
 import path from 'path';
-@WebSocketGateway({path: '/presence-api'})
+@WebSocketGateway({namespace: 'presence'})
 export class PresenceGateway {
   constructor(
     private readonly presenceService: PresenceService
@@ -31,18 +31,18 @@ export class PresenceGateway {
   @UseGuards(AuthGuard)
   @SubscribeMessage('onlineStatus')
   async joinRoom(
-    @MessageBody() data: { _id: string; sacco: string },
+    @MessageBody() data: { _id: string; saccoId: string },
     @ConnectedSocket() client: Socket,
   ): Promise<void> {
-    await this.presenceService.joinRoom(data._id, data.sacco, client);
+    await this.presenceService.joinRoom(data._id, data.saccoId, client);
   }
 
   @UseGuards(AuthGuard)
   @SubscribeMessage('offlineStatus')
   async leaveRoom(
-    @MessageBody() data: { _id: string; sacco: string },
+    @MessageBody() data: { _id: string; saccoId: string },
     @ConnectedSocket() client: Socket,
   ): Promise<void> {
-    await this.presenceService.leaveRoom(data._id, data.sacco, client);
+    await this.presenceService.leaveRoom(data._id, data.saccoId, client);
   }
 }
