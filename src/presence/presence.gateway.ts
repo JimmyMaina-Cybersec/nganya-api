@@ -42,6 +42,6 @@ export class PresenceGateway {
     @MessageBody() data: { _id: string; sacco: string },
     @ConnectedSocket() client: Socket,
   ): Promise<void> {
-    await this.presenceService.leaveRoom(data._id);
+    await this.presenceService.leaveRoom(data._id, data.sacco, client);
   }
 }
