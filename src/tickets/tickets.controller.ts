@@ -30,7 +30,7 @@ export class TicketController {
   }
 
   @Get()
-  findAll(user: JwtPayload, @Query() query: Object) {
+  findAll(@CurrentUser() user: JwtPayload, @Query() query: Object) {
     return this.ticketService.findAll(user, query);
   }
 
