@@ -11,7 +11,8 @@ import { PresenceService } from './presence.service';
 import { Server, Socket } from 'socket.io';
 import { UseGuards } from "@nestjs/common";
 import { AuthGuard } from './presenceGuards/auth.guard';
-@WebSocketGateway()
+import path from 'path';
+@WebSocketGateway({path: '/presence-api'})
 export class PresenceGateway {
   constructor(
     private readonly presenceService: PresenceService
