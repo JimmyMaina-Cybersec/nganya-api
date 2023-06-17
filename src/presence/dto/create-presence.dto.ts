@@ -6,6 +6,10 @@ export class CreatePresenceDto {
   userId: string;
 
   @IsNotEmpty()
+  @IsString()
+  sacco: string;
+
+  @IsNotEmpty()
   @IsDate()
   lastActiveTime: Date;
 }

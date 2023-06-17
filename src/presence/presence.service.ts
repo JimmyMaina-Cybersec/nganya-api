@@ -24,6 +24,7 @@ async joinRoom(userId: string, sacco: string, client: Socket): Promise<void> {
   try {
     const createPresenceDto: CreatePresenceDto = {
       userId,
+      sacco,
       lastActiveTime: null, 
     };
 
