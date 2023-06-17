@@ -14,11 +14,11 @@ export class PercelService {
     private readonly percelModel: Model<PercelDocument>,
     @InjectModel(Availability.name)
     private readonly availabilityModel: Model<AvailabilityDocument>,
-  ) {}
+  ) { }
   async sendPercel(createPercelDto: CreatePercelDto, agent: JwtPayload) {
     try {
       if (agent.station) {
-        await this.percelModel.create({
+        return await this.percelModel.create({
           ...createPercelDto,
           sendingAgent: agent._id,
           sendingStation: agent.station,
@@ -26,13 +26,13 @@ export class PercelService {
           sacco: agent.sacco,
         });
 
-        throw new HttpException('Percel sent successfully', HttpStatus.CREATED);
-      } else {
-        throw new HttpException(
-          'Only station managers and station agents with permission to add availabilities can add availabilities',
-          HttpStatus.FORBIDDEN,
-        );
+
       }
+      throw new HttpException(
+        'Only station managers and station agents with permission to add availabilities can add availabilities',
+        HttpStatus.FORBIDDEN,
+      );
+
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
