@@ -30,7 +30,7 @@ async joinRoom(userId: string, saccoId: string, client: Socket): Promise<void> {
       { upsert: true },
     );
 
-    client.join('sacco_${saccoId}');
+    client.join('room_${saccoId}');
 
     this.emitPresenceUpdate(userId, saccoId, true);
 
@@ -53,7 +53,7 @@ async leaveRoom(userId: string, saccoId: string, client: Socket): Promise<void> 
         { upsert: true },
       );
   
-      client.leave('sacco_${saccoId}');
+      client.leave('room_${saccoId}');
 
       this.emitPresenceUpdate(userId, saccoId, false);
     
@@ -66,7 +66,7 @@ async leaveRoom(userId: string, saccoId: string, client: Socket): Promise<void> 
 }
 
 private emitPresenceUpdate(userId: string, saccoId: string, online: boolean): void {
-  const roomName = `sacco_${saccoId}`; 
+  const roomName = `room_${saccoId}`; 
   const message = {
     userId,
     online,
