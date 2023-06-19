@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Inject, forwardRef } from '@nestjs/common';
 import { Socket } from 'socket.io';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
@@ -14,6 +14,7 @@ export class PresenceService {
   constructor(
     @InjectModel(Presence.name)
     private readonly presenceModel: Model<PresenceDocument>,
+    @Inject(forwardRef(() => PresenceGateway ))
     private readonly presenceGateway: PresenceGateway,
   ) {}
 
