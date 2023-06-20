@@ -1,4 +1,4 @@
-import { Controller, Body, Headers, HttpStatus, Post } from '@nestjs/common';
+import { Controller, Body, HttpStatus, Post } from '@nestjs/common';
 import { SmsService } from "./sms.service";
 
 @Controller('sms')
@@ -6,9 +6,7 @@ export class SmsController {
     constructor(private readonly smsService: SmsService) {}
 
     @Post()
-    async sendSms(
-        @Headers() headers: Record<string, string>,
-        @Body() body: { phone: string; message: string }): Promise<any> {
+    async sendSms(@Body() body: { phone: string; message: string }): Promise<any> {
         if ( !body.phone || !body.message ) {
             return {
                 statusCode: HttpStatus.BAD_REQUEST,
