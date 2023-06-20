@@ -1,6 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AfricasTalkingOptions, SMS } from "africastalking";
-
+import { SMS, AfricasTalkingOptions } from 'africastalking';
 @Injectable()
 export class SmsService {
     private africasTalking: SMS;
@@ -13,10 +12,10 @@ export class SmsService {
         this.africasTalking = new SMS(options);
     }
 
-    async sendSMS(phone: string, message: string): Promise<any> {
+    async sendSMS(phone: string | string[], message: string): Promise<any> {
         try {
             const result = await this.africasTalking.send({
-                to: phone,
+                to: Array.isArray(phone) ? phone : [phone],
                 message: message,
             });
             return result;
