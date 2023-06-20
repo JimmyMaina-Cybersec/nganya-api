@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+// @ts-ignore
 import { SMS, AfricasTalkingOptions } from 'africastalking';
 @Injectable()
 export class SmsService {
