@@ -1,28 +1,31 @@
 import { Injectable } from '@nestjs/common';
-// @ts-ignore
-import * as AfricasTalking from 'africastalking';
-import { AfricasTalkingOptions, SmsResponse } from "./sms.interface";
+import { SmsDto } from "./dto/sms.dto";
+import * as AfricasTalking from "africastalking";
 @Injectable()
 export class SmsService {
-    private africasTalking: typeof AfricasTalking.SMS;
+    private africasTalking: any;
 
     constructor() {
-        const options: AfricasTalkingOptions = {
+        const credentials = {
             apiKey: '9b41f958e5d5f80605aa61f0acc3f7150d382e37ebaa995eaa87623c9332dad9',
             username: 'nganya'
         };
-        this.africasTalking = new AfricasTalking.SMS(options);
+        this.africasTalking = AfricasTalking(credentials);
     }
 
-    async sendSMS(phone: string | string[], message: string): Promise<SmsResponse> {
+    async sendSMS(smsDto: SmsDto) {
+        const sms = this.africasTalking.SMS;
+
+        const options = {
+            to: smsDto.phones,
+            message: smsDto.message,
+        };
         try {
-            const result = await this.africasTalking.send({
-                to: Array.isArray(phone) ? phone : [phone],
-                message: message,
-            });
-            return result;
+            const response = await sms.send(options);
+            return response;
         } catch (error) {
             throw error;
         }
     }
 }
+// 
