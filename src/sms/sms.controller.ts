@@ -8,19 +8,10 @@ export class SmsController {
 
     @Post()
     async sendSms(@Body() smsDto: SmsDto ) {
-        try {
-            const result = await this.smsService.sendSMS(smsDto);
-            return {
-                statusCode: HttpStatus.OK,
-                message: 'Message sent successfully',
-                result,
-            };
-        } catch (error) {
-            return {
-                statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
-                message: 'An error occurred while sending the message',
-                error: error,
-            };
-        }
+        return this.smsService.sendSMS(smsDto);
     }
 }
+
+    // statusCode: HttpStatus.OK,
+    // message: 'Message sent successfully',
+    // result,
