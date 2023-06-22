@@ -11,7 +11,3 @@ export class SmsController {
         return this.smsService.sendSMS(smsDto);
     }
 }
-
-    // statusCode: HttpStatus.OK,
-    // message: 'Message sent successfully',
-    // result,
