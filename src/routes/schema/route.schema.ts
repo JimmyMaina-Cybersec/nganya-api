@@ -14,6 +14,12 @@ export class Route {
   @Prop({ type: Array, default: [] })
   prices: [];
 
+  @Prop({ type: Array, default: [] })
+  documentPrices: Array<number>; 
+
+  @Prop({ type: Array, default: [] })
+  parcelPrices: Array<number>; 
+  
   @Prop({ type: SchemaTypes.ObjectId, ref: 'Sacco' })
   sacco: Types.ObjectId;
 
