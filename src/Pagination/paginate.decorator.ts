@@ -1,10 +1,10 @@
 import { Request, Response } from 'express';
 
 export function Paginate(
+  collection: any,
+  filterConditions?: any,
   responsePerPage: number = 20,
   defaultPage: number = 1,
-  collection: any,
-  filterConditions: any = {}
 ) {
   return function (
     target: Record<string, any>,
@@ -22,7 +22,13 @@ export function Paginate(
       const limit = responsePerPage;
 
       try {
-        const totalCount = await collection.countDocuments(filterConditions).exec();
+        let query = collection.find();
+
+        if (filterConditions) {
+          query = query.where(filterConditions);
+        }
+
+        const totalCount = await collection.countDocuments().exec();
         const totalPages = Math.ceil(totalCount / responsePerPage);
 
         const paginatedQuery = originalMethod
