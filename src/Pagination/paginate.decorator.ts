@@ -5,6 +5,7 @@ export function Paginate(
   filterConditions?: any,
   responsePerPage: number = 20,
   defaultPage: number = 1,
+  populateFields?: string[]
 ) {
   return function (
     target: Record<string, any>,
@@ -28,13 +29,16 @@ export function Paginate(
           query = query.where(filterConditions);
         }
 
-        const totalCount = await collection.countDocuments().exec();
+        const totalCount = await query.countDocuments().exec();
         const totalPages = Math.ceil(totalCount / responsePerPage);
 
-        const paginatedQuery = originalMethod
-          .call(this, skip, limit)
-          .populate('vehicle')
-          .populate('route');
+        let paginatedQuery = originalMethod.call(this, skip, limit);
+
+        if (populateFields && populateFields.length > 0) {
+          for (const field of populateFields) {
+            paginatedQuery = paginatedQuery.populate(field);
+          }
+        }
 
         const data = await paginatedQuery.exec();
 
