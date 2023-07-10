@@ -16,7 +16,6 @@ export function Paginate() {
       req: Request,
       res: Response
     ): Promise<any> {
-      console.log(req.query);
       const currentPage = Number(req.query.page) || 1;
       const responsePerPage = Number(req.query.resPerPage) || 20;
       const skip = (currentPage - 1) * responsePerPage;
@@ -32,8 +31,8 @@ export function Paginate() {
         let query = model.find();
 
         const paramTypes = Reflect.getMetadata('design:paramtypes', target, propertyKey);
-        const filterConditions = extractFilterConditions(req, paramTypes);
-        const populateFields = extractPopulateFields(req, paramTypes);
+        const filterConditions = extractFilterConditions(req, paramTypes, query);
+        const populateFields = extractPopulateFields(req, paramTypes, query);
 
         if (filterConditions) {
           query = query.where(filterConditions);
@@ -81,14 +80,15 @@ function getModelFromMetadata(target: Record<string, any>, propertyKey: string):
   return undefined;
 }
 
-function extractFilterConditions(req: Request, paramTypes: any[]): QueryFilter | undefined {
+function extractFilterConditions(req: Request, paramTypes: any[], query: any): QueryFilter | undefined {
+
   const filterConditions: QueryFilter = {};
 
   for (let i = 0; i < paramTypes.length; i++) {
     const paramType = paramTypes[i];
 
-    if (paramType === Object && req.query) {
-      Object.entries(req.query).forEach(([key, value]) => {
+    if (paramType === Object && query === req.query) {
+      Object.entries(query).forEach(([key, value]) => {
         filterConditions[key] = value;
       });
     }
@@ -97,13 +97,13 @@ function extractFilterConditions(req: Request, paramTypes: any[]): QueryFilter |
   return Object.keys(filterConditions).length > 0 ? filterConditions : undefined;
 }
 
-function extractPopulateFields(req: Request, paramTypes: any[]): PopulateFields | undefined {
+function extractPopulateFields(req: Request, paramTypes: any[], query: any): PopulateFields | undefined {
   const populateFields: PopulateFields = [];
 
   for (let i = 0; i < paramTypes.length; i++) {
     const paramType = paramTypes[i];
 
-    if (Array.isArray(paramType) && req.query && typeof req.query.populate === 'string') {
+    if (Array.isArray(paramType) && query === req.query && typeof req.query.populate === 'string') {
       const fields = req.query.populate.split(',');
 
       for (const field of fields) {
