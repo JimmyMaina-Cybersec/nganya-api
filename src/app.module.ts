@@ -20,6 +20,7 @@ import { ChatModule } from './chat/chat.module';
 import { NotificationsModule } from './notifications/notifications.module';
 import { PresenceModule } from './presence/presence.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { SmsModule } from './sms/sms.module';
 
 @Module({
   imports: [
@@ -49,6 +50,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     ChatModule,
     NotificationsModule,
     PresenceModule,
+    SmsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

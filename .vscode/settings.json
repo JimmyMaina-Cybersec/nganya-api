@@ -11,5 +11,8 @@
   "zenMode.hideLineNumbers": false,
   "zenMode.silentNotifications": false,
   "zenMode.hideStatusBar": false,
-  "peacock.color": "#215732"
+  "peacock.color": "#215732",
+  "githubPullRequests.ignoredPullRequestBranches": [
+    "main"
+  ]
 }
