@@ -7,6 +7,9 @@ import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { Ticket, TicketDocument } from './schema/tickets.schema';
 
 import { Availability, AvailabilityDocument } from 'src/schemas/Availability';
+import PaginationQueryType from 'src/types/paginationQuery';
+import {TicketQuery} from "../types/ticketQuery";
+import { UnauthorizedException } from '@nestjs/common';
 
 
 @Injectable()
@@ -52,37 +55,43 @@ export class TicketService {
     }
   }
 
-  async findAll(user: JwtPayload, query: Object) {
+  async findAll(user: JwtPayload, pagination: PaginationQueryType) {
     try {
-      if (user.role == 'station agent') {
-        return await this.ticketModel
-          .find({
-            addedBy: user._id,
-            ...query,
-          })
-          .select('-__v');
-      }
-      if (user.role == 'station manager') {
-        return await this.ticketModel
-          .find({
-            station: user.station,
-            ...query,
-          })
-          .select('-__v');
-      }
-      if (user.role == 'admin' || user.role == "general admin") {
-        return await this.ticketModel.find({
-          sacco: user.sacco,
-          ...query,
 
-        })
-          .populate('addedBy', 'firstName secondName photoURL')
-          .select('-__v');
+      if (!user || !user.role) {
+        // Handle the scenario where the user object or role property is undefined
+        throw new UnauthorizedException('You are not authorized to view tickets');
       }
-      throw new HttpException(
-        'You are not allowed to view tickets',
-        HttpStatus.FORBIDDEN,
-      );
+      let findQuery: TicketQuery = {};
+  
+      if (user.role === 'station agent') {
+        findQuery.addedBy = user._id;
+      } else if (user.role === 'station manager') {
+        findQuery.station = user.station;
+      } else if (['admin', 'general admin'].includes(user.role)) {
+        findQuery.sacco = user.sacco;
+      } else {
+        throw new HttpException(
+          'You are not allowed to view tickets',
+          HttpStatus.FORBIDDEN,
+        );
+      }
+  
+      const tickets = await this.ticketModel
+        .find(findQuery)
+        .skip(pagination.skip)
+        .limit(pagination.resPerPage)
+        .populate('addedBy', 'firstName secondName photoURL')
+        .select('-__v');
+
+        const count = await this.ticketModel.countDocuments(findQuery);
+  
+      return {
+        data: tickets,
+        page: pagination.page,
+        resPerPage: pagination.resPerPage,
+        numberOfPages: Math.ceil(count / pagination.resPerPage),
+      };;
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
