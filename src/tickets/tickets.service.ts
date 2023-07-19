@@ -59,14 +59,14 @@ export class TicketService {
           'You are not authorized to view tickets',
         );
       }
-      const findQuery: TicketQuery = {};
+      const query: TicketQuery = {};
 
       if (user.role === 'station agent') {
-        findQuery.addedBy = user._id;
+        query.addedBy = user._id;
       } else if (user.role === 'station manager') {
-        findQuery.station = user.station;
+        query.station = user.station;
       } else if (['admin', 'general admin'].includes(user.role)) {
-        findQuery.sacco = user.sacco;
+        query.sacco = user.sacco;
       } else {
         throw new HttpException(
           'You are not allowed to view tickets',
@@ -75,13 +75,13 @@ export class TicketService {
       }
 
       const tickets = await this.ticketModel
-        .find(findQuery)
+        .find(query)
         .skip(pagination.skip)
         .limit(pagination.resPerPage)
         .populate('addedBy', 'firstName secondName photoURL')
         .select('-__v');
 
-      const count = await this.ticketModel.countDocuments(findQuery);
+      const count = await this.ticketModel.countDocuments(query);
 
       return {
         data: tickets,
