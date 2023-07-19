@@ -1,10 +1,16 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateSaccoDto } from './dto/create-sacco.dto';
 import { UpdateSaccoDto } from './dto/update-sacco.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Sacco, SaccoDocument } from './schema/sacco.schema';
 import { Model } from 'mongoose';
 import { JwtPayload } from 'src/types/jwt-payload';
+import PaginationQueryType from 'src/types/paginationQuery';
 
 @Injectable()
 export class SaccosService {
@@ -36,14 +42,38 @@ export class SaccosService {
     );
   }
 
-  findAll(user: JwtPayload) {
-    if (user.role === 'Super User') {
-      return this.saccoModel.find().select('-__v');
+  async findAll(user: JwtPayload, pagination: PaginationQueryType) {
+    try {
+      if (!user || !user.role) {
+        throw new UnauthorizedException('You are not allowed to access Saccos');
+      }
+
+      if (user.role === 'Super User') {
+        const { page, resPerPage } = pagination;
+
+        const [Sacco, totalCount] = await Promise.all([
+          this.saccoModel
+            .find()
+            .select('-__v')
+            .skip(pagination.skip)
+            .limit(pagination.resPerPage),
+          this.saccoModel.countDocuments(),
+        ]);
+        return {
+          data: Sacco,
+          page,
+          resPerPage,
+          numberOfPages: Math.ceil(totalCount / resPerPage),
+        };
+      } else {
+        throw new HttpException(
+          'You are not allowed to view availabilities',
+          HttpStatus.FORBIDDEN,
+        );
+      }
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
     }
-    throw new HttpException(
-      'You are not allowed to get all saccos',
-      HttpStatus.FORBIDDEN,
-    );
   }
 
   findOne(id: string, user: JwtPayload) {
