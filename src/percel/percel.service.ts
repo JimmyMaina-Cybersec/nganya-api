@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreatePercelDto } from './dto/create-percel.dto';
 import { UpdatePercelDto } from './dto/update-percel.dto';
 import { JwtPayload } from 'src/types/jwt-payload';
@@ -6,6 +11,8 @@ import { Model } from 'mongoose';
 import { Percel, PercelDocument } from './schema/percel.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Availability, AvailabilityDocument } from 'src/schemas/Availability';
+import PaginationQueryType from 'src/types/paginationQuery';
+import { PercelQuery } from 'src/types/percelQuery';
 
 @Injectable()
 export class PercelService {
@@ -35,41 +42,55 @@ export class PercelService {
     }
   }
 
-  findAll(user: JwtPayload, query: any) {
+  async findAll(user: JwtPayload, pagination: PaginationQueryType) {
     try {
+      if (!user || !user.role) {
+        throw new UnauthorizedException(
+          'You are not authorised to access Percels',
+        );
+      }
+
+      const query: PercelQuery = {};
       if (
         user.role === 'Super User' ||
         user.role === 'admin' ||
         user.role === 'general admin'
       ) {
-        return this.percelModel.find({ ...query, sacco: user.sacco });
+        query.sacco = user.sacco;
       }
       if (user.role === 'station manager') {
-        return this.percelModel
-          .find({ ...query })
-          .or([
-            { sendingStation: user.station },
-            { recivingStation: user.station },
-          ])
-          .populate('sendingAgent', 'firstName secondName photoURL ')
-          .populate('recivingAgent', 'firstName secondName photoURL ')
-          .populate('sendingStation', 'firstName secondName photoURL');
+        query.$or = [
+          { sendingStation: user.station },
+          { receivingStation: user.station },
+        ];
       }
       if (user.role === 'station agent') {
-        return this.percelModel
-          .find({ ...query })
-          .or([
-            { sendingAgent: user._id },
-            { pickupAgent: user._id },
-            { recivingAgent: user._id },
-          ])
-          .populate('sendingStation');
+        query.$or = [
+          { sendingAgent: user._id },
+          { pickupAgent: user._id },
+          { recivingAgent: user._id },
+        ];
       }
 
-      throw new HttpException(
-        'You are not authorized to perform this action',
-        HttpStatus.FORBIDDEN,
-      );
+      const { page, resPerPage } = pagination;
+
+      const [percels, totalCount] = await Promise.all([
+        this.percelModel
+          .find(query)
+          .populate('sendingAgent', 'firstName secondName photoURL')
+          .populate('receivingAgent', 'firstName secondName photoURL')
+          .populate('sendingStation', 'firstName secondName photoURL')
+          .skip(pagination.skip)
+          .limit(pagination.resPerPage),
+        this.percelModel.countDocuments(query),
+      ]);
+
+      return {
+        data: percels,
+        page,
+        resPerPage,
+        numberOfPages: Math.ceil(totalCount / resPerPage),
+      };
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
