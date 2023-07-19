@@ -5,7 +5,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { VehicleOwner } from './schema/vehicle-owner.schema';
 import { Model } from 'mongoose';
 import { JwtPayload } from 'src/types/jwt-payload';
-import { Vehicle, VehicleSchema } from 'src/vehicles/schema/vehicle.schema';
+import { Vehicle } from 'src/vehicles/schema/vehicle.schema';
+import { VehicleOwnersQuery } from 'src/types/vehicleOwnersQuery';
 
 @Injectable()
 export class VehicleOwnersService {
@@ -43,20 +44,40 @@ export class VehicleOwnersService {
     );
   }
 
-  async findAll(user: JwtPayload) {
-    if (
-      user.role === 'Super User' ||
-      user.role === 'admin' ||
-      user.role === 'general admin'
-    ) {
-      return await this.vehicleOwnerModel
-        .find({ sacco: user.sacco })
-        .select('-__v');
+  async findAll(user: JwtPayload, pagination) {
+    try {
+      const query: VehicleOwnersQuery = {};
+      if (
+        user.role === 'Super User' ||
+        user.role === 'admin' ||
+        user.role === 'general admin'
+      ) {
+        query.sacco = user.sacco;
+      } else {
+        throw new HttpException(
+          'You Do Not Have Permission To View Vehicle Owners',
+          HttpStatus.FORBIDDEN,
+        );
+      }
+      const { page, resPerPage } = pagination;
+      const [vehicleOwners, totalCount] = await Promise.all([
+        this.vehicleOwnerModel
+          .find(query)
+          .select('-__v')
+          .skip(pagination.skip)
+          .limit(pagination.resPerPage),
+        this.vehicleOwnerModel.countDocuments(query),
+      ]);
+
+      return {
+        data: vehicleOwners,
+        page,
+        resPerPage,
+        numberOfPages: Math.ceil(totalCount / resPerPage),
+      };
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
     }
-    throw new HttpException(
-      'You Do Not Have Permission To View Vehicle Owners',
-      HttpStatus.FORBIDDEN,
-    );
   }
 
   findOne(id: string, user: JwtPayload) {
