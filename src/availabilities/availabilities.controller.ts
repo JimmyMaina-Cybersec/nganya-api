@@ -14,6 +14,8 @@ import { UpdateAvailabilityDto } from './dto/update-availability.dto';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { JwtPayload } from 'src/types/jwt-payload';
+import { Pagination } from 'src/common/decorators/paginate.decorator';
+import PaginationQueryType from 'src/types/paginationQuery';
 
 @UseGuards(JwtGuard)
 @Controller('availabilities')
@@ -29,8 +31,11 @@ export class AvailabilitiesController {
   }
 
   @Get()
-  findAll(@CurrentUser() user: JwtPayload) {
-    return this.availabilitiesService.findAll(user);
+  findAll(
+    @CurrentUser() user: JwtPayload,
+    @Pagination() pagination: PaginationQueryType,
+  ) {
+    return this.availabilitiesService.findAll(user, pagination);
   }
 
   @Get(':id')
