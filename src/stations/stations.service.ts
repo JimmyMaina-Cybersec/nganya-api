@@ -5,6 +5,7 @@ import { Station, StationDocument } from './schema/station.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { JwtPayload } from 'src/types/jwt-payload';
+import { StationQuery } from 'src/types/stationQuery';
 
 @Injectable()
 export class StationsService {
@@ -67,29 +68,40 @@ export class StationsService {
    * @returns Promise<Station[]>
    *  */
 
-  async findAll(user: JwtPayload) {
+  async findAll(user: JwtPayload, pagination) {
     try {
+      const query: StationQuery = {};
+      let stationQuery: any = this.stationModel
+        .find(query)
+        .select('_id name location stret');
+
       switch (user.role) {
         case 'Super User':
-          return await this.stationModel
-            .find()
-            .select('_id name location street');
+          break;
         case 'general admin':
-          return await this.stationModel.find({
-            sacco: user.sacco,
-          });
+          stationQuery = stationQuery.where('sacco').equals(user.sacco);
+          break;
 
         case 'admin':
-          return await this.stationModel.find({
-            sacco: user.sacco,
-          });
+          stationQuery = stationQuery.where('sacco').equals(user.sacco);
+          break;
         default:
-          return await this.stationModel
-            .find({
-              sacco: user.sacco,
-            })
-            .select('_id name location street');
+          stationQuery = stationQuery.where('sacco').equals(user.sacco);
       }
+
+      const { page, resPerPage } = pagination;
+
+      const [station, totalCount] = await Promise.all([
+        stationQuery.skip(pagination.skip).limit(pagination.resPerPage),
+        this.stationModel.countDocuments(query),
+      ]);
+
+      return {
+        data: station,
+        page,
+        resPerPage,
+        numberOfPages: Math.ceil(totalCount / resPerPage),
+      };
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
