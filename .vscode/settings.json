@@ -11,8 +11,5 @@
   "zenMode.hideLineNumbers": false,
   "zenMode.silentNotifications": false,
   "zenMode.hideStatusBar": false,
-  "peacock.color": "#215732",
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
-}
+  "peacock.color": "#215732"
 }
