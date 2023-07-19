@@ -12,7 +12,7 @@ export class UsersService {
   constructor(
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
-  ) { }
+  ) {}
 
   async assingManager(
     queryData: { station: string; userId: string },
@@ -69,7 +69,6 @@ export class UsersService {
       return true;
     }
     return false;
-
   }
 
   /**
@@ -111,7 +110,6 @@ export class UsersService {
             createdBy: user._id,
             updatedBy: user._id,
           });
-
         }
       } else {
         throw new HttpException(
@@ -119,15 +117,9 @@ export class UsersService {
           HttpStatus.FORBIDDEN,
         );
       }
-
-
     } catch (error) {
-      throw new HttpException(
-        error.message,
-        error.status,
-      );
+      throw new HttpException(error.message, error.status);
     }
-
   }
 
   /**

@@ -31,18 +31,12 @@ export class UsersController {
   }
 
   @Get()
-  findAll(
-    @CurrentUser() currentUser: JwtPayload,
-    @Query() query: any,
-  ) {
+  findAll(@CurrentUser() currentUser: JwtPayload, @Query() query: any) {
     return this.usersService.findAllUsers(currentUser, query);
   }
 
   @Get('user/:id')
-  findOne(
-    @Param('id') id: string,
-    @CurrentUser() currentUser: JwtPayload,
-  ) {
+  findOne(@Param('id') id: string, @CurrentUser() currentUser: JwtPayload) {
     return this.usersService.findUser(id, currentUser);
   }
 
@@ -60,18 +54,11 @@ export class UsersController {
     @Body() updateUserDto: UpdateUserDto,
     @CurrentUser() currentUser: JwtPayload,
   ) {
-    return this.usersService.updateUser(
-      id,
-      updateUserDto,
-      currentUser,
-    );
+    return this.usersService.updateUser(id, updateUserDto, currentUser);
   }
 
   @Delete('delete-user/:id')
-  deleteUser(
-    @Param('id') id: string,
-    @CurrentUser() currentUser: JwtPayload,
-  ) {
+  deleteUser(@Param('id') id: string, @CurrentUser() currentUser: JwtPayload) {
     return this.usersService.deleteUser(id, currentUser);
   }
 
@@ -80,10 +67,7 @@ export class UsersController {
     @CurrentUser() currentUser: JwtPayload,
     @Query() station: FindStationAgentsDto,
   ) {
-    return this.usersService.findAgentsInStation(
-      currentUser,
-      station,
-    );
+    return this.usersService.findAgentsInStation(currentUser, station);
   }
 
   @Get('station-manager')
