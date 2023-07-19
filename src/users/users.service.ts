@@ -6,6 +6,8 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { FindStationAgentsDto } from './dto/find-station-agents.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './schema/user.schema';
+import PaginationQueryType from 'src/types/paginationQuery';
+import { UsersQuery } from 'src/types/usersQuery';
 
 @Injectable()
 export class UsersService {
@@ -127,46 +129,42 @@ export class UsersService {
    * @param currentUser
    * @returns Array<UserDocument>
    */
-  async findAllUsers(currentUser: JwtPayload, query: any) {
-    switch (currentUser.role) {
-      case 'Super User':
-        return await this.userModel
-          .find({
-            sacco: currentUser.sacco,
-            ...query,
-          })
-          .select('-password -refreshToken');
-      case 'general admin':
-        return await this.userModel
-          .find({
-            sacco: currentUser.sacco,
-            ...query,
-          })
-          .select('-password -refreshToken -upadatedAt -updatedBy');
-      case 'admin':
-        return await this.userModel
-          .find({
-            sacco: currentUser.sacco,
-            ...query,
-          })
-          .select('-password -refreshToken -upadatedAt -updatedBy');
-      case 'station manager':
-        return await this.userModel
-          .find({
-            station: currentUser.station,
-            ...query,
-          })
-          .or([
-            { role: 'station agent' },
-            { role: 'driver' },
-            { role: 'station manager' },
-          ]);
-      default:
-        return await this.userModel
-          .find({
-            _id: currentUser._id,
-          })
-          .select('-password -refreshToken -upadatedAt -updatedBy');
+  async findAllUsers(currentUser: JwtPayload, pagination: PaginationQueryType) {
+    try {
+      const query: UsersQuery = {};
+      switch (currentUser.role) {
+        case 'Super User':
+        case 'general admin':
+        case 'admin':
+          query.sacco = currentUser.sacco;
+          break;
+        case 'station manager':
+          query.station = currentUser.station;
+          query.role = ['station agent', 'driver', 'station manager'];
+          break;
+        default:
+          query._id = currentUser._id;
+      }
+
+      const { page, resPerPage } = pagination;
+
+      const [users, totalCount] = await Promise.all([
+        this.userModel
+          .find(query)
+          .select('-password -refreshtoken')
+          .skip(pagination.skip)
+          .limit(pagination.resPerPage),
+        this.userModel.countDocuments(query),
+      ]);
+
+      return {
+        data: users,
+        page,
+        resPerPage,
+        numberOfPages: Math.ceil(totalCount / resPerPage),
+      };
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
     }
   }
 
