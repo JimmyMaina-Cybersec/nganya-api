@@ -10,7 +10,7 @@ export const Pagination = createParamDecorator(
     return {
       page,
       resPerPage,
-      skip: (page -1) * resPerPage,
+      skip: (page - 1) * resPerPage,
     };
   },
 );
