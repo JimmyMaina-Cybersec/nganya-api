@@ -16,6 +16,8 @@ import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { JwtPayload } from 'src/types/jwt-payload';
 import { UpdateDriverDto } from './dto/update-driver.dto';
+import { Pagination } from 'src/common/decorators/paginate.decorator';
+import PaginationQueryType from 'src/types/paginationQuery';
 
 @UseGuards(JwtGuard)
 @Controller('vehicles')
@@ -39,8 +41,13 @@ export class VehiclesController {
   getOwnerVehicles(
     @CurrentUser() user: JwtPayload,
     @Param('vehicleOwnerID') vehicleOwner: string,
+    @Pagination() pagination: PaginationQueryType,
   ) {
-    return this.vehiclesService.getOwnerVehicles(user, vehicleOwner);
+    return this.vehiclesService.getOwnerVehicles(
+      user,
+      vehicleOwner,
+      pagination,
+    );
   }
 
   @Get('driver/:vehicleID')
@@ -60,8 +67,11 @@ export class VehiclesController {
   }
 
   @Get()
-  findAll(@CurrentUser() user: JwtPayload, @Query() query: any) {
-    return this.vehiclesService.findAll(user, query);
+  findAll(
+    @CurrentUser() user: JwtPayload,
+    @Pagination() pagination: PaginationQueryType,
+  ) {
+    return this.vehiclesService.findAll(user, pagination);
   }
 
   @Post('add-to-station')
