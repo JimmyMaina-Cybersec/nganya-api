@@ -7,6 +7,8 @@ import { Model } from 'mongoose';
 import { Vehicle, VehicleDocument } from './schema/vehicle.schema';
 import { User, UserDocument } from 'src/users/schema/user.schema';
 import { UpdateDriverDto } from './dto/update-driver.dto';
+import { Pagination } from 'src/common/decorators/paginate.decorator';
+import { VehicleQuery } from 'src/types/vehicleQuery';
 
 @Injectable()
 export class VehiclesService {
@@ -105,27 +107,36 @@ export class VehiclesService {
     }
   }
 
-  async getOwnerVehicles(user: JwtPayload, vehicleOwnerID) {
+  async getOwnerVehicles(user: JwtPayload, vehicleOwnerID, pagination) {
     try {
+      const query: VehicleQuery = {};
       if (user.role === 'Super User') {
-        return await this.vehicleModel
-          .find({
-            owner: vehicleOwnerID,
-          })
-          .exec();
+        query.owner = vehicleOwnerID;
       } else if (user.role === 'admin' || user.role === 'general admin') {
-        return await this.vehicleModel
-          .find({
-            owner: vehicleOwnerID,
-            sacco: user.sacco,
-          })
-          .exec();
+        query.owner = vehicleOwnerID;
+        query.sacco = user.sacco;
       } else {
         throw new HttpException(
           'You are not allowed to see Details of the selected vehicle',
           HttpStatus.FORBIDDEN,
         );
       }
+
+      const { page, resPerPage } = pagination;
+      const [vehicles, totalCount] = await Promise.all([
+        this.vehicleModel
+          .find(query)
+          .skip(pagination.skip)
+          .limit(pagination.resPerPage),
+        this.vehicleModel.countDocuments(query),
+      ]);
+
+      return {
+        data: vehicles,
+        page,
+        resPerPage,
+        numberOfPages: Math.ceil(totalCount / resPerPage),
+      };
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
