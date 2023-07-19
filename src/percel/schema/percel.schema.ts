@@ -51,7 +51,7 @@ export class Percel {
   sendingAgent: Types.ObjectId;
 
   @Prop({ type: SchemaTypes.ObjectId, ref: 'User' })
-  recivingAgent: Types.ObjectId;
+  receivingAgent: Types.ObjectId;
 
   @Prop({ type: SchemaTypes.ObjectId, ref: 'User' })
   driver: Types.ObjectId;
