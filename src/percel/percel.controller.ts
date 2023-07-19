@@ -14,6 +14,8 @@ import { UpdatePercelDto } from './dto/update-percel.dto';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { JwtPayload } from 'src/types/jwt-payload';
+import { Pagination } from '../common/decorators/paginate.decorator';
+import PaginationQueryType from 'src/types/paginationQuery';
 
 @UseGuards(JwtGuard)
 @Controller('percels')
@@ -29,8 +31,11 @@ export class PercelController {
   }
 
   @Get()
-  findAll(@Query() query: any, @CurrentUser() user: JwtPayload) {
-    return this.percelService.findAll(user, query);
+  findAll(
+    @CurrentUser() user: JwtPayload,
+    @Pagination() pagination: PaginationQueryType,
+  ) {
+    return this.percelService.findAll(user, pagination);
   }
 
   @Patch('upadate/:id')
