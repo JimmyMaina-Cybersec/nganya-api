@@ -176,7 +176,7 @@ export class VehiclesService {
           );
         }
 
-        let result = await this.vehicleModel.findOneAndUpdate(
+        const result = await this.vehicleModel.findOneAndUpdate(
           {
             plateNo: query.plateNo.toLowerCase(),
           },

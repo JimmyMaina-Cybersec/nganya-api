@@ -83,18 +83,11 @@ export class VehiclesController {
     @Body() updateVehicleDto: UpdateVehicleDto,
     @CurrentUser() user: JwtPayload,
   ) {
-    return this.vehiclesService.updateVehicle(
-      id,
-      updateVehicleDto,
-      user,
-    );
+    return this.vehiclesService.updateVehicle(id, updateVehicleDto, user);
   }
 
   @Delete('delete-vehicle/:id')
-  deleteVehicle(
-    @Param('id') id: string,
-    @CurrentUser() user: JwtPayload,
-  ) {
+  deleteVehicle(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
     return this.vehiclesService.deleteVehicle(id, user);
   }
 }
