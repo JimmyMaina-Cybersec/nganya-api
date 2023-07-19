@@ -6,7 +6,6 @@ import {
   Patch,
   Param,
   UseGuards,
-  Query,
 } from '@nestjs/common';
 import { PercelService } from './percel.service';
 import { CreatePercelDto } from './dto/create-percel.dto';
