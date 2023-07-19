@@ -8,9 +8,8 @@ import { Ticket, TicketDocument } from './schema/tickets.schema';
 
 import { Availability, AvailabilityDocument } from 'src/schemas/Availability';
 import PaginationQueryType from 'src/types/paginationQuery';
-import {TicketQuery} from "../types/ticketQuery";
+import { TicketQuery } from '../types/ticketQuery';
 import { UnauthorizedException } from '@nestjs/common';
-
 
 @Injectable()
 export class TicketService {
@@ -19,15 +18,12 @@ export class TicketService {
     private readonly ticketModel: Model<TicketDocument>,
     @InjectModel(Availability.name)
     private readonly availabilityModel: Model<AvailabilityDocument>,
-  ) { }
+  ) {}
 
   async book(createTicketDto: CreateTicketDto, user: JwtPayload) {
     try {
-
       if (user.role == 'station agent' || user.role == 'station manager') {
         const ticket = await this.ticketModel.create({
-
-
           ...createTicketDto,
           station: user.station,
           sacco: user.sacco,
@@ -57,13 +53,14 @@ export class TicketService {
 
   async findAll(user: JwtPayload, pagination: PaginationQueryType) {
     try {
-
       if (!user || !user.role) {
         // Handle the scenario where the user object or role property is undefined
-        throw new UnauthorizedException('You are not authorized to view tickets');
+        throw new UnauthorizedException(
+          'You are not authorized to view tickets',
+        );
       }
-      let findQuery: TicketQuery = {};
-  
+      const findQuery: TicketQuery = {};
+
       if (user.role === 'station agent') {
         findQuery.addedBy = user._id;
       } else if (user.role === 'station manager') {
@@ -76,7 +73,7 @@ export class TicketService {
           HttpStatus.FORBIDDEN,
         );
       }
-  
+
       const tickets = await this.ticketModel
         .find(findQuery)
         .skip(pagination.skip)
@@ -84,14 +81,14 @@ export class TicketService {
         .populate('addedBy', 'firstName secondName photoURL')
         .select('-__v');
 
-        const count = await this.ticketModel.countDocuments(findQuery);
-  
+      const count = await this.ticketModel.countDocuments(findQuery);
+
       return {
         data: tickets,
         page: pagination.page,
         resPerPage: pagination.resPerPage,
         numberOfPages: Math.ceil(count / pagination.resPerPage),
-      };;
+      };
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
