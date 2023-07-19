@@ -57,19 +57,22 @@ export class PercelService {
         user.role === 'general admin'
       ) {
         query.sacco = user.sacco;
-      }
-      if (user.role === 'station manager') {
+      } else if (user.role === 'station manager') {
         query.$or = [
           { sendingStation: user.station },
           { receivingStation: user.station },
         ];
-      }
-      if (user.role === 'station agent') {
+      } else if (user.role === 'station agent') {
         query.$or = [
           { sendingAgent: user._id },
           { pickupAgent: user._id },
           { recivingAgent: user._id },
         ];
+      } else {
+        throw new HttpException(
+          'You are not allowed to all percels',
+          HttpStatus.FORBIDDEN,
+        );
       }
 
       const { page, resPerPage } = pagination;
