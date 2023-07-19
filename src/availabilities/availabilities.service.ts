@@ -75,7 +75,7 @@ export class AvailabilitiesService {
         query.station = user.station;
       } else {
         throw new HttpException(
-          'You are not authorized to view availabilities',
+          'You are not allowed to view availabilities',
           HttpStatus.FORBIDDEN,
         );
       }

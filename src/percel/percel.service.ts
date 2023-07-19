@@ -70,7 +70,7 @@ export class PercelService {
         ];
       } else {
         throw new HttpException(
-          'You are not allowed to all percels',
+          'You are not allowed to view percels',
           HttpStatus.FORBIDDEN,
         );
       }
