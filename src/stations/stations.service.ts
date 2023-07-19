@@ -23,8 +23,8 @@ export class StationsService {
           _id: id,
           sacco: user.sacco,
         });
-      
-        case 'admin' :
+
+      case 'admin':
         return this.stationModel.findOne({
           _id: id,
           sacco: user.sacco,
@@ -74,12 +74,12 @@ export class StationsService {
           return await this.stationModel
             .find()
             .select('_id name location street');
-        case  'general admin':
+        case 'general admin':
           return await this.stationModel.find({
             sacco: user.sacco,
           });
-      
-       case 'admin' :
+
+        case 'admin':
           return await this.stationModel.find({
             sacco: user.sacco,
           });
