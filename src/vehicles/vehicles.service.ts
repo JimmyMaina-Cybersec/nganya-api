@@ -74,34 +74,41 @@ export class VehiclesService {
     }
   }
 
-  async findAll(user: JwtPayload, query: any) {
+  async findAll(user: JwtPayload, pagination) {
     try {
+      const query: VehicleQuery = {};
       if (
         user.role === 'Super User' ||
         user.role === 'admin' ||
         user.role === 'general admin'
       ) {
-        return await this.vehicleModel
-          .find({
-            sacco: user.sacco,
-            ...query,
-          })
-          .exec();
+        query.sacco = user.sacco;
       } else if (user.role === 'station agent' || 'station manager') {
-        return await this.vehicleModel
-          .find({
-            sacco: user.sacco,
-            ...query,
-          })
-          .or([
-            { lastStation: user.station },
-            { currentStation: user.station },
-            { nextStation: user.station },
-          ])
-          .exec();
+        query.sacco = user.sacco;
+        query.$or = [
+          { lastStation: user.station },
+          { currentStation: user.station },
+          { nextStation: user.station },
+        ];
       } else {
         return [];
       }
+
+      const { page, resPerPage } = pagination;
+      const [vehicles, totalCount] = await Promise.all([
+        this.vehicleModel
+          .find(query)
+          .skip(pagination.skip)
+          .limit(pagination.resPerPage),
+        this.vehicleModel.countDocuments(query),
+      ]);
+
+      return {
+        data: vehicles,
+        page,
+        resPerPage,
+        numberOfPages: Math.ceil(totalCount / resPerPage),
+      };
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
@@ -123,7 +130,7 @@ export class VehiclesService {
       }
 
       const { page, resPerPage } = pagination;
-      const [vehicles, totalCount] = await Promise.all([
+      const [ownersVehicles, totalCount] = await Promise.all([
         this.vehicleModel
           .find(query)
           .skip(pagination.skip)
@@ -132,7 +139,7 @@ export class VehiclesService {
       ]);
 
       return {
-        data: vehicles,
+        data: ownersVehicles,
         page,
         resPerPage,
         numberOfPages: Math.ceil(totalCount / resPerPage),
