@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { LipaDto } from './dto/create-lipa-na-mpesa.dto';
 import { LipaNaMpesaCallbackDto } from './dto/lipa-na-mpesa-callback.dto';
 import { JwtPayload } from 'src/types/jwt-payload';
@@ -11,6 +16,9 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { StkInitResponce } from './types/stk-init-reponce.type';
 import { EventEmitter2 } from '@nestjs/event-emitter';
+import { CheckBalanceDTO } from './dto/checkBalance.dto';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
 
 @Injectable()
 export class LipaNaMpesaService {
@@ -18,6 +26,7 @@ export class LipaNaMpesaService {
     @InjectModel(LipaNaMpesaTransaction.name)
     private lipaNaMpesaTransaction: Model<LipaNaMpesaTransactionDocument>,
     private eventEmitter: EventEmitter2,
+    private httpService: HttpService,
   ) {}
 
   readonly authorisationEndpoint =
@@ -60,24 +69,7 @@ export class LipaNaMpesaService {
     ).toString('base64');
 
     try {
-      let accessToken = null;
-
-      await axios({
-        method: 'get',
-        url: this.authorisationEndpoint,
-        headers: {
-          Authorization:
-            'Basic cGVFOHc2bUt6WTNBWEFGTWZ5ank1NjhUUnJGZ2I2MDI6NG1jc0Z3cFR1VTI0d1JwbQ==',
-        },
-      })
-        .then((res) => {
-          accessToken = res.data.access_token;
-        })
-        .catch((err) => {
-          console.log(err);
-
-          throw new HttpException(err.message, HttpStatus.BAD_GATEWAY);
-        });
+      const accessToken = await this.getAccessToken();
 
       let result: StkInitResponce | null = null;
 
@@ -132,6 +124,67 @@ export class LipaNaMpesaService {
       return result;
     } catch (error) {
       throw new HttpException(error.message, error.status);
+    }
+  }
+
+  /**
+   * Get the account balance for a given till/paybill number from Daraja API
+   * @param checkBalanceDTO The till/paybill number for which to retrieve the balance
+   * @param user
+   * @returns The account balance as a number.
+   */
+  async getAccountBalance(
+    user: JwtPayload,
+    checkBalanceDTO: CheckBalanceDTO,
+  ): Promise<number> {
+    if (
+      user.role !== 'Super User' &&
+      user.role !== 'general admin' &&
+      user.role !== 'admin' &&
+      user.role !== 'station manager'
+    ) {
+      throw new UnauthorizedException(
+        'You do not have access to account balance',
+      );
+    }
+
+    const { organisationType, phoneOrAccountNumber, shortCode } =
+      checkBalanceDTO;
+
+    const accessToken = await this.getAccessToken();
+
+    const darajaBalanceEndpoint =
+      'https://sandbox.safaricom.co.ke/mpesa/accountbalance/v1/query';
+
+    const identifierType = organisationType === 'Till' ? 1 : 4;
+
+    try {
+      const response = await firstValueFrom(
+        this.httpService.get(darajaBalanceEndpoint, {
+          headers: {
+            Authorization: `Bearer ${accessToken}`,
+          },
+          params: {
+            Initiator: '',
+            SecurityCredential: '',
+            CommandID: 'AccountBalance',
+            PartyA: phoneOrAccountNumber,
+            PartyB: shortCode,
+            IdentifierType: identifierType,
+            Remarks: 'Account balance query',
+          },
+          timeout: 120000,
+        }),
+      );
+
+      const balance = response.data.Balance;
+      return balance;
+    } catch (error) {
+      if (axios.isCancel(error)) {
+        throw new Error('Requst timed out');
+      } else {
+        throw new Error(error.message);
+      }
     }
   }
 
@@ -205,5 +258,22 @@ export class LipaNaMpesaService {
     console.log(mpesaData);
 
     return mpesaData;
+  }
+
+  private async getAccessToken(): Promise<string> {
+    try {
+      const response = await axios({
+        method: 'get',
+        url: this.authorisationEndpoint,
+        headers: {
+          Authorization:
+            'Basic cGVFOHc2bUt6WTNBWEFGTWZ5ank1NjhUUnJGZ2I2MDI6NG1jc0Z3cFR1VTI0d1JwbQ==',
+        },
+      });
+      return response.data.access_token;
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(error.message, HttpStatus.BAD_GATEWAY);
+    }
   }
 }
