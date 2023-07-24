@@ -14,6 +14,8 @@ import { UpdateStationDto } from './dto/update-station.dto';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { JwtPayload } from 'src/types/jwt-payload';
+import { Pagination } from 'src/common/decorators/paginate.decorator';
+import PaginationQueryType from 'src/types/paginationQuery';
 
 @UseGuards(JwtGuard)
 @Controller('stations')
@@ -29,8 +31,11 @@ export class StationsController {
   }
 
   @Get()
-  findAll(@CurrentUser() currentUser: JwtPayload) {
-    return this.stationsService.findAll(currentUser);
+  findAll(
+    @CurrentUser() currentUser: JwtPayload,
+    @Pagination() pagination: PaginationQueryType,
+  ) {
+    return this.stationsService.findAll(currentUser, pagination);
   }
 
   @Get('my-station')

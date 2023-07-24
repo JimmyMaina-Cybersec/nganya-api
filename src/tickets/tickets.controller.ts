@@ -7,7 +7,6 @@ import {
   Param,
   Delete,
   UseGuards,
-  Query,
 } from '@nestjs/common';
 import { TicketService } from './tickets.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
@@ -15,11 +14,13 @@ import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { JwtPayload } from 'src/types/jwt-payload';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import PaginationQueryType from '../types/paginationQuery';
+import { Pagination } from '../common/decorators/paginate.decorator';
 
 @UseGuards(JwtGuard)
 @Controller('tickets')
 export class TicketController {
-  constructor(private readonly ticketService: TicketService) { }
+  constructor(private readonly ticketService: TicketService) {}
 
   @Post('book-ticket')
   create(
@@ -30,8 +31,11 @@ export class TicketController {
   }
 
   @Get()
-  findAll(@CurrentUser() user: JwtPayload, @Query() query: Object) {
-    return this.ticketService.findAll(user, query);
+  findAll(
+    @CurrentUser() user: JwtPayload,
+    @Pagination() pagination: PaginationQueryType,
+  ) {
+    return this.ticketService.findAll(user, pagination);
   }
 
   @Get('ticket/:id')

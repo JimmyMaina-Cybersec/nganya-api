@@ -7,7 +7,6 @@ import {
   Param,
   Delete,
   UseGuards,
-  Query,
 } from '@nestjs/common';
 import { VehiclesService } from './vehicles.service';
 import { CreateVehicleDto } from './dto/create-vehicle.dto';
@@ -16,6 +15,8 @@ import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { JwtPayload } from 'src/types/jwt-payload';
 import { UpdateDriverDto } from './dto/update-driver.dto';
+import { Pagination } from 'src/common/decorators/paginate.decorator';
+import PaginationQueryType from 'src/types/paginationQuery';
 
 @UseGuards(JwtGuard)
 @Controller('vehicles')
@@ -39,8 +40,13 @@ export class VehiclesController {
   getOwnerVehicles(
     @CurrentUser() user: JwtPayload,
     @Param('vehicleOwnerID') vehicleOwner: string,
+    @Pagination() pagination: PaginationQueryType,
   ) {
-    return this.vehiclesService.getOwnerVehicles(user, vehicleOwner);
+    return this.vehiclesService.getOwnerVehicles(
+      user,
+      vehicleOwner,
+      pagination,
+    );
   }
 
   @Get('driver/:vehicleID')
@@ -60,8 +66,11 @@ export class VehiclesController {
   }
 
   @Get()
-  findAll(@CurrentUser() user: JwtPayload, @Query() query: any) {
-    return this.vehiclesService.findAll(user, query);
+  findAll(
+    @CurrentUser() user: JwtPayload,
+    @Pagination() pagination: PaginationQueryType,
+  ) {
+    return this.vehiclesService.findAll(user, pagination);
   }
 
   @Post('add-to-station')
@@ -83,18 +92,11 @@ export class VehiclesController {
     @Body() updateVehicleDto: UpdateVehicleDto,
     @CurrentUser() user: JwtPayload,
   ) {
-    return this.vehiclesService.updateVehicle(
-      id,
-      updateVehicleDto,
-      user,
-    );
+    return this.vehiclesService.updateVehicle(id, updateVehicleDto, user);
   }
 
   @Delete('delete-vehicle/:id')
-  deleteVehicle(
-    @Param('id') id: string,
-    @CurrentUser() user: JwtPayload,
-  ) {
+  deleteVehicle(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
     return this.vehiclesService.deleteVehicle(id, user);
   }
 }
