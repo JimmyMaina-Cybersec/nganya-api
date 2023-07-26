@@ -10,6 +10,7 @@ import {
 } from '@nestjs/common';
 import { AvailabilitiesService } from './availabilities.service';
 import { CreateAvailabilityDto } from './dto/create-availability.dto';
+import { DeleteAvailabilitDto } from './dto/delete-Availability.dto';
 import { UpdateAvailabilityDto } from './dto/update-availability.dto';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
@@ -55,8 +56,12 @@ export class AvailabilitiesController {
     return this.availabilitiesService.update(id, updateAvailabilityDto, user);
   }
 
-  @Delete('delete-availability/:id')
-  remove(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+  @Delete('delete-availability')
+  remove(
+    @Body() deleteAvailabilitDto: DeleteAvailabilitDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    const { id } = deleteAvailabilitDto;
     return this.availabilitiesService.deleteAvalablity(id, user);
   }
 }
