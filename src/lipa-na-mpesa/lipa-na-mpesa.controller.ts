@@ -14,6 +14,7 @@ import { LipaNaMpesaCallbackDto } from './dto/lipa-na-mpesa-callback.dto';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { JwtPayload } from 'src/types/jwt-payload';
+import { CheckBalanceDTO } from './dto/checkBalance.dto';
 
 @Controller('lipa-na-mpesa')
 export class LipaNaMpesaController {
@@ -31,6 +32,14 @@ export class LipaNaMpesaController {
   @Post('callback')
   mpesaCallback(@Body() createLipaNaMpesaDto: any) {
     return this.lipaNaMpesaService.mpesaCallback(createLipaNaMpesaDto);
+  }
+
+  @Post('check-balance')
+  checkBalance(
+    @CurrentUser() user: JwtPayload,
+    @Body() checkBalanceDTO: CheckBalanceDTO,
+  ) {
+    return this.lipaNaMpesaService.getAccountBalance(user, checkBalanceDTO);
   }
 
   @Get()
