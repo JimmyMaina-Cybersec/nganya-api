@@ -17,7 +17,7 @@ export class Payments {
   @Prop({ default: null, type: SchemaTypes.ObjectId, ref: 'Ticket' })
   TicketId: Types.ObjectId;
 
-  @Prop({ default: null, type: SchemaTypes.ObjectId, ref: 'Customer' })
+  @Prop({ default: null, type: SchemaTypes.ObjectId, ref: 'Customers' })
   CustomerId: Types.ObjectId;
 
   @Prop({ type: SchemaTypes.ObjectId, ref: 'User' })
