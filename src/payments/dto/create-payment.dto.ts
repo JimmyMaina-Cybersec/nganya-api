@@ -1,4 +1,11 @@
+import { IsNotEmpty, IsNumber } from 'class-validator';
+
 export class CreatePaymentDto {
-  phone: string;
-  amount: number;
+  @IsNumber()
+  @IsNotEmpty()
+  customerPhoneNo: string;
+
+  @IsNumber()
+  @IsNotEmpty()
+  amountPaid: number;
 }
