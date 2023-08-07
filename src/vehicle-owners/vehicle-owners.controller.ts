@@ -14,6 +14,8 @@ import { UpdateVehicleOwnerDto } from './dto/update-vehicle-owner.dto';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { JwtPayload } from 'src/types/jwt-payload';
+import { Pagination } from 'src/common/decorators/paginate.decorator';
+import PaginationQueryType from 'src/types/paginationQuery';
 
 @UseGuards(JwtGuard)
 @Controller('vehicle-owners')
@@ -32,8 +34,11 @@ export class VehicleOwnersController {
   }
 
   @Get()
-  findAll(@CurrentUser() user: JwtPayload) {
-    return this.vehicleOwnersService.findAll(user);
+  findAll(
+    @CurrentUser() user: JwtPayload,
+    @Pagination() pagination: PaginationQueryType,
+  ) {
+    return this.vehicleOwnersService.findAll(user, pagination);
   }
 
   @Get(':id')

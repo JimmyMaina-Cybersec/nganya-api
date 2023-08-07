@@ -5,6 +5,7 @@ import { JwtPayload } from 'src/types/jwt-payload';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Route, RouteDocument } from './schema/route.schema';
+import { DeleteResult } from 'mongodb';
 
 @Injectable()
 export class RoutesService {
@@ -102,7 +103,7 @@ export class RoutesService {
     }
   }
 
-  remove(_id: string, user: JwtPayload) {
+  remove(_id: string, user: JwtPayload): Promise<DeleteResult> {
     try {
       if (
         user.role === 'Super User' ||

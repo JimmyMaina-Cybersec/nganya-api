@@ -21,6 +21,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { PresenceModule } from './presence/presence.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { SmsModule } from './sms/sms.module';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { SmsModule } from './sms/sms.module';
     NotificationsModule,
     PresenceModule,
     SmsModule,
+    PaymentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

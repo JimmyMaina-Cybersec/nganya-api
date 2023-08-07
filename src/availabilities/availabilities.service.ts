@@ -1,4 +1,9 @@
-import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  HttpStatus,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreateAvailabilityDto } from './dto/create-availability.dto';
 import { UpdateAvailabilityDto } from './dto/update-availability.dto';
 import { JwtPayload } from 'src/types/jwt-payload';
@@ -10,6 +15,8 @@ import {
 } from './schema/availability.schema';
 import { Station, StationDocument } from 'src/stations/schema/station.schema';
 import { Vehicle, VehicleDocument } from 'src/vehicles/schema/vehicle.schema';
+import PaginationQueryType from 'src/types/paginationQuery';
+import { AvailabilityQuery } from '../types/availabilitiesQuery';
 
 @Injectable()
 export class AvailabilitiesService {
@@ -46,38 +53,51 @@ export class AvailabilitiesService {
     }
   }
 
-  async findAll(user: JwtPayload) {
-    let availabilities = [];
+  async findAll(user: JwtPayload, pagination: PaginationQueryType) {
     try {
+      if (!user || !user.role) {
+        throw new UnauthorizedException(
+          'You are not authorized to view Availabilities',
+        );
+      }
+      const query: AvailabilityQuery = {};
+
       if (
         user.role === 'general admin' ||
         user.role === 'admin' ||
         user.role === 'Super User'
       ) {
-        availabilities = await this.availabilityModel
-          .where({
-            sacco: user.sacco,
-          })
-          .populate('vehicle')
-          .populate('route');
+        query.sacco = user.sacco;
       } else if (
         user.role === 'station manager' ||
         user.role === 'station agent'
       ) {
-        availabilities = await this.availabilityModel
-          .where({
-            station: user.station,
-          })
-          .populate('vehicle')
-          .populate('route');
+        query.station = user.station;
       } else {
         throw new HttpException(
-          'You are not authorized to view availabilities',
+          'You are not allowed to view availabilities',
           HttpStatus.FORBIDDEN,
         );
       }
 
-      return availabilities;
+      const { page, resPerPage } = pagination;
+
+      const [availabilities, totalCount] = await Promise.all([
+        this.availabilityModel
+          .find(query)
+          .populate('vehicle')
+          .populate('route')
+          .skip(pagination.skip)
+          .limit(pagination.resPerPage),
+        this.availabilityModel.countDocuments(query),
+      ]);
+
+      return {
+        data: availabilities,
+        page,
+        resPerPage,
+        totalPages: Math.ceil(totalCount / resPerPage),
+      };
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }

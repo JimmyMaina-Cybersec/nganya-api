@@ -15,6 +15,7 @@ import { UpdateRouteDto } from './dto/update-route.dto';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { JwtPayload } from 'src/types/jwt-payload';
+import { DeleteResult } from 'mongodb';
 
 @UseGuards(JwtGuard)
 @Controller('routes')
@@ -49,7 +50,7 @@ export class RoutesController {
   }
 
   @Delete('delete-route/:id')
-  remove(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+  remove(@Param('id') id: string, @CurrentUser() user: JwtPayload): Promise<DeleteResult> {
     return this.routesService.remove(id, user);
   }
 }
