@@ -7,10 +7,12 @@ import {
   LipaNaMpesaTransactionSchema,
 } from './schema/lipa-na-mpesa.schema';
 import { LipaNaMpesaGateway } from './lipa-na-mpesa.gateway';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   controllers: [LipaNaMpesaController],
   imports: [
+    HttpModule,
     MongooseModule.forFeature([
       {
         name: LipaNaMpesaTransaction.name,
