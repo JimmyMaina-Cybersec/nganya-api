@@ -8,8 +8,11 @@ export class Payments {
   @Prop({ type: String, required: true })
   TransactionMethod: string;
 
+  @Prop({ type: String, default: null })
+  TransactionType: string;
+
   @Prop({ type: Number, required: true })
-  Amount: number;
+  AmountPaid: number;
 
   @Prop({ default: null, type: String })
   MpesaTransaction: string;
