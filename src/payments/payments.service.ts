@@ -2,30 +2,33 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 import axios from 'axios';
+import { InjectModel } from '@nestjs/mongoose';
+import { Payments, PaymentsDocument } from './schema/payments.schema';
+import { Model } from 'mongoose';
+import { JwtPayload } from 'src/types/jwt-payload';
 
 @Injectable()
 export class PaymentsService {
-  async sendStk(CreatePaymentDto: CreatePaymentDto) {
-    // ?auth url
-    const authURL = //found in apis Authorization
+  constructor(
+    @InjectModel(Payments.name)
+    private readonly paymentModel: Model<PaymentsDocument>,
+  ) {}
+  async sendStk(user: JwtPayload, createPaymentDto: CreatePaymentDto) {
+    const authURL =
       'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials';
-    // ?stk push url
-    const stkPushURL = //found in apis M-pesa Express (simulate)
+
+    const stkPushURL =
       'https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest';
-    // ?short code
+
     const shortCode = 174379;
-    // !callback url
+
     const callbackUrl = 'https://api.nganyaapp.com/api/lipa-na-mpesa/callback';
-    // !password
+
     const basic_token =
       'YlhBVGFVbDlOc1pxbndNQW9RVFpKMDhVc25iYVRJTzY6MEZOUWhvR0FoczA4TDJ0ZA==';
 
     const passkey =
       'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919';
-    // const timestamp = new Date()
-    //   .toISOString()
-    //   .replace(/[^0-9]/g, '')
-    //   .slice(0, -3);
 
     const date = new Date(Date.now());
     const pad2 = (n: string | number) => (Number(n) < 10 ? '0' + n : n);
@@ -37,15 +40,9 @@ export class PaymentsService {
       pad2(date.getMinutes()) +
       pad2(date.getSeconds());
 
-    // const password = Buffer.from(shortCode + passkey + timestamp).toString(
-    //   'base64',
-    // );
     const password = Buffer.from(shortCode + passkey + timestamp).toString(
       'base64',
     );
-
-    console.log(password);
-    console.log(timestamp);
 
     try {
       let accesstoken = null;
@@ -56,18 +53,10 @@ export class PaymentsService {
         headers: {
           Authorization: 'Basic ' + basic_token,
         },
-      })
-        .then((res) => {
-          console.log(res.data);
-          accesstoken = res.data.access_token;
-          console.log(accesstoken);
-        })
-        .catch((err) => {
-          console.log(err);
-          throw new HttpException(err.message, err.status);
-        });
+      }).then((res) => {
+        accesstoken = res.data.access_token;
+      });
 
-      console.log('Starting');
       await axios({
         url: stkPushURL,
         method: 'POST',
@@ -79,28 +68,33 @@ export class PaymentsService {
           Password: password,
           Timestamp: timestamp,
           TransactionType: 'CustomerPayBillOnline',
-          Amount: CreatePaymentDto.amount,
-          PartyA: CreatePaymentDto.phone,
+          Amount: createPaymentDto.amountPaid,
+          PartyA: createPaymentDto.customerPhoneNo,
           PartyB: shortCode,
-          PhoneNumber: CreatePaymentDto.phone,
+          PhoneNumber: createPaymentDto.customerPhoneNo,
           CallBackURL: callbackUrl,
-          AccountReference: 'CompanyXLTD',
+          AccountReference: 'Nganya',
           TransactionDesc: 'Payment of X',
         },
-      })
-        .then((res) => {
-          console.log(res.data);
-          console.log('done');
-          throw new HttpException(res.data, 200);
-        })
-        .catch((err) => {
-          console.error('error:', err.response.data);
-          console.log(err);
-          throw new HttpException(err.message, err.status);
+      }).then(async (res) => {
+        const response = res.data;
+        await this.paymentModel.create({
+          CheckoutRequestID: res.data.CheckoutRequestID,
+          ...response,
+          createPaymentDto,
+          UserId: user._id,
+          UserFirstName: user.firstName,
+          UserSecondName: user.secondName,
+          AgentStation: user.station,
+          ServiceDescription: 'Payment',
         });
+        throw new HttpException(res.data, 200);
+      });
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
+
+    // Store details in db
   }
 
   create(createPaymentDto: CreatePaymentDto) {
