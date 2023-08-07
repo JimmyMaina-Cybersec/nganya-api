@@ -1,1 +1,4 @@
-export class CreatePaymentDto {}
+export class CreatePaymentDto {
+  phone: string;
+  amount: number;
+}

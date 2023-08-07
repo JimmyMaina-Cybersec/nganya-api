@@ -16,16 +16,16 @@ import { JwtGuard } from 'src/auth/guards/jwt.guard';
 @Controller('payments')
 export class PaymentsController {
   constructor(private readonly paymentsService: PaymentsService) {}
-  
+
   @UseGuards(JwtGuard)
-  @Post('lipa-na-mpesa'){
-    
+  @Post('lipa-na-mpesa')
+  sendStk(@Body() CreatePaymentDto: CreatePaymentDto) {
+    return this.paymentsService.sendStk(CreatePaymentDto);
   }
-  @Post('mpesa-till-number'){
-    
-  }
-  @Post('cash-payment'){
-    
-  }
-  
+  // @Post('mpesa-till-number'){
+
+  // }
+  // @Post('cash-payment'){
+
+  // }
 }

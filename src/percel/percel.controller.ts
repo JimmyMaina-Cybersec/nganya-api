@@ -6,10 +6,6 @@ import {
   Patch,
   Param,
   UseGuards,
-<<<<<<< HEAD
-  Query,
-=======
->>>>>>> 9046e89215cf8879819f41b32191c356abe8f68f
 } from '@nestjs/common';
 import { PercelService } from './percel.service';
 import { CreatePercelDto } from './dto/create-percel.dto';
@@ -17,11 +13,9 @@ import { UpdatePercelDto } from './dto/update-percel.dto';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { JwtPayload } from 'src/types/jwt-payload';
-<<<<<<< HEAD
-=======
+
 import { Pagination } from '../common/decorators/paginate.decorator';
 import PaginationQueryType from 'src/types/paginationQuery';
->>>>>>> 9046e89215cf8879819f41b32191c356abe8f68f
 
 @UseGuards(JwtGuard)
 @Controller('percels')
