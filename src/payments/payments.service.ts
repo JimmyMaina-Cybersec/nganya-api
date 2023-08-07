@@ -1,4 +1,8 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { CreatePaymentDto } from './dto/create-payment.dto';
 import { UpdatePaymentDto } from './dto/update-payment.dto';
 import axios from 'axios';
@@ -6,6 +10,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Payments, PaymentsDocument } from './schema/payments.schema';
 import { Model } from 'mongoose';
 import { JwtPayload } from 'src/types/jwt-payload';
+import PaginationQueryType from 'src/types/paginationQuery';
 
 @Injectable()
 export class PaymentsService {
@@ -101,8 +106,62 @@ export class PaymentsService {
     return 'This action adds a new payment';
   }
 
-  findAll() {
-    return `This action returns all payments`;
+  async findAll(
+    user: JwtPayload,
+    transactionMethod: string,
+    transactionType: string,
+    agent: string,
+    station: string,
+    pagination: PaginationQueryType,
+  ): Promise<{
+    data: Payments[];
+    page: number;
+    resPerPage: number;
+    totalPages: number;
+  }> {
+    try {
+      if (
+        user.role !== 'Super User' &&
+        user.role !== 'general admin' &&
+        user.role !== 'admin' &&
+        user.role !== 'station manager'
+      ) {
+        throw new UnauthorizedException(
+          'You are not authorised to access this information',
+        );
+      }
+      const query: any = {};
+      if (transactionMethod) {
+        query.TransactionMethod = transactionMethod;
+      }
+      if (transactionType) {
+        query.transactionType;
+      }
+      if (agent) {
+        query.agent;
+      }
+      if (station) {
+        query.station;
+      }
+      const { page, resPerPage } = pagination;
+
+      const [payments, totalCount] = await Promise.all([
+        this.paymentModel
+          .find(query)
+          .skip(pagination.skip)
+          .limit(pagination.resPerPage),
+        this.paymentModel.countDocuments(query),
+      ]);
+
+      return {
+        data: payments,
+        page,
+        resPerPage,
+        totalPages: Math.ceil(totalCount / resPerPage),
+      };
+    } catch (err) {
+      throw new HttpException(err.status, err.message);
+    }
   }
 
   findOne(id: number) {
