@@ -1,11 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
-import { Payments } from './payments.schema';
+import { HydratedDocument, SchemaTypes, Types } from 'mongoose';
 
-export type MpesaTransactionsDocument = HydratedDocument<MpesaTransactions>;
+export type PushSTKDocument = HydratedDocument<PushSTK>;
 
 @Schema({ timestamps: true })
-export class MpesaTransactions extends Payments {
+export class PushSTK {
   @Prop({ required: true, type: String })
   MerchantRequestID: string;
 
@@ -24,6 +23,15 @@ export class MpesaTransactions extends Payments {
   @Prop({ default: null, type: Number })
   Amount: number;
 
+  @Prop({ required: true, type: SchemaTypes.ObjectId, ref: 'Station' })
+  AgentStationId: Types.ObjectId;
+
+  @Prop({ default: null, type: SchemaTypes.ObjectId, ref: 'User' })
+  ReceivingAgentId: Types.ObjectId;
+
+  @Prop({ default: null, type: SchemaTypes.ObjectId, ref: 'User' })
+  SaaccoId: Types.ObjectId;
+
   @Prop({ default: null, type: String })
   MpesaReceiptNumber: string;
 
@@ -33,5 +41,4 @@ export class MpesaTransactions extends Payments {
   @Prop({ default: null, type: String })
   PhoneNumber: string;
 }
-export const MpesaTransactionSchema =
-  SchemaFactory.createForClass(MpesaTransactions);
+export const MpesaTransactionSchema = SchemaFactory.createForClass(PushSTK);

@@ -14,8 +14,14 @@ export class Payments {
   @Prop({ type: Number, required: true })
   AmountPaid: number;
 
-  @Prop({ default: null, type: String })
-  MpesaTransaction: string;
+  @Prop({ default: null, type: SchemaTypes.ObjectId, ref: 'PushSTK' })
+  PushSTKId: string;
+
+  @Prop({ default: null, type: SchemaTypes.ObjectId, ref: 'LipaNaMpesa' })
+  LipaNaMpesaId: string;
+
+  @Prop({ default: null, type: SchemaTypes.ObjectId, ref: 'CashPayments' })
+  CashPaymentsId: string;
 
   @Prop({ default: null, type: SchemaTypes.ObjectId, ref: 'Ticket' })
   TicketId: Types.ObjectId;
@@ -23,11 +29,14 @@ export class Payments {
   @Prop({ default: null, type: SchemaTypes.ObjectId, ref: 'Customers' })
   CustomerId: Types.ObjectId;
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: 'User' })
+  @Prop({ required: true, type: SchemaTypes.ObjectId, ref: 'Station' })
+  AgentStationId: Types.ObjectId;
+
+  @Prop({ default: null, type: SchemaTypes.ObjectId, ref: 'User' })
   ReceivingAgentId: Types.ObjectId;
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: 'Station' })
-  AgentStation: Types.ObjectId;
+  @Prop({ default: null, type: SchemaTypes.ObjectId, ref: 'User' })
+  SaaccoId: Types.ObjectId;
 
   @Prop({ required: true, type: String })
   ServiceDescription: string;
