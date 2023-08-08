@@ -186,6 +186,35 @@ export class PaymentsService {
     }
   }
 
+  async mpesaCallback(mpesaResponse: any) {
+    try {
+      await this.pushSTKModel.findOneAndUpdate(
+        {
+          CheckoutRequestID: mpesaResponse.Body?.stkCallback.CheckoutRequestID,
+        },
+        {
+          CheckoutRequestID: mpesaResponse.Body?.stkCallback?.CheckoutRequestID,
+          MerchantRequestID: mpesaResponse.Body?.stkCallback?.MerchantRequestID,
+          ResultCode: mpesaResponse.Body?.stkCallback?.ResultCode,
+          ResultDesc: mpesaResponse.Body?.stkCallback?.ResultDesc,
+          MpesaReceiptNumber:
+            mpesaResponse.Body?.stkCallback?.CallbackMetadata?.Item[1]?.Value ??
+            null,
+          TransactionDate:
+            mpesaResponse.Body?.stkCallback?.CallbackMetadata?.Item[3]?.Value ??
+            null,
+          PhoneNumber:
+            mpesaResponse.Body?.stkCallback?.CallbackMetadata?.Item[4]?.Value ??
+            null,
+        },
+      );
+
+      throw new HttpException('Transaction saved successfully', HttpStatus.OK);
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
+  }
+
   async findAllLipaNaMpesa(user: JwtPayload, pagination: PaginationQueryType) {
     try {
       if (!user || !user.role) {
@@ -206,7 +235,7 @@ export class PaymentsService {
       }
 
       const payments = await this.lipaNaMpesaModel
-        .find(query)
+        .find({ ...query, status: 'pending' })
         .skip(pagination.skip)
         .limit(pagination.resPerPage)
         .select('-__v');
@@ -229,8 +258,22 @@ export class PaymentsService {
     return `This action returns a #${id} payment`;
   }
 
-  update(id: number, updatePaymentDto: UpdatePaymentDto) {
-    return `This action updates a #${id} payment`;
+  async update(user: JwtPayload, id: string) {
+    if (user.role != 'station manager' && user.role != 'station agent') {
+      throw new UnauthorizedException(
+        'You are not allowed to perform this action',
+      );
+    }
+
+    return await this.lipaNaMpesaModel
+      .findByIdAndUpdate(
+        id,
+        {
+          status: 'claimed',
+        },
+        { new: true },
+      )
+      .exec();
   }
 
   remove(id: number) {
