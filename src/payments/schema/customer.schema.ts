@@ -12,16 +12,16 @@ export class Customers {
   customerLastName: string;
 
   @Prop({ required: true, type: Number })
-  CustomePhoneNo: number;
+  customerPhoneNo: number;
 
   @Prop({ default: null, type: String })
-  CustomerNationalId: string;
+  customerNationalId: string;
 
   @Prop({ default: null, type: String })
-  CustomerAddress: string;
+  customerAddress: string;
 
   @Prop({ default: null, type: String })
-  CustomerEmail: string;
+  customerEmail: string;
 }
 
 export const CustomersSchema = SchemaFactory.createForClass(Customers);
