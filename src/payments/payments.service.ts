@@ -98,8 +98,6 @@ export class PaymentsService {
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
-
-    // Store details in db
   }
 
   create(createPaymentDto: CreatePaymentDto) {

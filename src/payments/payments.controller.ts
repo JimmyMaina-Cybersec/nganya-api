@@ -41,6 +41,14 @@ export class PaymentsController {
     );
   }
 
+  // @Get('lipa-na-mpesa')
+  // findAllLipaNaMpesa(
+  //   @CurrentUser() user: JwtPayload,
+  //   @Pagination() pagination: PaginationQueryType,
+  // ) {
+  //   return this.paymentsService.findAllLipaNaMpesa(user, pagination);
+  // }
+
   @Post('lipa-na-mpesa')
   sendStk(
     @CurrentUser() user: JwtPayload,
