@@ -5,23 +5,20 @@ export type PaymentsDocument = HydratedDocument<Payments>;
 
 @Schema({ timestamps: true })
 export class Payments {
-  @Prop({ type: String, required: true })
-  TransactionMethod: string;
-
   @Prop({ type: String, default: null })
   TransactionType: string;
 
-  @Prop({ type: Number, required: true })
-  AmountPaid: number;
-
   @Prop({ default: null, type: SchemaTypes.ObjectId, ref: 'PushSTK' })
-  PushSTKId: string;
+  PushSTKId: Types.ObjectId;
 
   @Prop({ default: null, type: SchemaTypes.ObjectId, ref: 'LipaNaMpesa' })
-  LipaNaMpesaId: string;
+  LipaNaMpesaId: Types.ObjectId;
 
   @Prop({ default: null, type: SchemaTypes.ObjectId, ref: 'CashPayments' })
-  CashPaymentsId: string;
+  CashPaymentsId: Types.ObjectId;
+
+  @Prop({ type: Number, required: true })
+  AmountPaid: number;
 
   @Prop({ default: null, type: SchemaTypes.ObjectId, ref: 'Ticket' })
   TicketId: Types.ObjectId;
@@ -36,7 +33,7 @@ export class Payments {
   ReceivingAgentId: Types.ObjectId;
 
   @Prop({ default: null, type: SchemaTypes.ObjectId, ref: 'User' })
-  SaaccoId: Types.ObjectId;
+  SaccoId: Types.ObjectId;
 
   @Prop({ required: true, type: String })
   ServiceDescription: string;
