@@ -12,6 +12,9 @@ export class LipaNaMpesa {
   ReceivingAgentId: Types.ObjectId;
 
   @Prop({ default: null, type: SchemaTypes.ObjectId, ref: 'User' })
-  SaaccoId: Types.ObjectId;
+  SaccoId: Types.ObjectId;
+
+  @Prop({ type: String, default: 'pending' })
+  status: string;
 }
 export const LipaNaMpesaDocument = SchemaFactory.createForClass(LipaNaMpesa);
