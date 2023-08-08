@@ -16,6 +16,7 @@ import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { JwtPayload } from 'src/types/jwt-payload';
 import { Pagination } from 'src/common/decorators/paginate.decorator';
 import PaginationQueryType from 'src/types/paginationQuery';
+import { TransactionType } from 'src/types/transactionMethod';
 
 @Controller('payments')
 export class PaymentsController {
@@ -25,29 +26,19 @@ export class PaymentsController {
   @Get()
   findAll(
     @CurrentUser() user: JwtPayload,
-    @Query('transactionMethod') transactionMethod: string,
-    @Query('transactionType') transactionType: string,
-    @Query('agent') agent: string,
-    @Query('station') station: string,
+    @Query('transactionType') transactionType: TransactionType,
     @Pagination() pagination: PaginationQueryType,
   ) {
-    return this.paymentsService.findAll(
-      user,
-      transactionMethod,
-      transactionType,
-      agent,
-      station,
-      pagination,
-    );
+    return this.paymentsService.findAll(user, transactionType, pagination);
   }
 
-  // @Get('lipa-na-mpesa')
-  // findAllLipaNaMpesa(
-  //   @CurrentUser() user: JwtPayload,
-  //   @Pagination() pagination: PaginationQueryType,
-  // ) {
-  //   return this.paymentsService.findAllLipaNaMpesa(user, pagination);
-  // }
+  @Get('lipa-na-mpesa')
+  findAllLipaNaMpesa(
+    @CurrentUser() user: JwtPayload,
+    @Pagination() pagination: PaginationQueryType,
+  ) {
+    return this.paymentsService.findAllLipaNaMpesa(user, pagination);
+  }
 
   @Post('lipa-na-mpesa')
   sendStk(
