@@ -19,7 +19,8 @@ import { HttpModule } from '@nestjs/axios';
         schema: LipaNaMpesaTransactionSchema,
       },
     ]),
+    HttpModule,
   ],
   providers: [LipaNaMpesaService, LipaNaMpesaGateway],
 })
-export class LipaNaMpesaModule {}
+export class LipaNaMpesaModule { }
