@@ -7,6 +7,7 @@ import {
   LipaNaMpesaTransactionSchema,
 } from './schema/lipa-na-mpesa.schema';
 import { LipaNaMpesaGateway } from './lipa-na-mpesa.gateway';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   controllers: [LipaNaMpesaController],
@@ -17,7 +18,8 @@ import { LipaNaMpesaGateway } from './lipa-na-mpesa.gateway';
         schema: LipaNaMpesaTransactionSchema,
       },
     ]),
+    HttpModule,
   ],
   providers: [LipaNaMpesaService, LipaNaMpesaGateway],
 })
-export class LipaNaMpesaModule {}
+export class LipaNaMpesaModule { }
