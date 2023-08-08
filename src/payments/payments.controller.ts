@@ -10,7 +10,6 @@ import {
 } from '@nestjs/common';
 import { PaymentsService } from './payments.service';
 import { CreatePaymentDto } from './dto/create-payment.dto';
-import { UpdatePaymentDto } from './dto/update-payment.dto';
 import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { JwtPayload } from 'src/types/jwt-payload';
@@ -46,6 +45,16 @@ export class PaymentsController {
     @Body() createPaymentDto: CreatePaymentDto,
   ) {
     return this.paymentsService.sendStk(user, createPaymentDto);
+  }
+
+  @Post('callback')
+  mpesaCallback(@Body() createLipaNaMpesaDto: any) {
+    return this.paymentsService.mpesaCallback(createLipaNaMpesaDto);
+  }
+
+  @Patch('confirm-lipa-na-mpesa/:id')
+  update(@CurrentUser() user: JwtPayload, @Param('id') id: string) {
+    return this.paymentsService.update(user, id);
   }
 
   // @Post('cash-payment'){
