@@ -6,10 +6,10 @@ export type PushSTKDocument = HydratedDocument<PushSTK>;
 @Schema({ timestamps: true })
 export class PushSTK {
   @Prop({ required: true, type: String })
-  MerchantRequestID: string;
+  CheckoutRequestID: string;
 
   @Prop({ required: true, type: String })
-  CheckoutRequestID: string;
+  MerchantRequestID: string;
 
   @Prop({ required: true, type: String })
   ResponseCode: string;
@@ -30,7 +30,7 @@ export class PushSTK {
   ReceivingAgentId: Types.ObjectId;
 
   @Prop({ default: null, type: SchemaTypes.ObjectId, ref: 'User' })
-  SaaccoId: Types.ObjectId;
+  SaccoId: Types.ObjectId;
 
   @Prop({ default: null, type: String })
   MpesaReceiptNumber: string;
@@ -41,4 +41,4 @@ export class PushSTK {
   @Prop({ default: null, type: String })
   PhoneNumber: string;
 }
-export const MpesaTransactionSchema = SchemaFactory.createForClass(PushSTK);
+export const PushSTKSchema = SchemaFactory.createForClass(PushSTK);
