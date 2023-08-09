@@ -12,15 +12,15 @@ import { TicketService } from './tickets.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { JwtPayload } from 'src/types/jwt-payload';
-import { JwtGuard } from 'src/auth/guards/jwt.guard';
+import { AuthGuard } from '@nestjs/passport';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import PaginationQueryType from '../types/paginationQuery';
 import { Pagination } from '../common/decorators/paginate.decorator';
 
-@UseGuards(JwtGuard)
+@UseGuards(AuthGuard('jwt'))
 @Controller('tickets')
 export class TicketController {
-  constructor(private readonly ticketService: TicketService) {}
+  constructor(private readonly ticketService: TicketService) { }
 
   @Post('book-ticket')
   create(

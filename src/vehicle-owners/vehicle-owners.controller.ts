@@ -11,16 +11,16 @@ import {
 import { VehicleOwnersService } from './vehicle-owners.service';
 import { CreateVehicleOwnerDto } from './dto/create-vehicle-owner.dto';
 import { UpdateVehicleOwnerDto } from './dto/update-vehicle-owner.dto';
-import { JwtGuard } from 'src/auth/guards/jwt.guard';
+import { AuthGuard } from '@nestjs/passport';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { JwtPayload } from 'src/types/jwt-payload';
 import { Pagination } from 'src/common/decorators/paginate.decorator';
 import PaginationQueryType from 'src/types/paginationQuery';
 
-@UseGuards(JwtGuard)
+@UseGuards(AuthGuard('jwt'))
 @Controller('vehicle-owners')
 export class VehicleOwnersController {
-  constructor(private readonly vehicleOwnersService: VehicleOwnersService) {}
+  constructor(private readonly vehicleOwnersService: VehicleOwnersService) { }
 
   @Post('add-vehicle-owner')
   addVehicleOwner(

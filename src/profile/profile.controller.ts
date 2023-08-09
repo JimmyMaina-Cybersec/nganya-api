@@ -2,13 +2,13 @@ import { Controller, Get, Body, Patch, UseGuards } from '@nestjs/common';
 import { ProfileService } from './profile.service';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import { JwtGuard } from 'src/auth/guards/jwt.guard';
+import { AuthGuard } from '@nestjs/passport';
 import { JwtPayload } from 'src/types/jwt-payload';
 
-@UseGuards(JwtGuard)
+@UseGuards(AuthGuard('jwt'))
 @Controller('profile')
 export class ProfileController {
-  constructor(private readonly profileService: ProfileService) {}
+  constructor(private readonly profileService: ProfileService) { }
 
   @Get()
   findOne(@CurrentUser() id: JwtPayload) {
