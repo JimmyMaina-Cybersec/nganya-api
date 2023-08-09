@@ -12,16 +12,16 @@ import { AvailabilitiesService } from './availabilities.service';
 import { CreateAvailabilityDto } from './dto/create-availability.dto';
 import { DeleteAvailabilitDto } from './dto/delete-Availability.dto';
 import { UpdateAvailabilityDto } from './dto/update-availability.dto';
-import { JwtGuard } from 'src/auth/guards/jwt.guard';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { JwtPayload } from 'src/types/jwt-payload';
 import { Pagination } from 'src/common/decorators/paginate.decorator';
 import PaginationQueryType from 'src/types/paginationQuery';
+import { AuthGuard } from '@nestjs/passport';
 
-@UseGuards(JwtGuard)
+@UseGuards(AuthGuard('jwt'))
 @Controller('availabilities')
 export class AvailabilitiesController {
-  constructor(private readonly availabilitiesService: AvailabilitiesService) {}
+  constructor(private readonly availabilitiesService: AvailabilitiesService) { }
 
   @Post('add-availability')
   create(

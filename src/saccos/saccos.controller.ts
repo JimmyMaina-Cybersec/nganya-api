@@ -11,16 +11,16 @@ import {
 import { SaccosService } from './saccos.service';
 import { CreateSaccoDto } from './dto/create-sacco.dto';
 import { UpdateSaccoDto } from './dto/update-sacco.dto';
-import { JwtGuard } from 'src/auth/guards/jwt.guard';
+import { AuthGuard } from '@nestjs/passport';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { JwtPayload } from 'src/types/jwt-payload';
 import { Pagination } from 'src/common/decorators/paginate.decorator';
 import PaginationQueryType from 'src/types/paginationQuery';
 
-@UseGuards(JwtGuard)
+@UseGuards(AuthGuard('jwt'))
 @Controller('saccos')
 export class SaccosController {
-  constructor(private readonly saccosService: SaccosService) {}
+  constructor(private readonly saccosService: SaccosService) { }
 
   @Post()
   create(

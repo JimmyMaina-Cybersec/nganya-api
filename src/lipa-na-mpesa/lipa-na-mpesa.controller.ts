@@ -11,16 +11,16 @@ import {
 import { LipaNaMpesaService } from './lipa-na-mpesa.service';
 import { LipaDto } from './dto/create-lipa-na-mpesa.dto';
 import { LipaNaMpesaCallbackDto } from './dto/lipa-na-mpesa-callback.dto';
-import { JwtGuard } from 'src/auth/guards/jwt.guard';
+import { AuthGuard } from '@nestjs/passport';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { JwtPayload } from 'src/types/jwt-payload';
 import { CheckBalanceDTO } from './dto/checkBalance.dto';
 
 @Controller('lipa-na-mpesa')
 export class LipaNaMpesaController {
-  constructor(private readonly lipaNaMpesaService: LipaNaMpesaService) {}
+  constructor(private readonly lipaNaMpesaService: LipaNaMpesaService) { }
 
-  @UseGuards(JwtGuard)
+  @UseGuards(AuthGuard('jwt'))
   @Post('send-stk')
   sendStk(
     @Body() createLipaNaMpesaDto: LipaDto,
