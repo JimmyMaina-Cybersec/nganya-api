@@ -12,6 +12,7 @@ import { HttpModule } from '@nestjs/axios';
 @Module({
   controllers: [LipaNaMpesaController],
   imports: [
+    HttpModule,
     MongooseModule.forFeature([
       {
         name: LipaNaMpesaTransaction.name,
