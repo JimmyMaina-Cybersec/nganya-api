@@ -6,7 +6,7 @@ import {
 } from '@nestjs/websockets';
 import { AvailabilitiesService } from './availabilities.service';
 import { UseGuards } from '@nestjs/common';
-import { JwtGuard } from 'src/auth/guards/jwt.guard';
+import { AuthGuard } from '@nestjs/passport';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { JwtPayload } from 'src/types/jwt-payload';
 import { InjectModel } from '@nestjs/mongoose';
@@ -19,7 +19,7 @@ import {
 } from './schema/availability.schema';
 import { Server } from 'socket.io';
 
-// @UseGuards(JwtGuard)
+// @UseGuards(AuthGuard('jwt'))
 @WebSocketGateway({ namespace: 'availabilities' })
 export class AvailabilitiesGateway {
   constructor(
@@ -31,7 +31,7 @@ export class AvailabilitiesGateway {
     private readonly stationModel: Model<StationDocument>,
     @InjectModel(Vehicle.name)
     private readonly vehicleModel: Model<VehicleDocument>,
-  ) {}
+  ) { }
 
   @WebSocketServer()
   server: Server;

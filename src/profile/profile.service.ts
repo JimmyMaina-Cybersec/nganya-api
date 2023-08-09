@@ -1,11 +1,9 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
-import { CreateProfileDto } from './dto/create-profile.dto';
 import { UpdateProfileDto } from './dto/update-profile.dto';
 import { JwtPayload } from 'src/types/jwt-payload';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from 'src/users/schema/user.schema';
-import { ObjectId } from 'mongodb';
 
 @Injectable()
 export class ProfileService {
@@ -16,24 +14,25 @@ export class ProfileService {
 
   async myProfile(user: JwtPayload) {
     try {
-      if (user.station) {
-        return await this.userModel
-          .findById(user._id)
-          .populate('sacco', '-__v')
-          .populate('station', '-__v')
-          .select('-__v');
-      }
-      if (user.vehicle) {
-        return await this.userModel
-          .findById(user._id)
-          .populate('sacco', '-__v')
-          .populate('vehicle', '-__v')
-          .select('-__v');
-      }
-      return await this.userModel
-        .findById(user._id)
-        .populate('sacco', '-__v')
-        .select('-__v');
+      // if (user.station) {
+      //   return await this.userModel
+      //     .findById(user._id)
+      //     .populate('sacco', '-__v')
+      //     .populate('station', '-__v')
+      //     .select('-__v');
+      // }
+      // if (user.vehicle) {
+      //   return await this.userModel
+      //     .findById(user._id)
+      //     .populate('sacco', '-__v')
+      //     .populate('vehicle', '-__v')
+      //     .select('-__v');
+      // }
+      // return await this.userModel
+      //   .findById(user._id)
+      //   .populate('sacco', '-__v')
+      //   .select('-__v');
+      return user;
     } catch (error) {
       throw new HttpException(error, error.status);
     }

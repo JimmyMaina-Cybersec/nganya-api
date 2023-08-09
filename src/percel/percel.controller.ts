@@ -10,17 +10,17 @@ import {
 import { PercelService } from './percel.service';
 import { CreatePercelDto } from './dto/create-percel.dto';
 import { UpdatePercelDto } from './dto/update-percel.dto';
-import { JwtGuard } from 'src/auth/guards/jwt.guard';
+import { AuthGuard } from '@nestjs/passport';
 import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { JwtPayload } from 'src/types/jwt-payload';
 
 import { Pagination } from '../common/decorators/paginate.decorator';
 import PaginationQueryType from 'src/types/paginationQuery';
 
-@UseGuards(JwtGuard)
+@UseGuards(AuthGuard('jwt'))
 @Controller('percels')
 export class PercelController {
-  constructor(private readonly percelService: PercelService) {}
+  constructor(private readonly percelService: PercelService) { }
 
   @Post('send')
   sendPercel(

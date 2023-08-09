@@ -1,22 +1,39 @@
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
+import * as dotenv from 'dotenv';
+import { passportJwtSecret } from 'jwks-rsa';
+import { ConfigService } from '@nestjs/config';
+
+dotenv.config();
 
 @Injectable()
-export class JwtStrategy extends PassportStrategy(
-  Strategy,
-  'jwt',
-) {
-  constructor(private configService: ConfigService) {
+export class JwtStrategy extends PassportStrategy(Strategy) {
+  private AUTH0_AUDIENCE: string;
+  private AUTH0_DOMAIN: string;
+
+
+  constructor(private congurationService: ConfigService) {
+
+
     super({
-      jwtFromRequest:
-        ExtractJwt.fromAuthHeaderAsBearerToken(),
-      secretOrKey: configService.get('ACCESS_TOKEN_SECRET'),
+      secretOrKeyProvider: passportJwtSecret({
+        cache: true,
+        rateLimit: true,
+        jwksRequestsPerMinute: 5,
+        jwksUri: `${congurationService.get<string>('AUTH0_DOMAIN')}.well-known/jwks.json`,
+      }),
+
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      audience: congurationService.get<string>('AUTH0_AUDIENCE'),
+      issuer: `${congurationService.get<string>('AUTH0_ISSUER_URL')}`,
+      algorithms: ['RS256'],
     });
+
+
   }
 
-  validate(payload: any) {     
+  validate(payload: unknown): unknown {
     return payload;
   }
 }
