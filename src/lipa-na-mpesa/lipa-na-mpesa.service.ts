@@ -267,7 +267,7 @@ export class LipaNaMpesaService {
         url: this.authorisationEndpoint,
         headers: {
           Authorization:
-            'Basic cGVFOHc2bUt6WTNBWEFGTWZ5ank1NjhUUnJGZ2I2MDI6NG1jc0Z3cFR1VTI0d1JwbQ==',
+            'Basic YlhBVGFVbDlOc1pxbndNQW9RVFpKMDhVc25iYVRJTzY6MEZOUWhvR0FoczA4TDJ0ZA==',
         },
       });
       return response.data.access_token;

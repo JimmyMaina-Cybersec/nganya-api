@@ -21,7 +21,7 @@ import { NotificationsModule } from './notifications/notifications.module';
 import { PresenceModule } from './presence/presence.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { SmsModule } from './sms/sms.module';
-import { TestAuthModule } from './test-auth/test-auth.module';
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
   imports: [
@@ -52,7 +52,7 @@ import { TestAuthModule } from './test-auth/test-auth.module';
     NotificationsModule,
     PresenceModule,
     SmsModule,
-    TestAuthModule,
+    PaymentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
