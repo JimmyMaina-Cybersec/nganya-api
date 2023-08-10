@@ -17,4 +17,5 @@ export class LipaNaMpesa {
   @Prop({ type: String, default: 'pending' })
   status: string;
 }
-export const LipaNaMpesaDocument = SchemaFactory.createForClass(LipaNaMpesa);
+
+export const LipaNaMpesaSchema = SchemaFactory.createForClass(LipaNaMpesa);

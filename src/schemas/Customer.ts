@@ -26,3 +26,5 @@ export class Customer {
   @Prop()
   upadatedAt: Date;
 }
+
+// export const CustomerSchema = SchemaFactory.createForClass(Customer);

@@ -1,7 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  SetMetadata,
+  UseGuards,
+} from '@nestjs/common';
 import { TestAuthService } from './test-auth.service';
 import { CreateTestAuthDto } from './dto/create-test-auth.dto';
 import { UpdateTestAuthDto } from './dto/update-test-auth.dto';
+import { AuthorizationGuard } from '../auth/guards/authorization-guard.service';
+import { PermissionsGuard } from '../auth/guards/permissions/permissions.guard';
 
 @Controller('test-auth')
 export class TestAuthController {
@@ -12,6 +24,8 @@ export class TestAuthController {
     return this.testAuthService.create(createTestAuthDto);
   }
 
+  @UseGuards(AuthorizationGuard, PermissionsGuard)
+  @SetMetadata('permissions', ['read:test-auth'])
   @Get()
   findAll() {
     return this.testAuthService.findAll();
@@ -23,7 +37,10 @@ export class TestAuthController {
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTestAuthDto: UpdateTestAuthDto) {
+  update(
+    @Param('id') id: string,
+    @Body() updateTestAuthDto: UpdateTestAuthDto,
+  ) {
     return this.testAuthService.update(+id, updateTestAuthDto);
   }
 
