@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsPhoneNumber, IsString } from 'class-validator';
 
 export class CreateSaccoDto {
   @IsNotEmpty()
@@ -10,14 +10,14 @@ export class CreateSaccoDto {
   address: string;
 
   @IsNotEmpty()
-  @IsString()
+  @IsPhoneNumber()
   phone: string;
 
   @IsNotEmpty()
-  @IsString()
+  @IsEmail()
   email: string;
 
   @IsNotEmpty()
   @IsString()
-  logo?: string;
+  logo: string;
 }
