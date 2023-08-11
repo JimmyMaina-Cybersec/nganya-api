@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateVehicleDto } from './dto/create-vehicle.dto';
 import { UpdateVehicleDto } from './dto/update-vehicle.dto';
-import { JwtPayload } from 'src/types/jwt-payload';
+import { OldJwtPayload } from 'src/types/jwt-payload';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Vehicle, VehicleDocument } from './schema/vehicle.schema';
@@ -16,7 +16,7 @@ export class VehiclesService {
     @InjectModel(Vehicle.name)
     private vehicleModel: Model<VehicleDocument>,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
-  ) {}
+  ) { }
 
   async checkVehicleRegNo(regNo: string) {
     const exist = await this.vehicleModel.exists({ plateNo: regNo });
@@ -28,7 +28,7 @@ export class VehiclesService {
 
   async addVehicle(
     createVehicleDto: CreateVehicleDto,
-    user: JwtPayload,
+    user: OldJwtPayload,
     vehicleOwner: string,
   ) {
     try {
@@ -74,7 +74,7 @@ export class VehiclesService {
     }
   }
 
-  async findAll(user: JwtPayload, pagination) {
+  async findAll(user: OldJwtPayload, pagination) {
     try {
       const query: VehicleQuery = {};
       if (
@@ -114,7 +114,7 @@ export class VehiclesService {
     }
   }
 
-  async getOwnerVehicles(user: JwtPayload, vehicleOwnerID, pagination) {
+  async getOwnerVehicles(user: OldJwtPayload, vehicleOwnerID, pagination) {
     try {
       const query: VehicleQuery = {};
       if (user.role === 'Super User') {
@@ -149,7 +149,7 @@ export class VehiclesService {
     }
   }
 
-  async findOne(id: string, user: JwtPayload) {
+  async findOne(id: string, user: OldJwtPayload) {
     if (user.role === 'Super User') {
       return this.vehicleModel.findById(id);
     }
@@ -173,7 +173,7 @@ export class VehiclesService {
     );
   }
 
-  async addToStation(user: JwtPayload, query: { plateNo: string }) {
+  async addToStation(user: OldJwtPayload, query: { plateNo: string }) {
     try {
       if (
         user.role === 'station manager' ||
@@ -226,7 +226,7 @@ export class VehiclesService {
     }
   }
 
-  async hasDriver(user: JwtPayload, vehicleID: string) {
+  async hasDriver(user: OldJwtPayload, vehicleID: string) {
     try {
       const exists = await this.userModel.exists({
         vehicle: vehicleID,
@@ -241,7 +241,7 @@ export class VehiclesService {
     }
   }
 
-  async assignDriver(user: JwtPayload, updateDriverDto: UpdateDriverDto) {
+  async assignDriver(user: OldJwtPayload, updateDriverDto: UpdateDriverDto) {
     if (await this.hasDriver(user, updateDriverDto.vehicleID)) {
       throw new HttpException(
         'You are already assigned to this vehicle',
@@ -262,7 +262,7 @@ export class VehiclesService {
 
       if (
         (user.role === 'admin' || user.role === 'general admin',
-        user.role === 'Super User')
+          user.role === 'Super User')
       ) {
         await this.userModel.findOneAndUpdate(
           {
@@ -285,7 +285,7 @@ export class VehiclesService {
     }
   }
 
-  async getDriver(user: JwtPayload, vehicleID: string) {
+  async getDriver(user: OldJwtPayload, vehicleID: string) {
     try {
       if (user.role === 'Super User') {
         return await this.userModel
@@ -312,12 +312,12 @@ export class VehiclesService {
   updateVehicle(
     id: string,
     updateVehicleDto: UpdateVehicleDto,
-    user: JwtPayload,
+    user: OldJwtPayload,
   ) {
     return `This action updates a #${id} vehicle`;
   }
 
-  async deleteVehicle(id: string, user: JwtPayload) {
+  async deleteVehicle(id: string, user: OldJwtPayload) {
     try {
       if (user.role === 'Super User') {
         await this.vehicleModel.findByIdAndDelete(id);

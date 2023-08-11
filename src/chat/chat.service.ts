@@ -1,7 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { CreateChatDto } from './dto/create-chat.dto';
 import { UpdateChatDto } from './dto/update-chat.dto';
-import { JwtPayload } from 'src/types/jwt-payload';
+import { OldJwtPayload } from 'src/types/jwt-payload';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Chat, ChatDocument } from './schema/chat.schema';
@@ -11,8 +11,8 @@ export class ChatService {
   constructor(
     @InjectModel(Chat.name)
     private readonly chatModel: Model<ChatDocument>,
-  ) {}
-  sendMessage(chat: CreateChatDto, user: JwtPayload) {
+  ) { }
+  sendMessage(chat: CreateChatDto, user: OldJwtPayload) {
     const newChat = new this.chatModel({
       message: chat.message,
       file: chat.file,
@@ -26,7 +26,7 @@ export class ChatService {
     return 'This action adds a new chat';
   }
 
-  userMessages(user: JwtPayload) {
+  userMessages(user: OldJwtPayload) {
     try {
       return this.chatModel
         .find({ sacco: user.sacco })

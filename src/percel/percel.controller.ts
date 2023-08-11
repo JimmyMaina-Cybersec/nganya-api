@@ -11,8 +11,8 @@ import { PercelService } from './percel.service';
 import { CreatePercelDto } from './dto/create-percel.dto';
 import { UpdatePercelDto } from './dto/update-percel.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import { JwtPayload } from 'src/types/jwt-payload';
+import { OldCurrentUser } from 'src/common/decorators/current-user.decorator';
+import { OldJwtPayload } from 'src/types/jwt-payload';
 
 import { Pagination } from '../common/decorators/paginate.decorator';
 import PaginationQueryType from 'src/types/paginationQuery';
@@ -25,14 +25,14 @@ export class PercelController {
   @Post('send')
   sendPercel(
     @Body() createPercelDto: CreatePercelDto,
-    @CurrentUser() agent: JwtPayload,
+    @OldCurrentUser() agent: OldJwtPayload,
   ) {
     return this.percelService.sendPercel(createPercelDto, agent);
   }
 
   @Get()
   findAll(
-    @CurrentUser() user: JwtPayload,
+    @OldCurrentUser() user: OldJwtPayload,
     @Pagination() pagination: PaginationQueryType,
   ) {
     return this.percelService.findAll(user, pagination);
@@ -42,7 +42,7 @@ export class PercelController {
   update(
     @Param('id') id: string,
     @Body() updatePercelDto: UpdatePercelDto,
-    @CurrentUser() user: JwtPayload,
+    @OldCurrentUser() user: OldJwtPayload,
   ) {
     return this.percelService.update(user, id, updatePercelDto);
   }

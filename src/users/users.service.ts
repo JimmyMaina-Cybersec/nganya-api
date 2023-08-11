@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { JwtPayload } from 'src/types/jwt-payload';
+import { OldJwtPayload } from 'src/types/jwt-payload';
 import { CreateUserDto } from './dto/create-user.dto';
 import { FindStationAgentsDto } from './dto/find-station-agents.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -14,63 +14,36 @@ import { AuthenticationClient, ManagementClient } from 'auth0';
 
 @Injectable()
 export class UsersService {
-  // private readonly AUTH0_CLIENT_SECRET: string;
-  // private readonly AUTH0_DOMAIN: string;
-  // private readonly AUTH0_CLIENT_ID: string;
-
   constructor(
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
     private configurationService: ConfigService,
   ) {
-    // this.AUTH0_CLIENT_SECRET = configurationService.get<string>(
-    //   'AUTH0_CLIENT_SECRET',
-    // );
-    // this.AUTH0_DOMAIN = configurationService.get<string>('AUTH0_DOMAIN');
-    // this.AUTH0_CLIENT_ID = configurationService.get<string>('AUTH0_CLIENT_ID');
+
   }
 
   async createUser() {
     let accessToken = null;
-
-    const authClient = new AuthenticationClient({
-      domain: 'nganya.us.auth0.com',
-      clientId: 'amoI9KxWjNwUOyXDBwgSha8A0kiSjRca',
-      clientSecret: "WnzDbP2o0oMFWA1KLKFdzheyyFAK4bFU0fawBstBOwKNhY7ryTNIY8uybPQ1IPPy",
-    });
-    authClient.clientCredentialsGrant(
-      {
-        audience: 'https://nganya.us.auth0.com/api/v2/',
-        scope: 'create:user',
-
-      },
-      function (err, response) {
-        if (err) {
-          console.log('error Message:', err);
-          throw new HttpException(err.message, HttpStatus.FORBIDDEN);
-        }
-        accessToken = response.access_token;
-        console.log(response.access_token);
-      },
-    );
-
-    console.log(accessToken);
+    const client_id = 'sy6vl7Klm5UxsoMvKHlBmF4L2dtqTcp3';
+    const client_secret = 'CBGF9Ab9iCoaO6pxrVzzxglop6A8JteUI_EBFWr3iIkG0mPDjro8UucWnTqqLHOO';
 
 
 
     const managementClient = new ManagementClient({
       domain: 'nganya.us.auth0.com',
-      clientId: 'amoI9KxWjNwUOyXDBwgSha8A0kiSjRca',
-      clientSecret: 'WnzDbP2o0oMFWA1KLKFdzheyyFAK4bFU0fawBstBOwKNhY7ryTNIY8uybPQ1IPPy',
-      scope: 'create:user',
-
-      token: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Il9mblNFWktFZEsyUVVOeERNSEo4NiJ9.eyJpc3MiOiJodHRwczovL25nYW55YS51cy5hdXRoMC5jb20vIiwic3ViIjoiYW1vSTlLeFdqTndVT3lYREJ3Z1NoYThBMGtpU2pSY2FAY2xpZW50cyIsImF1ZCI6Imh0dHBzOi8vYXBpLm5nYW55YWFwcC5jb20vIiwiaWF0IjoxNjkxNzQ4OTI4LCJleHAiOjE2OTE4MzUzMjgsImF6cCI6ImFtb0k5S3hXak53VU95WERCd2dTaGE4QTBraVNqUmNhIiwic2NvcGUiOiJjcmVhdGU6dXNlciIsImd0eSI6ImNsaWVudC1jcmVkZW50aWFscyIsInBlcm1pc3Npb25zIjpbImNyZWF0ZTp1c2VyIl19.TDmKPmdIhFKBiOlrIhRL-AsxvNmbc1F_KCtzh6a8CBQm5r3z4hSfFqcWN6AejNE2iORFDrpU_GuFmAXFBlGUJrVjOTJuMqBq8Fnjc5TnUyZq2yc5md_6ueza_a_BkpX948gSiVo_EG6uDqjYPyqIkmI5uHUGmh56W0XZJ5uo6efOUzgMRyIrGmdi3JKXysv4tXk0ceUqKtREkRYQ3Hie0SpK9RC6lYh_jYnYJcsod9sOXzCTHcUWDcSVvw08SlDoo5n40-J5dpBq3KMXur2oBUjSYUhuzZ7pX4GDd6qlNdaPwHBYU4BcKvAhFxFkJLzYIkEbYoEL1po8PPgP2o7JCA',
+      clientId: 'sy6vl7Klm5UxsoMvKHlBmF4L2dtqTcp3',
+      clientSecret: 'CBGF9Ab9iCoaO6pxrVzzxglop6A8JteUI_EBFWr3iIkG0mPDjro8UucWnTqqLHOO',
+      scope: 'create:users',
     });
 
     try {
+      managementClient.assignRolestoUser({
+        id: 'auth0|5f9f6b3b1c9d440000d1b3a0',
+      }, {
+        roles: ['rol_5f9f6b3b1c9d440000d1b3a0']
+      })
       return await managementClient.createUser({
         email: 'wekesa350@gmail.com',
-        phone_number: '07123456787',
         user_metadata: {
           sacco: '5f9f6b3b1c9d440000d1b3a0',
           station: '5f9f6b3b1c9d440000d1b3a0',
@@ -79,7 +52,8 @@ export class UsersService {
         app_metadata: {},
         given_name: 'Paul',
         family_name: 'Test',
-        connection: 'none',
+        connection: 'Username-Password-Authentication',
+        password: 'Wekesa@2023',
       });
     } catch (error) {
       console.log(error);
@@ -93,7 +67,7 @@ export class UsersService {
 
   async assingManager(
     queryData: { station: string; userId: string },
-    currentUser: JwtPayload,
+    currentUser: OldJwtPayload,
   ) {
     try {
       const user = await this.userModel.findById(queryData.userId);
@@ -155,7 +129,7 @@ export class UsersService {
    * @param user
    * @returns Object
    */
-  async addUser(createUserDto: CreateUserDto, user: JwtPayload) {
+  async addUser(createUserDto: CreateUserDto, user: OldJwtPayload) {
     try {
       if (await this.checkIfUserExists(createUserDto.idNo)) {
         throw new HttpException('User already exists', HttpStatus.CONFLICT);
@@ -204,7 +178,7 @@ export class UsersService {
    * @param currentUser
    * @returns Array<UserDocument>
    */
-  async findAllUsers(currentUser: JwtPayload, pagination: PaginationQueryType) {
+  async findAllUsers(currentUser: OldJwtPayload, pagination: PaginationQueryType) {
     try {
       const query: UsersQuery = {};
       switch (currentUser.role) {
@@ -249,7 +223,7 @@ export class UsersService {
    * @param user
    * @returns Object<UserDocument>
    * */
-  async findUser(idNo: string, user: JwtPayload) {
+  async findUser(idNo: string, user: OldJwtPayload) {
     switch (user.role) {
       case 'Super User':
         return this.userModel
@@ -294,7 +268,7 @@ export class UsersService {
    * @param user
    * @returns Object<UserDocument>
    * */
-  async findUserById(idNo: { idNo: string }, user: JwtPayload) {
+  async findUserById(idNo: { idNo: string }, user: OldJwtPayload) {
     switch (user.role) {
       case 'Super User':
         return this.userModel
@@ -345,7 +319,7 @@ export class UsersService {
    *
    * */
 
-  async updateUser(id: string, updateUserDto: UpdateUserDto, user: JwtPayload) {
+  async updateUser(id: string, updateUserDto: UpdateUserDto, user: OldJwtPayload) {
     if (
       user.role === 'Super User' ||
       user.role === 'admin' ||
@@ -396,7 +370,7 @@ export class UsersService {
    *
    */
 
-  async deleteUser(id: string, user: JwtPayload) {
+  async deleteUser(id: string, user: OldJwtPayload) {
     try {
       const deletingUser = await this.userModel.findById(id);
       if (deletingUser.role === 'Super User') {
@@ -448,7 +422,7 @@ export class UsersService {
     }
   }
 
-  async findAgentsInStation(user: JwtPayload, station: FindStationAgentsDto) {
+  async findAgentsInStation(user: OldJwtPayload, station: FindStationAgentsDto) {
     try {
       if (
         user.role === 'admin' ||
@@ -484,7 +458,7 @@ export class UsersService {
     }
   }
 
-  async findStationManager(user: JwtPayload, station: { station: string }) {
+  async findStationManager(user: OldJwtPayload, station: { station: string }) {
     try {
       return await this.userModel
         .findOne({

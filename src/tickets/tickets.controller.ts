@@ -11,9 +11,9 @@ import {
 import { TicketService } from './tickets.service';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
-import { JwtPayload } from 'src/types/jwt-payload';
+import { OldJwtPayload } from 'src/types/jwt-payload';
 import { AuthGuard } from '@nestjs/passport';
-import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { OldCurrentUser } from 'src/common/decorators/current-user.decorator';
 import PaginationQueryType from '../types/paginationQuery';
 import { Pagination } from '../common/decorators/paginate.decorator';
 
@@ -25,14 +25,14 @@ export class TicketController {
   @Post('book-ticket')
   create(
     @Body() createTicketDto: CreateTicketDto,
-    @CurrentUser() user: JwtPayload,
+    @OldCurrentUser() user: OldJwtPayload,
   ) {
     return this.ticketService.book(createTicketDto, user);
   }
 
   @Get()
   findAll(
-    @CurrentUser() user: JwtPayload,
+    @OldCurrentUser() user: OldJwtPayload,
     @Pagination() pagination: PaginationQueryType,
   ) {
     return this.ticketService.findAll(user, pagination);
@@ -47,13 +47,13 @@ export class TicketController {
   update(
     @Param('id') id: string,
     @Body() updateTicketDto: UpdateTicketDto,
-    @CurrentUser() user: JwtPayload,
+    @OldCurrentUser() user: OldJwtPayload,
   ) {
     return this.ticketService.update(id, updateTicketDto, user);
   }
 
   @Delete('delete-ticket/:id')
-  remove(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+  remove(@Param('id') id: string, @OldCurrentUser() user: OldJwtPayload) {
     return this.ticketService.remove(id, user);
   }
 }

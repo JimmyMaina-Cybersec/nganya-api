@@ -4,7 +4,7 @@ import { UpdateStationDto } from './dto/update-station.dto';
 import { Station, StationDocument } from './schema/station.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { JwtPayload } from 'src/types/jwt-payload';
+import { OldJwtPayload } from 'src/types/jwt-payload';
 import { StationQuery } from 'src/types/stationQuery';
 
 @Injectable()
@@ -12,9 +12,9 @@ export class StationsService {
   constructor(
     @InjectModel(Station.name)
     private readonly stationModel: Model<StationDocument>,
-  ) {}
+  ) { }
 
-  findOneStation(user: JwtPayload, id: string) {
+  findOneStation(user: OldJwtPayload, id: string) {
     switch (user.role) {
       case 'Super User':
         return this.stationModel.findById(id);
@@ -39,7 +39,7 @@ export class StationsService {
     }
   }
 
-  async createSacco(createStationDto: CreateStationDto, user: JwtPayload) {
+  async createSacco(createStationDto: CreateStationDto, user: OldJwtPayload) {
     if (
       user.role == 'Super User' ||
       user.role === 'admin' ||
@@ -68,7 +68,7 @@ export class StationsService {
    * @returns Promise<Station[]>
    *  */
 
-  async findAll(user: JwtPayload, pagination) {
+  async findAll(user: OldJwtPayload, pagination) {
     try {
       const query: StationQuery = {};
       let stationQuery: any = this.stationModel
@@ -136,7 +136,7 @@ export class StationsService {
    *
    * */
   async updateStation(
-    user: JwtPayload,
+    user: OldJwtPayload,
     updateStationDto: UpdateStationDto,
     stationID: string,
   ) {
@@ -164,7 +164,7 @@ export class StationsService {
     }
   }
 
-  async remove(id: string, user: JwtPayload) {
+  async remove(id: string, user: OldJwtPayload) {
     try {
       if (user.role === 'Super User') {
         await this.stationModel.findByIdAndDelete(id);

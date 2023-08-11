@@ -12,8 +12,8 @@ import { LipaNaMpesaService } from './lipa-na-mpesa.service';
 import { LipaDto } from './dto/create-lipa-na-mpesa.dto';
 import { LipaNaMpesaCallbackDto } from './dto/lipa-na-mpesa-callback.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import { JwtPayload } from 'src/types/jwt-payload';
+import { OldCurrentUser } from 'src/common/decorators/current-user.decorator';
+import { OldJwtPayload } from 'src/types/jwt-payload';
 import { CheckBalanceDTO } from './dto/checkBalance.dto';
 
 @Controller('lipa-na-mpesa')
@@ -24,7 +24,7 @@ export class LipaNaMpesaController {
   @Post('send-stk')
   sendStk(
     @Body() createLipaNaMpesaDto: LipaDto,
-    @CurrentUser() user: JwtPayload,
+    @OldCurrentUser() user: OldJwtPayload,
   ) {
     return this.lipaNaMpesaService.sendStk(createLipaNaMpesaDto, user);
   }
@@ -36,7 +36,7 @@ export class LipaNaMpesaController {
 
   @Post('check-balance')
   checkBalance(
-    @CurrentUser() user: JwtPayload,
+    @OldCurrentUser() user: OldJwtPayload,
     @Body() checkBalanceDTO: CheckBalanceDTO,
   ) {
     return this.lipaNaMpesaService.getAccountBalance(user, checkBalanceDTO);

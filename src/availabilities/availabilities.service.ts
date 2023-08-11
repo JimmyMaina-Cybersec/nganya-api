@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { CreateAvailabilityDto } from './dto/create-availability.dto';
 import { UpdateAvailabilityDto } from './dto/update-availability.dto';
-import { JwtPayload } from 'src/types/jwt-payload';
+import { OldJwtPayload } from 'src/types/jwt-payload';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import {
@@ -27,9 +27,9 @@ export class AvailabilitiesService {
     private readonly stationModel: Model<StationDocument>,
     @InjectModel(Vehicle.name)
     private readonly vehicleModel: Model<VehicleDocument>,
-  ) {}
+  ) { }
 
-  async create(createAvailabilityDto: CreateAvailabilityDto, user: JwtPayload) {
+  async create(createAvailabilityDto: CreateAvailabilityDto, user: OldJwtPayload) {
     try {
       if (
         user.role === 'station manager' ||
@@ -53,7 +53,7 @@ export class AvailabilitiesService {
     }
   }
 
-  async findAll(user: JwtPayload, pagination: PaginationQueryType) {
+  async findAll(user: OldJwtPayload, pagination: PaginationQueryType) {
     try {
       if (!user || !user.role) {
         throw new UnauthorizedException(
@@ -103,14 +103,14 @@ export class AvailabilitiesService {
     }
   }
 
-  async findOne(id: string, user: JwtPayload) {
+  async findOne(id: string, user: OldJwtPayload) {
     return await this.availabilityModel.findById(id);
   }
 
   async update(
     id: string,
     updateAvailabilityDto: UpdateAvailabilityDto,
-    user: JwtPayload,
+    user: OldJwtPayload,
   ) {
     try {
       if (
@@ -141,7 +141,7 @@ export class AvailabilitiesService {
     }
   }
 
-  async deleteAvalablity(id: string, user: JwtPayload) {
+  async deleteAvalablity(id: string, user: OldJwtPayload) {
     try {
       if (user.role === 'admin' || user.role === 'general admin') {
         await this.availabilityModel.findByIdAndDelete(id);

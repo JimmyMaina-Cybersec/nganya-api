@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateRouteDto } from './dto/create-route.dto';
 import { UpdateRouteDto } from './dto/update-route.dto';
-import { JwtPayload } from 'src/types/jwt-payload';
+import { OldJwtPayload } from 'src/types/jwt-payload';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Route, RouteDocument } from './schema/route.schema';
@@ -12,9 +12,9 @@ export class RoutesService {
   constructor(
     @InjectModel(Route.name)
     private readonly routeModel: Model<RouteDocument>,
-  ) {}
+  ) { }
 
-  create(createRouteDto: CreateRouteDto, user: JwtPayload) {
+  create(createRouteDto: CreateRouteDto, user: OldJwtPayload) {
     try {
       if (
         user.role === 'Super User' ||
@@ -44,7 +44,7 @@ export class RoutesService {
     }
   }
 
-  findAll(query: any, user: JwtPayload) {
+  findAll(query: any, user: OldJwtPayload) {
     try {
       if (user.role === 'admin' || user.role === 'general admin') {
         return this.routeModel.find({
@@ -68,7 +68,7 @@ export class RoutesService {
     return `This action returns a #${id} route`;
   }
 
-  update(id: string, updateRouteDto: UpdateRouteDto, user: JwtPayload) {
+  update(id: string, updateRouteDto: UpdateRouteDto, user: OldJwtPayload) {
     try {
       if (
         user.role === 'Super User' ||
@@ -103,7 +103,7 @@ export class RoutesService {
     }
   }
 
-  remove(_id: string, user: JwtPayload): Promise<DeleteResult> {
+  remove(_id: string, user: OldJwtPayload): Promise<DeleteResult> {
     try {
       if (
         user.role === 'Super User' ||

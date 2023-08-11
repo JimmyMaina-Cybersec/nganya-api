@@ -1,6 +1,6 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { UpdateProfileDto } from './dto/update-profile.dto';
-import { JwtPayload } from 'src/types/jwt-payload';
+import { OldJwtPayload } from 'src/types/jwt-payload';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from 'src/users/schema/user.schema';
@@ -10,9 +10,9 @@ export class ProfileService {
   constructor(
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
-  ) {}
+  ) { }
 
-  async myProfile(user: JwtPayload) {
+  async myProfile(user: OldJwtPayload) {
     try {
       // if (user.station) {
       //   return await this.userModel
@@ -38,7 +38,7 @@ export class ProfileService {
     }
   }
 
-  async update(updateProfileDto: UpdateProfileDto, user: JwtPayload) {
+  async update(updateProfileDto: UpdateProfileDto, user: OldJwtPayload) {
     try {
       await this.userModel.findByIdAndUpdate(user._id, { ...updateProfileDto });
       throw new HttpException('Profile updated successfully', HttpStatus.OK);

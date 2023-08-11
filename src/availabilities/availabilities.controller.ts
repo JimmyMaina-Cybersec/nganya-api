@@ -12,8 +12,8 @@ import { AvailabilitiesService } from './availabilities.service';
 import { CreateAvailabilityDto } from './dto/create-availability.dto';
 import { DeleteAvailabilitDto } from './dto/delete-Availability.dto';
 import { UpdateAvailabilityDto } from './dto/update-availability.dto';
-import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import { JwtPayload } from 'src/types/jwt-payload';
+import { OldCurrentUser } from 'src/common/decorators/current-user.decorator';
+import { OldJwtPayload } from 'src/types/jwt-payload';
 import { Pagination } from 'src/common/decorators/paginate.decorator';
 import PaginationQueryType from 'src/types/paginationQuery';
 import { AuthGuard } from '@nestjs/passport';
@@ -26,14 +26,14 @@ export class AvailabilitiesController {
   @Post('add-availability')
   create(
     @Body() createAvailabilityDto: CreateAvailabilityDto,
-    @CurrentUser() user: JwtPayload,
+    @OldCurrentUser() user: OldJwtPayload,
   ) {
     return this.availabilitiesService.create(createAvailabilityDto, user);
   }
 
   @Get()
   findAll(
-    @CurrentUser() user: JwtPayload,
+    @OldCurrentUser() user: OldJwtPayload,
     @Pagination() pagination: PaginationQueryType,
   ) {
     return this.availabilitiesService.findAll(user, pagination);
@@ -42,7 +42,7 @@ export class AvailabilitiesController {
   @Get(':id')
   findOne(
     @Param('availability/id') id: string,
-    @CurrentUser() user: JwtPayload,
+    @OldCurrentUser() user: OldJwtPayload,
   ) {
     return this.availabilitiesService.findOne(id, user);
   }
@@ -51,7 +51,7 @@ export class AvailabilitiesController {
   update(
     @Param('id') id: string,
     @Body() updateAvailabilityDto: UpdateAvailabilityDto,
-    @CurrentUser() user: JwtPayload,
+    @OldCurrentUser() user: OldJwtPayload,
   ) {
     return this.availabilitiesService.update(id, updateAvailabilityDto, user);
   }
@@ -59,7 +59,7 @@ export class AvailabilitiesController {
   @Delete('delete-availability')
   remove(
     @Body() deleteAvailabilitDto: DeleteAvailabilitDto,
-    @CurrentUser() user: JwtPayload,
+    @OldCurrentUser() user: OldJwtPayload,
   ) {
     const { id } = deleteAvailabilitDto;
     return this.availabilitiesService.deleteAvalablity(id, user);

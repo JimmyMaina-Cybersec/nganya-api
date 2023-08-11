@@ -12,8 +12,8 @@ import { VehicleOwnersService } from './vehicle-owners.service';
 import { CreateVehicleOwnerDto } from './dto/create-vehicle-owner.dto';
 import { UpdateVehicleOwnerDto } from './dto/update-vehicle-owner.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import { JwtPayload } from 'src/types/jwt-payload';
+import { OldCurrentUser } from 'src/common/decorators/current-user.decorator';
+import { OldJwtPayload } from 'src/types/jwt-payload';
 import { Pagination } from 'src/common/decorators/paginate.decorator';
 import PaginationQueryType from 'src/types/paginationQuery';
 
@@ -25,7 +25,7 @@ export class VehicleOwnersController {
   @Post('add-vehicle-owner')
   addVehicleOwner(
     @Body() createVehicleOwnerDto: CreateVehicleOwnerDto,
-    @CurrentUser() user: JwtPayload,
+    @OldCurrentUser() user: OldJwtPayload,
   ) {
     return this.vehicleOwnersService.addVehicleOwner(
       createVehicleOwnerDto,
@@ -35,14 +35,14 @@ export class VehicleOwnersController {
 
   @Get()
   findAll(
-    @CurrentUser() user: JwtPayload,
+    @OldCurrentUser() user: OldJwtPayload,
     @Pagination() pagination: PaginationQueryType,
   ) {
     return this.vehicleOwnersService.findAll(user, pagination);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+  findOne(@Param('id') id: string, @OldCurrentUser() user: OldJwtPayload) {
     return this.vehicleOwnersService.findOne(id, user);
   }
 
@@ -50,13 +50,13 @@ export class VehicleOwnersController {
   update(
     @Param('id') id: string,
     @Body() updateVehicleOwnerDto: UpdateVehicleOwnerDto,
-    @CurrentUser() user: JwtPayload,
+    @OldCurrentUser() user: OldJwtPayload,
   ) {
     return this.vehicleOwnersService.update(id, updateVehicleOwnerDto, user);
   }
 
   @Delete('delete/:id')
-  deleteVehicleOwner(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+  deleteVehicleOwner(@Param('id') id: string, @OldCurrentUser() user: OldJwtPayload) {
     return this.vehicleOwnersService.deleteVehicleOwner(id, user);
   }
 }

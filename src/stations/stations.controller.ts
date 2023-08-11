@@ -12,8 +12,8 @@ import { StationsService } from './stations.service';
 import { CreateStationDto } from './dto/create-station.dto';
 import { UpdateStationDto } from './dto/update-station.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import { JwtPayload } from 'src/types/jwt-payload';
+import { OldCurrentUser } from 'src/common/decorators/current-user.decorator';
+import { OldJwtPayload } from 'src/types/jwt-payload';
 import { Pagination } from 'src/common/decorators/paginate.decorator';
 import PaginationQueryType from 'src/types/paginationQuery';
 
@@ -25,27 +25,27 @@ export class StationsController {
   @Post('add-station')
   create(
     @Body() createStationDto: CreateStationDto,
-    @CurrentUser() currentUser: JwtPayload,
+    @OldCurrentUser() currentUser: OldJwtPayload,
   ) {
     return this.stationsService.createSacco(createStationDto, currentUser);
   }
 
   @Get()
   findAll(
-    @CurrentUser() currentUser: JwtPayload,
+    @OldCurrentUser() currentUser: OldJwtPayload,
     @Pagination() pagination: PaginationQueryType,
   ) {
     return this.stationsService.findAll(currentUser, pagination);
   }
 
   @Get('my-station')
-  myStation(@CurrentUser('station') stationID: string) {
+  myStation(@OldCurrentUser('station') stationID: string) {
     return this.stationsService.myStation(stationID);
   }
 
   @Get(':id')
   findOneStation(
-    @CurrentUser() currentUser: JwtPayload,
+    @OldCurrentUser() currentUser: OldJwtPayload,
     @Param('id') id: string,
   ) {
     return this.stationsService.findOneStation(currentUser, id);
@@ -55,7 +55,7 @@ export class StationsController {
   update(
     @Param('id') id: string,
     @Body() updateStationDto: UpdateStationDto,
-    @CurrentUser() currentUser: JwtPayload,
+    @OldCurrentUser() currentUser: OldJwtPayload,
   ) {
     return this.stationsService.updateStation(
       currentUser,
@@ -65,7 +65,7 @@ export class StationsController {
   }
 
   @Delete('delete-station/:id')
-  remove(@Param('id') id: string, @CurrentUser() currentUser: JwtPayload) {
+  remove(@Param('id') id: string, @OldCurrentUser() currentUser: OldJwtPayload) {
     return this.stationsService.remove(id, currentUser);
   }
 }

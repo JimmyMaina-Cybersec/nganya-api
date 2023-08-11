@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { LipaDto } from './dto/create-lipa-na-mpesa.dto';
 import { LipaNaMpesaCallbackDto } from './dto/lipa-na-mpesa-callback.dto';
-import { JwtPayload } from 'src/types/jwt-payload';
+import { OldJwtPayload } from 'src/types/jwt-payload';
 import axios from 'axios';
 import {
   LipaNaMpesaTransaction,
@@ -27,7 +27,7 @@ export class LipaNaMpesaService {
     private lipaNaMpesaTransaction: Model<LipaNaMpesaTransactionDocument>,
     private eventEmitter: EventEmitter2,
     private httpService: HttpService,
-  ) {}
+  ) { }
 
   readonly authorisationEndpoint =
     'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials';
@@ -47,7 +47,7 @@ export class LipaNaMpesaService {
    * @param user
    * @returns
    */
-  async sendStk(lipaDTO: LipaDto, user: JwtPayload) {
+  async sendStk(lipaDTO: LipaDto, user: OldJwtPayload) {
     const shortCode = '174379';
 
     const account_reference = null;
@@ -64,8 +64,8 @@ export class LipaNaMpesaService {
 
     const password = Buffer.from(
       shortCode +
-        'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919' +
-        timestamp,
+      'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919' +
+      timestamp,
     ).toString('base64');
 
     try {
@@ -134,7 +134,7 @@ export class LipaNaMpesaService {
    * @returns The account balance as a number.
    */
   async getAccountBalance(
-    user: JwtPayload,
+    user: OldJwtPayload,
     checkBalanceDTO: CheckBalanceDTO,
   ): Promise<number> {
     if (
