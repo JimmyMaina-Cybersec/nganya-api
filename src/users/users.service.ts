@@ -23,7 +23,6 @@ export class UsersService {
   }
 
   async createUser() {
-    let accessToken = null;
     const client_id = 'sy6vl7Klm5UxsoMvKHlBmF4L2dtqTcp3';
     const client_secret = 'CBGF9Ab9iCoaO6pxrVzzxglop6A8JteUI_EBFWr3iIkG0mPDjro8UucWnTqqLHOO';
 
@@ -31,8 +30,8 @@ export class UsersService {
 
     const managementClient = new ManagementClient({
       domain: 'nganya.us.auth0.com',
-      clientId: 'sy6vl7Klm5UxsoMvKHlBmF4L2dtqTcp3',
-      clientSecret: 'CBGF9Ab9iCoaO6pxrVzzxglop6A8JteUI_EBFWr3iIkG0mPDjro8UucWnTqqLHOO',
+      clientId: client_id,
+      clientSecret: client_secret,
       scope: 'create:users',
     });
 
@@ -131,43 +130,45 @@ export class UsersService {
    */
   async addUser(createUserDto: CreateUserDto, user: OldJwtPayload) {
     try {
-      if (await this.checkIfUserExists(createUserDto.idNo)) {
-        throw new HttpException('User already exists', HttpStatus.CONFLICT);
-      }
+      // if (await this.checkIfUserExists(createUserDto.idNo)) {
+      //   throw new HttpException('User already exists', HttpStatus.CONFLICT);
+      // }
 
-      if (
-        user.role === 'Super User' ||
-        user.role === 'admin' ||
-        user.role === 'general admin'
-      ) {
-        await this.userModel.create({
-          ...createUserDto,
-          status: 'active',
-          sacco: user.sacco,
-          createdBy: user._id,
-          updatedBy: user._id,
-        });
-        throw new HttpException(
-          'User created successfully',
-          HttpStatus.CREATED,
-        );
-      } else if (user.role === 'station manager') {
-        if (createUserDto.role === 'station agent') {
-          return await this.userModel.create({
-            ...createUserDto,
-            status: 'active',
-            station: user.station,
-            sacco: user.sacco,
-            createdBy: user._id,
-            updatedBy: user._id,
-          });
-        }
-      } else {
-        throw new HttpException(
-          'You are not allowed to perform this action',
-          HttpStatus.FORBIDDEN,
-        );
-      }
+      // if (
+      //   user.role === 'Super User' ||
+      //   user.role === 'admin' ||
+      //   user.role === 'general admin'
+      // ) {
+      //   await this.userModel.create({
+      //     ...createUserDto,
+      //     status: 'active',
+      //     sacco: user.sacco,
+      //     createdBy: user._id,
+      //     updatedBy: user._id,
+      //   });
+      //   throw new HttpException(
+      //     'User created successfully',
+      //     HttpStatus.CREATED,
+      //   );
+      // }
+      //  else if (user.role === 'station manager') {
+      //   if (createUserDto.role === 'station agent') {
+      //     return await this.userModel.create({
+      //       ...createUserDto,
+      //       status: 'active',
+      //       station: user.station,
+      //       sacco: user.sacco,
+      //       createdBy: user._id,
+      //       updatedBy: user._id,
+      //     });
+      //   }
+      // }
+      //  else {
+      //   throw new HttpException(
+      //     'You are not allowed to perform this action',
+      //     HttpStatus.FORBIDDEN,
+      //   );
+      // }
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
