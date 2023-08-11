@@ -5,9 +5,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { promisify } from 'util';
-import { expressjwt } from 'express-jwt';
-import { expressJwtSecret } from 'jwks-rsa';
 import { ConfigService } from '@nestjs/config';
+import { auth } from 'express-oauth2-jwt-bearer';
 
 @Injectable()
 export class AuthorizationGuard implements CanActivate {
@@ -26,19 +25,12 @@ export class AuthorizationGuard implements CanActivate {
     const req = context.getArgByIndex(0);
     const res = context.getArgByIndex(1);
 
-    console.log(this.AUTH0_AUDIENCE);
-
     const checkJWT = promisify(
-      expressjwt({
-        secret: expressJwtSecret({
-          cache: true,
-          rateLimit: true,
-          jwksRequestsPerMinute: 5,
-          jwksUri: `${this.AUTH0_DOMAIN}.well-known/jwks.json}`,
-        }) as any,
+      auth({
         issuer: this.AUTH0_ISSUER_URL,
         audience: this.AUTH0_AUDIENCE,
-        algorithms: ['RS256'],
+        issuerBaseURL: this.AUTH0_DOMAIN,
+        tokenSigningAlg: 'RS256',
       }),
     );
 
