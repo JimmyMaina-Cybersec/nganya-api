@@ -3,10 +3,7 @@ import { UsersService } from './users.service';
 import { UsersController } from './users.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from './schema/user.schema';
-import {
-  Sacco,
-  SaccoSchema,
-} from 'src/saccos/schema/sacco.schema';
+import { Sacco, SaccoSchema } from 'src/saccos/schema/sacco.schema';
 
 @Module({
   controllers: [UsersController],

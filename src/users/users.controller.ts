@@ -1,28 +1,22 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Delete,
-  UseGuards,
-  Query,
-} from '@nestjs/common';
-import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { AuthGuard } from '@nestjs/passport';
-import { JwtPayload } from 'src/types/jwt-payload';
-import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import { FindStationAgentsDto } from './dto/find-station-agents.dto';
-import { Pagination } from 'src/common/decorators/paginate.decorator';
-import PaginationQueryType from 'src/types/paginationQuery';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from "@nestjs/common";
+import { UsersService } from "./users.service";
+import { CreateUserDto } from "./dto/create-user.dto";
+import { UpdateUserDto } from "./dto/update-user.dto";
+import { JwtPayload } from "src/types/jwt-payload";
+import { CurrentUser } from "src/common/decorators/current-user.decorator";
+import { FindStationAgentsDto } from "./dto/find-station-agents.dto";
+import { Pagination } from "src/common/decorators/paginate.decorator";
+import PaginationQueryType from "src/types/paginationQuery";
 
-@UseGuards(AuthGuard('jwt'))
+// @UseGuards(AuthGuard('jwt'))
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {}
+
+  @Post('create-user')
+  createUser() {
+    return this.usersService.createUser();
+  }
 
   @Post('add-user')
   create(

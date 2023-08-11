@@ -8,13 +8,88 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './schema/user.schema';
 import PaginationQueryType from 'src/types/paginationQuery';
 import { UsersQuery } from 'src/types/usersQuery';
+import { ConfigService } from '@nestjs/config';
+import { AuthenticationClient, ManagementClient } from 'auth0';
+
 
 @Injectable()
 export class UsersService {
+  // private readonly AUTH0_CLIENT_SECRET: string;
+  // private readonly AUTH0_DOMAIN: string;
+  // private readonly AUTH0_CLIENT_ID: string;
+
   constructor(
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
-  ) {}
+    private configurationService: ConfigService,
+  ) {
+    // this.AUTH0_CLIENT_SECRET = configurationService.get<string>(
+    //   'AUTH0_CLIENT_SECRET',
+    // );
+    // this.AUTH0_DOMAIN = configurationService.get<string>('AUTH0_DOMAIN');
+    // this.AUTH0_CLIENT_ID = configurationService.get<string>('AUTH0_CLIENT_ID');
+  }
+
+  async createUser() {
+    let accessToken = null;
+
+    const authClient = new AuthenticationClient({
+      domain: 'nganya.us.auth0.com',
+      clientId: 'amoI9KxWjNwUOyXDBwgSha8A0kiSjRca',
+      clientSecret: "WnzDbP2o0oMFWA1KLKFdzheyyFAK4bFU0fawBstBOwKNhY7ryTNIY8uybPQ1IPPy",
+    });
+    authClient.clientCredentialsGrant(
+      {
+        audience: 'https://nganya.us.auth0.com/api/v2/',
+        scope: 'create:user',
+
+      },
+      function (err, response) {
+        if (err) {
+          console.log('error Message:', err);
+          throw new HttpException(err.message, HttpStatus.FORBIDDEN);
+        }
+        accessToken = response.access_token;
+        console.log(response.access_token);
+      },
+    );
+
+    console.log(accessToken);
+
+
+
+    const managementClient = new ManagementClient({
+      domain: 'nganya.us.auth0.com',
+      clientId: 'amoI9KxWjNwUOyXDBwgSha8A0kiSjRca',
+      clientSecret: 'WnzDbP2o0oMFWA1KLKFdzheyyFAK4bFU0fawBstBOwKNhY7ryTNIY8uybPQ1IPPy',
+      scope: 'create:user',
+
+      token: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6Il9mblNFWktFZEsyUVVOeERNSEo4NiJ9.eyJpc3MiOiJodHRwczovL25nYW55YS51cy5hdXRoMC5jb20vIiwic3ViIjoiYW1vSTlLeFdqTndVT3lYREJ3Z1NoYThBMGtpU2pSY2FAY2xpZW50cyIsImF1ZCI6Imh0dHBzOi8vYXBpLm5nYW55YWFwcC5jb20vIiwiaWF0IjoxNjkxNzQ4OTI4LCJleHAiOjE2OTE4MzUzMjgsImF6cCI6ImFtb0k5S3hXak53VU95WERCd2dTaGE4QTBraVNqUmNhIiwic2NvcGUiOiJjcmVhdGU6dXNlciIsImd0eSI6ImNsaWVudC1jcmVkZW50aWFscyIsInBlcm1pc3Npb25zIjpbImNyZWF0ZTp1c2VyIl19.TDmKPmdIhFKBiOlrIhRL-AsxvNmbc1F_KCtzh6a8CBQm5r3z4hSfFqcWN6AejNE2iORFDrpU_GuFmAXFBlGUJrVjOTJuMqBq8Fnjc5TnUyZq2yc5md_6ueza_a_BkpX948gSiVo_EG6uDqjYPyqIkmI5uHUGmh56W0XZJ5uo6efOUzgMRyIrGmdi3JKXysv4tXk0ceUqKtREkRYQ3Hie0SpK9RC6lYh_jYnYJcsod9sOXzCTHcUWDcSVvw08SlDoo5n40-J5dpBq3KMXur2oBUjSYUhuzZ7pX4GDd6qlNdaPwHBYU4BcKvAhFxFkJLzYIkEbYoEL1po8PPgP2o7JCA',
+    });
+
+    try {
+      return await managementClient.createUser({
+        email: 'wekesa350@gmail.com',
+        phone_number: '07123456787',
+        user_metadata: {
+          sacco: '5f9f6b3b1c9d440000d1b3a0',
+          station: '5f9f6b3b1c9d440000d1b3a0',
+          role: 'station agent',
+        },
+        app_metadata: {},
+        given_name: 'Paul',
+        family_name: 'Test',
+        connection: 'none',
+      });
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        error.message ?? 'Something went wrong',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
+  }
 
   async assingManager(
     queryData: { station: string; userId: string },
