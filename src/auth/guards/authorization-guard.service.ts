@@ -4,20 +4,21 @@ import {
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-// import { expressJwtSecret}  from "jwks-rsa";
 import { promisify } from 'util';
-import { expressjwt } from 'express-jwt';
-import { expressJwtSecret } from 'jwks-rsa';
 import { ConfigService } from '@nestjs/config';
+import { auth } from 'express-oauth2-jwt-bearer';
 
 @Injectable()
 export class AuthorizationGuard implements CanActivate {
-  private AUTH0_AUDIENCE: string;
-  private AUTH0_DOMAIN: string;
+  private readonly AUTH0_AUDIENCE: string;
+  private readonly AUTH0_DOMAIN: string;
+  private readonly AUTH0_ISSUER_URL: string;
 
-  constructor(private congurationService: ConfigService) {
-    this.AUTH0_AUDIENCE = congurationService.get<string>('AUTH0_AUDIENCE');
-    this.AUTH0_DOMAIN = congurationService.get<string>('AUTH0_DOMAIN');
+  constructor(private configurationService: ConfigService) {
+    this.AUTH0_AUDIENCE = configurationService.get<string>('AUTH0_AUDIENCE');
+    this.AUTH0_DOMAIN = configurationService.get<string>('AUTH0_DOMAIN');
+    this.AUTH0_ISSUER_URL =
+      configurationService.get<string>('AUTH0_ISSUER_URL');
   }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -25,16 +26,11 @@ export class AuthorizationGuard implements CanActivate {
     const res = context.getArgByIndex(1);
 
     const checkJWT = promisify(
-      expressjwt({
-        secret: expressJwtSecret({
-          cache: true,
-          rateLimit: true,
-          jwksRequestsPerMinute: 5,
-          jwksUri: `${this.AUTH0_DOMAIN}.well-known/jwks.json}`,
-        }) as any,
-        issuer: this.AUTH0_DOMAIN,
+      auth({
+        issuer: this.AUTH0_ISSUER_URL,
         audience: this.AUTH0_AUDIENCE,
-        algorithms: ['RS256'],
+        issuerBaseURL: this.AUTH0_DOMAIN,
+        tokenSigningAlg: 'RS256',
       }),
     );
 
@@ -42,6 +38,7 @@ export class AuthorizationGuard implements CanActivate {
       await checkJWT(req, res);
       return true;
     } catch (e) {
+      console.log(e);
       throw new UnauthorizedException(e.message);
     }
   }
