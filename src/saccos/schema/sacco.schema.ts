@@ -41,9 +41,9 @@ export class Sacco {
   @Prop({
     required: false,
     immutable: true,
-    type: SchemaTypes.ObjectId,
+    type: String,
   })
-  addedBy: Types.ObjectId;
+  addedBy: String;
 
   @Prop({ required: false })
   upadatedAt: Date;
