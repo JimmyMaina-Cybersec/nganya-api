@@ -1,9 +1,12 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete, UseGuards, SetMetadata } from '@nestjs/common';
 import { OnboardingService } from './onboarding.service';
-import { CreateOnboardingDto } from './dto/create-onboarding.dto';
+import { CreateSaccoGeneralAdmin } from './dto/create-sacco-genera-admin.dto';
 import { UpdateOnboardingDto } from './dto/update-onboarding.dto';
 import { AuthorizationGuard } from 'src/auth/guards/authorization-guard.service';
 import { PermissionsGuard } from 'src/auth/guards/permissions/permissions.guard';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { JwtPayload } from 'src/types/jwt-payload';
+import { CreateSaccoDto } from 'src/saccos/dto/create-sacco.dto';
 
 @UseGuards(AuthorizationGuard, PermissionsGuard)
 @Controller('onboarding')
@@ -11,10 +14,16 @@ export class OnboardingController {
   constructor(private readonly onboardingService: OnboardingService) { }
 
 
-  @SetMetadata('permissions', ['create:sacco'])
-  @Post()
-  create(@Body() createOnboardingDto: CreateOnboardingDto) {
-    return this.onboardingService.create(createOnboardingDto);
+  @SetMetadata('permissions', ['create:saccos'])
+  @Post('add-sacco')
+  create(@Body() createOnboardingDto: CreateSaccoDto, @CurrentUser() user: JwtPayload) {
+    return this.onboardingService.addSacco(createOnboardingDto, user);
+  }
+
+  @SetMetadata('permissions', ['create:saccos'])
+  @Post('add-general-admin')
+  createGeneralAdmin(@Body() createOnboardingDto: CreateSaccoGeneralAdmin) {
+    return this.onboardingService.createGeneralAdmin(createOnboardingDto);
   }
 
   @Get()
