@@ -52,6 +52,7 @@ export class JwtPayload {
   user_metadata: UserMetaDataType;
   user_roles: string[];
   permissions: string[];
+  sub: string;
 }
 
 
