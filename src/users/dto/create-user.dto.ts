@@ -7,7 +7,7 @@ export class CreateUserDto {
 
   @IsString()
   @IsNotEmpty()
-  secondName: string;
+  lastName: string;
 
   @IsString()
   @IsNotEmpty()
@@ -16,21 +16,6 @@ export class CreateUserDto {
   @IsString()
   @IsPhoneNumber('KE')
   phone: string;
-
-  @IsString()
-  @IsNotEmpty()
-  photoURL: string;
-
-  @IsString()
-  @IsNotEmpty()
-  role:
-    | 'Super User'
-    | 'general admin'
-    | 'admin'
-    | 'station manager'
-    | 'accountant'
-    | 'station agent'
-    | 'driver';
 
 
   @IsEmail()
