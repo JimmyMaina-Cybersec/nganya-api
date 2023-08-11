@@ -1,4 +1,4 @@
 import { PartialType } from '@nestjs/mapped-types';
-import { CreateOnboardingDto } from './create-onboarding.dto';
+import { CreateSaccoGeneralAdmin } from './create-sacco-genera-admin.dto';
 
-export class UpdateOnboardingDto extends PartialType(CreateOnboardingDto) {}
+export class UpdateOnboardingDto extends PartialType(CreateSaccoGeneralAdmin) { }
