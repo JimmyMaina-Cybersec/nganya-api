@@ -1,0 +1,15 @@
+export enum UserRoles {
+  SACCO_ADMIN = 'Administrator',
+  GENERAL_ADMIN = 'General Administrator',
+  STATION_MANAGER = 'Station Manager',
+  SERVICE_AGENT = 'Station Agent',
+  DRIVER = 'Driver',
+  CONDUCTOR = 'Conductor',
+  SACCO_ACCOUNTANT = 'Accountant',
+  NGANYA_ACCOUNTANT = 'Nganya Accountant',
+  NGANYA_ADMIN = 'Nganya Administrator',
+  NGANYA_MANAGER = 'Nganya Manager',
+  NGANYA_ONBOARDING_AGENT = 'Onboarding Agent',
+  NGANYA_CUSTOMER_CARE_AGENT = 'Customer Care Agent',
+  SUPER_ADMIN = 'Super Administrator',
+}

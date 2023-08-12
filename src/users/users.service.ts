@@ -9,8 +9,7 @@ import { User, UserDocument } from './schema/user.schema';
 import PaginationQueryType from 'src/types/paginationQuery';
 import { UsersQuery } from 'src/types/usersQuery';
 import { ConfigService } from '@nestjs/config';
-import { AuthenticationClient, ManagementClient } from 'auth0';
-
+import { ManagementClient } from 'auth0';
 
 @Injectable()
 export class UsersService {
@@ -18,15 +17,12 @@ export class UsersService {
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
     private configurationService: ConfigService,
-  ) {
-
-  }
+  ) {}
 
   async createUser() {
     const client_id = 'sy6vl7Klm5UxsoMvKHlBmF4L2dtqTcp3';
-    const client_secret = 'CBGF9Ab9iCoaO6pxrVzzxglop6A8JteUI_EBFWr3iIkG0mPDjro8UucWnTqqLHOO';
-
-
+    const client_secret =
+      'CBGF9Ab9iCoaO6pxrVzzxglop6A8JteUI_EBFWr3iIkG0mPDjro8UucWnTqqLHOO';
 
     const managementClient = new ManagementClient({
       domain: 'nganya.us.auth0.com',
@@ -36,11 +32,14 @@ export class UsersService {
     });
 
     try {
-      managementClient.assignRolestoUser({
-        id: 'auth0|5f9f6b3b1c9d440000d1b3a0',
-      }, {
-        roles: ['rol_5f9f6b3b1c9d440000d1b3a0']
-      })
+      await managementClient.assignRolestoUser(
+        {
+          id: 'auth0|5f9f6b3b1c9d440000d1b3a0',
+        },
+        {
+          roles: ['rol_5f9f6b3b1c9d440000d1b3a0'],
+        },
+      );
       return await managementClient.createUser({
         email: 'wekesa350@gmail.com',
         user_metadata: {
@@ -61,7 +60,6 @@ export class UsersService {
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
-
   }
 
   async assingManager(
@@ -133,7 +131,6 @@ export class UsersService {
       // if (await this.checkIfUserExists(createUserDto.idNo)) {
       //   throw new HttpException('User already exists', HttpStatus.CONFLICT);
       // }
-
       // if (
       //   user.role === 'Super User' ||
       //   user.role === 'admin' ||
@@ -179,7 +176,10 @@ export class UsersService {
    * @param currentUser
    * @returns Array<UserDocument>
    */
-  async findAllUsers(currentUser: OldJwtPayload, pagination: PaginationQueryType) {
+  async findAllUsers(
+    currentUser: OldJwtPayload,
+    pagination: PaginationQueryType,
+  ) {
     try {
       const query: UsersQuery = {};
       switch (currentUser.role) {
@@ -320,7 +320,11 @@ export class UsersService {
    *
    * */
 
-  async updateUser(id: string, updateUserDto: UpdateUserDto, user: OldJwtPayload) {
+  async updateUser(
+    id: string,
+    updateUserDto: UpdateUserDto,
+    user: OldJwtPayload,
+  ) {
     if (
       user.role === 'Super User' ||
       user.role === 'admin' ||
@@ -423,7 +427,10 @@ export class UsersService {
     }
   }
 
-  async findAgentsInStation(user: OldJwtPayload, station: FindStationAgentsDto) {
+  async findAgentsInStation(
+    user: OldJwtPayload,
+    station: FindStationAgentsDto,
+  ) {
     try {
       if (
         user.role === 'admin' ||
