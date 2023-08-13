@@ -29,6 +29,8 @@ export enum UserPermissions {
   UPDATE_SACCO = 'update:sacco',
   DELETE_SACCO = 'delete:sacco',
 
+  CREATE_ROUTES = 'create:routes',
+
   READ_SACCO_REPORTS = 'read:saccoReports',
 
   READ_SERVICE_AGENTS_REPORTS = 'read:serviceAgentsReports',
