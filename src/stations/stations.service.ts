@@ -4,7 +4,7 @@ import { UpdateStationDto } from './dto/update-station.dto';
 import { Station, StationDocument } from './schema/station.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
-import { OldJwtPayload } from 'src/types/jwt-payload';
+import { JwtPayload } from 'src/types/jwt-payload';
 import { StationQuery } from 'src/types/stationQuery';
 
 @Injectable()
@@ -12,54 +12,38 @@ export class StationsService {
   constructor(
     @InjectModel(Station.name)
     private readonly stationModel: Model<StationDocument>,
-  ) { }
+  ) {}
 
-  findOneStation(user: OldJwtPayload, id: string) {
-    switch (user.role) {
-      case 'Super User':
-        return this.stationModel.findById(id);
+  findOneStation(user: JwtPayload, id: string) {
+    return this.stationModel.findById(id);
 
-      case 'general admin':
-        return this.stationModel.findOne({
-          _id: id,
-          sacco: user.sacco,
-        });
+    // return this.stationModel.findOne({
+    //   _id: id,
+    //   sacco: user.sacco,
+    // });
 
-      case 'admin':
-        return this.stationModel.findOne({
-          _id: id,
-          sacco: user.sacco,
-        });
-
-      default:
-        throw new HttpException(
-          'You are not allowed to perform this action',
-          HttpStatus.FORBIDDEN,
-        );
-    }
+    // return this.stationModel.findOne({
+    //   _id: id,
+    //   sacco: user.sacco,
+    // });
   }
 
-  async createSacco(createStationDto: CreateStationDto, user: OldJwtPayload) {
-    if (
-      user.role == 'Super User' ||
-      user.role === 'admin' ||
-      user.role === 'general admin'
-    ) {
-      try {
-        await this.stationModel.create({
-          ...createStationDto,
-          sacco: user.sacco,
-          addedBy: user._id,
-        });
+  async createSacco(createStationDto: CreateStationDto, user: JwtPayload) {
+    try {
+      await this.stationModel.create({
+        ...createStationDto,
+        sacco: user.user_metadata.sacco,
+        addedBy: user.sub,
+      });
 
-        return {
-          message: 'Station created successfully',
-        };
-      } catch (error) {
-        throw new HttpException(error.message, error.status);
-      }
+      return {
+        message: 'Station created successfully',
+      };
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
     }
-    return 'This action adds a new station';
+
+    // return 'This action adds a new station';
   }
 
   /**
@@ -68,26 +52,16 @@ export class StationsService {
    * @returns Promise<Station[]>
    *  */
 
-  async findAll(user: OldJwtPayload, pagination) {
+  async findAll(user: JwtPayload, pagination) {
     try {
       const query: StationQuery = {};
       let stationQuery: any = this.stationModel
         .find(query)
         .select('_id name location stret');
 
-      switch (user.role) {
-        case 'Super User':
-          break;
-        case 'general admin':
-          stationQuery = stationQuery.where('sacco').equals(user.sacco);
-          break;
-
-        case 'admin':
-          stationQuery = stationQuery.where('sacco').equals(user.sacco);
-          break;
-        default:
-          stationQuery = stationQuery.where('sacco').equals(user.sacco);
-      }
+      stationQuery = stationQuery
+        .where('sacco')
+        .equals(user.user_metadata.sacco);
 
       const { page, resPerPage } = pagination;
 
@@ -136,50 +110,31 @@ export class StationsService {
    *
    * */
   async updateStation(
-    user: OldJwtPayload,
+    user: JwtPayload,
     updateStationDto: UpdateStationDto,
     stationID: string,
   ) {
-    if (
-      user.role == 'Super User' ||
-      user.role === 'admin' ||
-      user.role === 'general admin' ||
-      user.role === 'station manager'
-    ) {
-      await this.stationModel.findByIdAndUpdate(stationID, {
-        ...updateStationDto,
-        updatedBy: user._id,
-        updatedAt: Date.now(),
-      });
+    await this.stationModel.findByIdAndUpdate(stationID, {
+      ...updateStationDto,
+      updatedBy: user.sub,
+      updatedAt: Date.now(),
+    });
 
-      HttpStatus.OK;
-      return {
-        message: 'Station updated successfully',
-      };
-    } else {
-      throw new HttpException(
-        'You are not allowed to perform this action',
-        HttpStatus.FORBIDDEN,
-      );
-    }
+    HttpStatus.OK;
+    return {
+      message: 'Station updated successfully',
+    };
   }
 
-  async remove(id: string, user: OldJwtPayload) {
+  async remove(id: string, user: JwtPayload) {
     try {
-      if (user.role === 'Super User') {
-        await this.stationModel.findByIdAndDelete(id);
-      }
-      if (user.role === 'admin' || user.role === 'general admin') {
-        await this.stationModel.findOneAndDelete({
-          _id: id,
-          sacco: user.sacco,
-        });
-      } else {
-        throw new HttpException(
-          'You are not allowed to perform this action',
-          HttpStatus.FORBIDDEN,
-        );
-      }
+      // await this.stationModel.findByIdAndDelete(id);
+
+      await this.stationModel.findOneAndDelete({
+        _id: id,
+        sacco: user.user_metadata.sacco,
+      });
+
       throw new HttpException('Station deleted successfully', HttpStatus.OK);
     } catch (error) {
       throw new HttpException(error.message, error.status);
