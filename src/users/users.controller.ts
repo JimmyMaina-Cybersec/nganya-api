@@ -1,21 +1,36 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from "@nestjs/common";
-import { UsersService } from "./users.service";
-import { CreateUserDto } from "./dto/create-user.dto";
-import { UpdateUserDto } from "./dto/update-user.dto";
-import { OldJwtPayload } from "src/types/jwt-payload";
-import { OldCurrentUser } from "src/common/decorators/current-user.decorator";
-import { FindStationAgentsDto } from "./dto/find-station-agents.dto";
-import { Pagination } from "src/common/decorators/paginate.decorator";
-import PaginationQueryType from "src/types/paginationQuery";
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+  SetMetadata,
+  UseGuards,
+} from '@nestjs/common';
+import { UsersService } from './users.service';
+import { CreateUserDto } from './dto/create-user.dto';
+import { UpdateUserDto } from './dto/update-user.dto';
+import { OldJwtPayload } from 'src/types/jwt-payload';
+import { OldCurrentUser } from 'src/common/decorators/current-user.decorator';
+import { FindStationAgentsDto } from './dto/find-station-agents.dto';
+import { Pagination } from 'src/common/decorators/paginate.decorator';
+import PaginationQueryType from 'src/types/paginationQuery';
+import { AuthorizationGuard } from '../auth/guards/authorization-guard.service';
+import { PermissionsGuard } from '../auth/guards/permissions/permissions.guard';
+import { UserPermissions } from '../types/PermissionType';
 
-// @UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthorizationGuard, PermissionsGuard)
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {}
 
+  @SetMetadata('permissions', [UserPermissions.CREATE_SACCO_USERS])
   @Post('create-user')
   createUser() {
-    return this.usersService.createUser();
+    return this.usersService.createSaccoUsers();
   }
 
   @Post('add-user')
@@ -35,7 +50,10 @@ export class UsersController {
   }
 
   @Get('user/:id')
-  findOne(@Param('id') id: string, @OldCurrentUser() currentUser: OldJwtPayload) {
+  findOne(
+    @Param('id') id: string,
+    @OldCurrentUser() currentUser: OldJwtPayload,
+  ) {
     return this.usersService.findUser(id, currentUser);
   }
 
@@ -57,7 +75,10 @@ export class UsersController {
   }
 
   @Delete('delete-user/:id')
-  deleteUser(@Param('id') id: string, @OldCurrentUser() currentUser: OldJwtPayload) {
+  deleteUser(
+    @Param('id') id: string,
+    @OldCurrentUser() currentUser: OldJwtPayload,
+  ) {
     return this.usersService.deleteUser(id, currentUser);
   }
 
