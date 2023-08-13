@@ -39,12 +39,12 @@ export class Availability {
   @Prop()
   addedOn: Date;
 
-  @Prop({ type: ObjectId, ref: 'User' })
+  @Prop({ type: String })
   addedBy: string;
 
   @Prop()
   upadatedAt: Date;
 
-  @Prop({ type: ObjectId, ref: 'User' })
+  @Prop({ type: String })
   updatedBy: string;
 }

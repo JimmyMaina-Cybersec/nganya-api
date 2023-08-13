@@ -9,11 +9,11 @@ export class Chat {
   @Prop({ type: String })
   message: string;
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: 'User' })
-  from: Types.ObjectId;
+  @Prop({ type: String })
+  from: string;
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: 'User' })
-  to: Types.ObjectId;
+  @Prop({ type: String })
+  to: string;
 
   @Prop({ type: String, default: 'pending' })
   status: string;

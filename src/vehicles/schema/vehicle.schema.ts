@@ -26,8 +26,8 @@ export class Vehicle {
   @Prop({ required: false })
   imageURL: string;
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: 'User', required: false })
-  driver: Types.ObjectId;
+  @Prop({ type: String, required: false })
+  driver: string;
 
   @Prop({ type: SchemaTypes.ObjectId, ref: 'VehicleOwner', required: true })
   owner: Types.ObjectId;
@@ -35,8 +35,8 @@ export class Vehicle {
   @Prop({ type: SchemaTypes.ObjectId, ref: 'Sacco', required: true })
   sacco: Types.ObjectId;
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: 'User', required: true })
-  addedBy: Types.ObjectId;
+  @Prop({ type: String, required: true })
+  addedBy: string;
 
   @Prop({ default: () => Date.now() })
   addedOn: Date;

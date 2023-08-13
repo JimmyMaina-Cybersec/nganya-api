@@ -32,14 +32,14 @@ export class Availability {
   @Prop({ default: 'available' })
   status: string;
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: 'User' })
-  addedBy: Types.ObjectId;
+  @Prop({ type: String })
+  addedBy: string;
 
   @Prop()
   upadatedAt: Date;
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: 'User' })
-  updatedBy: Types.ObjectId;
+  @Prop({ type: String })
+  updatedBy: string;
 }
 
 export const AvailabilitySchema = SchemaFactory.createForClass(Availability);

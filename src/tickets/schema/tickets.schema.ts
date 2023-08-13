@@ -57,11 +57,11 @@ export class Ticket {
   @Prop({ type: String, required: true })
   status: string;
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: 'User', required: true })
-  addedBy: Types.ObjectId;
+  @Prop({ type: String, required: true })
+  addedBy: string;
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: 'User', required: false })
-  updatedBy: Types.ObjectId;
+  @Prop({ type: String, required: false })
+  updatedBy: string;
 }
 
 export const TicketSchema = SchemaFactory.createForClass(Ticket);

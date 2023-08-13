@@ -33,8 +33,7 @@ const tripHistory = new Schema({
     immutable: true,
   },
   recievedBy: {
-    type: ObjectId,
-    ref: "User",
+    type: String,
     required: true,
     immutable: true,
   },

@@ -26,11 +26,11 @@ export class Route {
   @Prop({ type: String, default: 'active' })
   status: string;
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: 'User' })
-  addedBy: Types.ObjectId;
+  @Prop({ type: String })
+  addedBy: string;
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: 'User' })
-  updatedBy: Types.ObjectId;
+  @Prop({ type: String })
+  updatedBy: string;
 }
 
 export const RouteSchema = SchemaFactory.createForClass(Route);
