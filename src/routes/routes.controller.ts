@@ -1,31 +1,38 @@
 import {
-  Controller,
-  Get,
-  Post,
   Body,
-  Patch,
-  Param,
+  Controller,
   Delete,
-  UseGuards,
+  Get,
+  Param,
+  Patch,
+  Post,
   Query,
+  SetMetadata,
+  UseGuards,
 } from '@nestjs/common';
 import { RoutesService } from './routes.service';
 import { CreateRouteDto } from './dto/create-route.dto';
 import { UpdateRouteDto } from './dto/update-route.dto';
-import { AuthGuard } from '@nestjs/passport';
-import { OldCurrentUser } from 'src/common/decorators/current-user.decorator';
-import { OldJwtPayload } from 'src/types/jwt-payload';
+import {
+  CurrentUser,
+  OldCurrentUser,
+} from 'src/common/decorators/current-user.decorator';
+import { JwtPayload, OldJwtPayload } from 'src/types/jwt-payload';
 import { DeleteResult } from 'mongodb';
+import { AuthorizationGuard } from '../auth/guards/authorization-guard.service';
+import { PermissionsGuard } from '../auth/guards/permissions/permissions.guard';
+import { UserPermissions } from '../types/PermissionType';
 
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthorizationGuard, PermissionsGuard)
 @Controller('routes')
 export class RoutesController {
-  constructor(private readonly routesService: RoutesService) { }
+  constructor(private readonly routesService: RoutesService) {}
 
+  @SetMetadata('permissions', [UserPermissions.CREATE_ROUTES])
   @Post('add-route')
   create(
     @Body() createRouteDto: CreateRouteDto,
-    @OldCurrentUser() user: OldJwtPayload,
+    @CurrentUser() user: JwtPayload,
   ) {
     return this.routesService.create(createRouteDto, user);
   }
@@ -50,7 +57,10 @@ export class RoutesController {
   }
 
   @Delete('delete-route/:id')
-  remove(@Param('id') id: string, @OldCurrentUser() user: OldJwtPayload): Promise<DeleteResult> {
+  remove(
+    @Param('id') id: string,
+    @OldCurrentUser() user: OldJwtPayload,
+  ): Promise<DeleteResult> {
     return this.routesService.remove(id, user);
   }
 }

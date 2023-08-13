@@ -1,8 +1,6 @@
 export type UserMetaDataType = {
-    saccoID?: string;
-    stationID?: string;
-    vehicleID?: string;
-    idNo: string;
-}
-
-
+  sacco?: string;
+  station?: string;
+  vehicle?: string;
+  idNo: string;
+};

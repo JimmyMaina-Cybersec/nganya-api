@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateRouteDto } from './dto/create-route.dto';
 import { UpdateRouteDto } from './dto/update-route.dto';
-import { OldJwtPayload } from 'src/types/jwt-payload';
+import { JwtPayload, OldJwtPayload } from 'src/types/jwt-payload';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Route, RouteDocument } from './schema/route.schema';
@@ -12,28 +12,16 @@ export class RoutesService {
   constructor(
     @InjectModel(Route.name)
     private readonly routeModel: Model<RouteDocument>,
-  ) { }
+  ) {}
 
-  create(createRouteDto: CreateRouteDto, user: OldJwtPayload) {
+  create(createRouteDto: CreateRouteDto, user: JwtPayload) {
     try {
-      if (
-        user.role === 'Super User' ||
-        user.role === 'station manager' ||
-        user.role === 'admin' ||
-        user.role === 'general admin'
-      ) {
-        return this.routeModel.create({
-          ...createRouteDto,
-          sacco: user.sacco,
-          station: user.station,
-          addedBy: user._id,
-        });
-      }
-
-      throw new HttpException(
-        'Only station managers and station agents with permission to add availabilities can add availabilities',
-        HttpStatus.FORBIDDEN,
-      );
+      return this.routeModel.create({
+        ...createRouteDto,
+        sacco: user.user_metadata.sacco,
+        station: user.user_metadata.station,
+        addedBy: user.sub,
+      });
     } catch (error) {
       console.log(error);
 
