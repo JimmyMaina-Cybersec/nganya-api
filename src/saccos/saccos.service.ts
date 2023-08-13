@@ -9,16 +9,16 @@ import { UpdateSaccoDto } from './dto/update-sacco.dto';
 import { InjectModel } from '@nestjs/mongoose';
 import { Sacco, SaccoDocument } from './schema/sacco.schema';
 import { Model } from 'mongoose';
-import { JwtPayload } from 'src/types/jwt-payload';
+import { OldJwtPayload } from 'src/types/jwt-payload';
 import PaginationQueryType from 'src/types/paginationQuery';
 
 @Injectable()
 export class SaccosService {
   constructor(
     @InjectModel(Sacco.name) private readonly saccoModel: Model<SaccoDocument>,
-  ) {}
+  ) { }
 
-  async create(createSaccoDto: CreateSaccoDto, user: JwtPayload) {
+  async create(createSaccoDto: CreateSaccoDto, user: OldJwtPayload) {
     if (user.role === 'Super User') {
       const exists = await this.saccoModel.exists({
         name: createSaccoDto.name,
@@ -42,7 +42,7 @@ export class SaccosService {
     );
   }
 
-  async findAll(user: JwtPayload, pagination: PaginationQueryType) {
+  async findAll(user: OldJwtPayload, pagination: PaginationQueryType) {
     try {
       if (!user || !user.role) {
         throw new UnauthorizedException('You are not allowed to access Saccos');
@@ -76,7 +76,7 @@ export class SaccosService {
     }
   }
 
-  findOne(id: string, user: JwtPayload) {
+  findOne(id: string, user: OldJwtPayload) {
     if (user.role === 'Super User' || user.sacco === id) {
       return this.saccoModel.findById(id).select('-__v');
     }
@@ -86,7 +86,7 @@ export class SaccosService {
     );
   }
 
-  updateSacco(id: string, updateSaccoDto: UpdateSaccoDto, user: JwtPayload) {
+  updateSacco(id: string, updateSaccoDto: UpdateSaccoDto, user: OldJwtPayload) {
     if (user.role === 'Super User' || user.role === 'general admin') {
       return this.saccoModel.findByIdAndUpdate(id, {
         ...updateSaccoDto,
@@ -100,7 +100,7 @@ export class SaccosService {
     );
   }
 
-  remove(id: string, user: JwtPayload) {
+  remove(id: string, user: OldJwtPayload) {
     return `This action removes a #${id} sacco`;
   }
 }

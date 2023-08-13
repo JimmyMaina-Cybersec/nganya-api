@@ -1,24 +1,70 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { JwtPayload } from 'src/types/jwt-payload';
+import { OldJwtPayload } from 'src/types/jwt-payload';
 import { CreateUserDto } from './dto/create-user.dto';
 import { FindStationAgentsDto } from './dto/find-station-agents.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User, UserDocument } from './schema/user.schema';
 import PaginationQueryType from 'src/types/paginationQuery';
 import { UsersQuery } from 'src/types/usersQuery';
+import { ConfigService } from '@nestjs/config';
+import { ManagementClient } from 'auth0';
 
 @Injectable()
 export class UsersService {
   constructor(
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
+    private configurationService: ConfigService,
   ) {}
+
+  async createUser() {
+    const client_id = 'sy6vl7Klm5UxsoMvKHlBmF4L2dtqTcp3';
+    const client_secret =
+      'CBGF9Ab9iCoaO6pxrVzzxglop6A8JteUI_EBFWr3iIkG0mPDjro8UucWnTqqLHOO';
+
+    const managementClient = new ManagementClient({
+      domain: 'nganya.us.auth0.com',
+      clientId: client_id,
+      clientSecret: client_secret,
+      scope: 'create:users',
+    });
+
+    try {
+      await managementClient.assignRolestoUser(
+        {
+          id: 'auth0|5f9f6b3b1c9d440000d1b3a0',
+        },
+        {
+          roles: ['rol_5f9f6b3b1c9d440000d1b3a0'],
+        },
+      );
+      return await managementClient.createUser({
+        email: 'wekesa350@gmail.com',
+        user_metadata: {
+          sacco: '5f9f6b3b1c9d440000d1b3a0',
+          station: '5f9f6b3b1c9d440000d1b3a0',
+          role: 'station agent',
+        },
+        app_metadata: {},
+        given_name: 'Paul',
+        family_name: 'Test',
+        connection: 'Username-Password-Authentication',
+        password: 'Wekesa@2023',
+      });
+    } catch (error) {
+      console.log(error);
+      throw new HttpException(
+        error.message ?? 'Something went wrong',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
 
   async assingManager(
     queryData: { station: string; userId: string },
-    currentUser: JwtPayload,
+    currentUser: OldJwtPayload,
   ) {
     try {
       const user = await this.userModel.findById(queryData.userId);
@@ -80,45 +126,46 @@ export class UsersService {
    * @param user
    * @returns Object
    */
-  async addUser(createUserDto: CreateUserDto, user: JwtPayload) {
+  async addUser(createUserDto: CreateUserDto, user: OldJwtPayload) {
     try {
-      if (await this.checkIfUserExists(createUserDto.idNo)) {
-        throw new HttpException('User already exists', HttpStatus.CONFLICT);
-      }
-
-      if (
-        user.role === 'Super User' ||
-        user.role === 'admin' ||
-        user.role === 'general admin'
-      ) {
-        await this.userModel.create({
-          ...createUserDto,
-          status: 'active',
-          sacco: user.sacco,
-          createdBy: user._id,
-          updatedBy: user._id,
-        });
-        throw new HttpException(
-          'User created successfully',
-          HttpStatus.CREATED,
-        );
-      } else if (user.role === 'station manager') {
-        if (createUserDto.role === 'station agent') {
-          return await this.userModel.create({
-            ...createUserDto,
-            status: 'active',
-            station: user.station,
-            sacco: user.sacco,
-            createdBy: user._id,
-            updatedBy: user._id,
-          });
-        }
-      } else {
-        throw new HttpException(
-          'You are not allowed to perform this action',
-          HttpStatus.FORBIDDEN,
-        );
-      }
+      // if (await this.checkIfUserExists(createUserDto.idNo)) {
+      //   throw new HttpException('User already exists', HttpStatus.CONFLICT);
+      // }
+      // if (
+      //   user.role === 'Super User' ||
+      //   user.role === 'admin' ||
+      //   user.role === 'general admin'
+      // ) {
+      //   await this.userModel.create({
+      //     ...createUserDto,
+      //     status: 'active',
+      //     sacco: user.sacco,
+      //     createdBy: user._id,
+      //     updatedBy: user._id,
+      //   });
+      //   throw new HttpException(
+      //     'User created successfully',
+      //     HttpStatus.CREATED,
+      //   );
+      // }
+      //  else if (user.role === 'station manager') {
+      //   if (createUserDto.role === 'station agent') {
+      //     return await this.userModel.create({
+      //       ...createUserDto,
+      //       status: 'active',
+      //       station: user.station,
+      //       sacco: user.sacco,
+      //       createdBy: user._id,
+      //       updatedBy: user._id,
+      //     });
+      //   }
+      // }
+      //  else {
+      //   throw new HttpException(
+      //     'You are not allowed to perform this action',
+      //     HttpStatus.FORBIDDEN,
+      //   );
+      // }
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
@@ -129,7 +176,10 @@ export class UsersService {
    * @param currentUser
    * @returns Array<UserDocument>
    */
-  async findAllUsers(currentUser: JwtPayload, pagination: PaginationQueryType) {
+  async findAllUsers(
+    currentUser: OldJwtPayload,
+    pagination: PaginationQueryType,
+  ) {
     try {
       const query: UsersQuery = {};
       switch (currentUser.role) {
@@ -174,7 +224,7 @@ export class UsersService {
    * @param user
    * @returns Object<UserDocument>
    * */
-  async findUser(idNo: string, user: JwtPayload) {
+  async findUser(idNo: string, user: OldJwtPayload) {
     switch (user.role) {
       case 'Super User':
         return this.userModel
@@ -219,7 +269,7 @@ export class UsersService {
    * @param user
    * @returns Object<UserDocument>
    * */
-  async findUserById(idNo: { idNo: string }, user: JwtPayload) {
+  async findUserById(idNo: { idNo: string }, user: OldJwtPayload) {
     switch (user.role) {
       case 'Super User':
         return this.userModel
@@ -270,7 +320,11 @@ export class UsersService {
    *
    * */
 
-  async updateUser(id: string, updateUserDto: UpdateUserDto, user: JwtPayload) {
+  async updateUser(
+    id: string,
+    updateUserDto: UpdateUserDto,
+    user: OldJwtPayload,
+  ) {
     if (
       user.role === 'Super User' ||
       user.role === 'admin' ||
@@ -321,7 +375,7 @@ export class UsersService {
    *
    */
 
-  async deleteUser(id: string, user: JwtPayload) {
+  async deleteUser(id: string, user: OldJwtPayload) {
     try {
       const deletingUser = await this.userModel.findById(id);
       if (deletingUser.role === 'Super User') {
@@ -373,7 +427,10 @@ export class UsersService {
     }
   }
 
-  async findAgentsInStation(user: JwtPayload, station: FindStationAgentsDto) {
+  async findAgentsInStation(
+    user: OldJwtPayload,
+    station: FindStationAgentsDto,
+  ) {
     try {
       if (
         user.role === 'admin' ||
@@ -409,7 +466,7 @@ export class UsersService {
     }
   }
 
-  async findStationManager(user: JwtPayload, station: { station: string }) {
+  async findStationManager(user: OldJwtPayload, station: { station: string }) {
     try {
       return await this.userModel
         .findOne({

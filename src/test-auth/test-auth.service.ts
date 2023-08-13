@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTestAuthDto } from './dto/create-test-auth.dto';
 import { UpdateTestAuthDto } from './dto/update-test-auth.dto';
+import { JwtPayload, OldJwtPayload } from 'src/types/jwt-payload';
 
 @Injectable()
 export class TestAuthService {
@@ -8,7 +9,10 @@ export class TestAuthService {
     return 'This action adds a new testAuth';
   }
 
-  findAll() {
+  findAll(user: JwtPayload) {
+
+    console.log(user);
+
     return `This action returns all testAuth`;
   }
 

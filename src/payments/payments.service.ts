@@ -11,7 +11,7 @@ import axios from 'axios';
 import { InjectModel } from '@nestjs/mongoose';
 import { Payments, PaymentsDocument } from './schema/payments.schema';
 import { Model } from 'mongoose';
-import { JwtPayload } from 'src/types/jwt-payload';
+import { OldJwtPayload } from 'src/types/jwt-payload';
 import PaginationQueryType from 'src/types/paginationQuery';
 import { TransactionType } from 'src/types/transactionMethod';
 import { UsersQuery } from 'src/types/usersQuery';
@@ -30,7 +30,7 @@ export class PaymentsService {
     private readonly pushSTKModel: Model<PushSTKDocument>,
     @InjectModel(Customers.name)
     private readonly customerModel: Model<CustomerDocument>,
-  ) {}
+  ) { }
 
   readonly authURL =
     'https://sandbox.safaricom.co.ke/oauth/v1/generate?grant_type=client_credentials';
@@ -48,7 +48,7 @@ export class PaymentsService {
   readonly passkey =
     'bfb279f9aa9bdbcf158e97dd71a467cd2e0c893059b10f78e6b72ada1ed2c919';
 
-  async sendStk(user: JwtPayload, createPaymentDto: CreatePaymentDto) {
+  async sendStk(user: OldJwtPayload, createPaymentDto: CreatePaymentDto) {
     const date = new Date(Date.now());
     const pad2 = (n: string | number) => (Number(n) < 10 ? '0' + n : n);
     const timestamp =
@@ -121,7 +121,7 @@ export class PaymentsService {
   }
 
   async findAll(
-    user: JwtPayload,
+    user: OldJwtPayload,
     transactionType: TransactionType,
     pagination: PaginationQueryType,
   ): Promise<{
@@ -215,7 +215,7 @@ export class PaymentsService {
     }
   }
 
-  async findAllLipaNaMpesa(user: JwtPayload, pagination: PaginationQueryType) {
+  async findAllLipaNaMpesa(user: OldJwtPayload, pagination: PaginationQueryType) {
     try {
       if (!user || !user.role) {
         throw new UnauthorizedException(
@@ -258,7 +258,7 @@ export class PaymentsService {
     return `This action returns a #${id} payment`;
   }
 
-  async update(user: JwtPayload, id: string) {
+  async update(user: OldJwtPayload, id: string) {
     if (user.role != 'station manager' && user.role != 'station agent') {
       throw new UnauthorizedException(
         'You are not allowed to perform this action',

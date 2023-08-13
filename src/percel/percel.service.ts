@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { CreatePercelDto } from './dto/create-percel.dto';
 import { UpdatePercelDto } from './dto/update-percel.dto';
-import { JwtPayload } from 'src/types/jwt-payload';
+import { OldJwtPayload } from 'src/types/jwt-payload';
 import { Model } from 'mongoose';
 import { Percel, PercelDocument } from './schema/percel.schema';
 import { InjectModel } from '@nestjs/mongoose';
@@ -21,8 +21,8 @@ export class PercelService {
     private readonly percelModel: Model<PercelDocument>,
     @InjectModel(Availability.name)
     private readonly availabilityModel: Model<AvailabilityDocument>,
-  ) {}
-  async sendPercel(createPercelDto: CreatePercelDto, agent: JwtPayload) {
+  ) { }
+  async sendPercel(createPercelDto: CreatePercelDto, agent: OldJwtPayload) {
     try {
       if (agent.station) {
         return await this.percelModel.create({
@@ -42,7 +42,7 @@ export class PercelService {
     }
   }
 
-  async findAll(user: JwtPayload, pagination: PaginationQueryType) {
+  async findAll(user: OldJwtPayload, pagination: PaginationQueryType) {
     try {
       if (!user || !user.role) {
         throw new UnauthorizedException(
@@ -99,7 +99,7 @@ export class PercelService {
     }
   }
 
-  update(user: JwtPayload, id: string, updatePercelDto: UpdatePercelDto) {
+  update(user: OldJwtPayload, id: string, updatePercelDto: UpdatePercelDto) {
     try {
       return this.percelModel.findByIdAndUpdate(
         id,

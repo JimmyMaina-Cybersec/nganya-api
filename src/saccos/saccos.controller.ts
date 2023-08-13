@@ -12,8 +12,8 @@ import { SaccosService } from './saccos.service';
 import { CreateSaccoDto } from './dto/create-sacco.dto';
 import { UpdateSaccoDto } from './dto/update-sacco.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import { JwtPayload } from 'src/types/jwt-payload';
+import { OldCurrentUser } from 'src/common/decorators/current-user.decorator';
+import { OldJwtPayload } from 'src/types/jwt-payload';
 import { Pagination } from 'src/common/decorators/paginate.decorator';
 import PaginationQueryType from 'src/types/paginationQuery';
 
@@ -25,21 +25,21 @@ export class SaccosController {
   @Post()
   create(
     @Body() createSaccoDto: CreateSaccoDto,
-    @CurrentUser() user: JwtPayload,
+    @OldCurrentUser() user: OldJwtPayload,
   ) {
     return this.saccosService.create(createSaccoDto, user);
   }
 
   @Get()
   findAll(
-    @CurrentUser() user: JwtPayload,
+    @OldCurrentUser() user: OldJwtPayload,
     @Pagination() pagination: PaginationQueryType,
   ) {
     return this.saccosService.findAll(user, pagination);
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+  findOne(@Param('id') id: string, @OldCurrentUser() user: OldJwtPayload) {
     return this.saccosService.findOne(id, user);
   }
 
@@ -47,13 +47,13 @@ export class SaccosController {
   update(
     @Param('id') id: string,
     @Body() updateSaccoDto: UpdateSaccoDto,
-    @CurrentUser() user: JwtPayload,
+    @OldCurrentUser() user: OldJwtPayload,
   ) {
     return this.saccosService.updateSacco(id, updateSaccoDto, user);
   }
 
   @Delete('delete-sacco/:id')
-  remove(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+  remove(@Param('id') id: string, @OldCurrentUser() user: OldJwtPayload) {
     return this.saccosService.remove(id, user);
   }
 }

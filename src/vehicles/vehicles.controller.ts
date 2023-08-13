@@ -12,8 +12,8 @@ import { VehiclesService } from './vehicles.service';
 import { CreateVehicleDto } from './dto/create-vehicle.dto';
 import { UpdateVehicleDto } from './dto/update-vehicle.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import { JwtPayload } from 'src/types/jwt-payload';
+import { OldCurrentUser } from 'src/common/decorators/current-user.decorator';
+import { OldJwtPayload } from 'src/types/jwt-payload';
 import { UpdateDriverDto } from './dto/update-driver.dto';
 import { Pagination } from 'src/common/decorators/paginate.decorator';
 import PaginationQueryType from 'src/types/paginationQuery';
@@ -26,7 +26,7 @@ export class VehiclesController {
   @Post('add-vehicle')
   addVehicle(
     @Body() createVehicleDto: CreateVehicleDto,
-    @CurrentUser() user: JwtPayload,
+    @OldCurrentUser() user: OldJwtPayload,
     @Param('vehicleOwnerID') vehicleOwner: string,
   ) {
     return this.vehiclesService.addVehicle(
@@ -38,7 +38,7 @@ export class VehiclesController {
 
   @Get('vehicle-owner/:vehicleOwnerID')
   getOwnerVehicles(
-    @CurrentUser() user: JwtPayload,
+    @OldCurrentUser() user: OldJwtPayload,
     @Param('vehicleOwnerID') vehicleOwner: string,
     @Pagination() pagination: PaginationQueryType,
   ) {
@@ -51,7 +51,7 @@ export class VehiclesController {
 
   @Get('driver/:vehicleID')
   getDriverVehicles(
-    @CurrentUser() user: JwtPayload,
+    @OldCurrentUser() user: OldJwtPayload,
     @Param('vehicleID') driver: string,
   ) {
     return this.vehiclesService.getDriver(user, driver);
@@ -59,7 +59,7 @@ export class VehiclesController {
 
   @Patch('assign-driver')
   assignDriver(
-    @CurrentUser() user: JwtPayload,
+    @OldCurrentUser() user: OldJwtPayload,
     @Body() updateVehicleDto: UpdateDriverDto,
   ) {
     return this.vehiclesService.assignDriver(user, updateVehicleDto);
@@ -67,7 +67,7 @@ export class VehiclesController {
 
   @Get()
   findAll(
-    @CurrentUser() user: JwtPayload,
+    @OldCurrentUser() user: OldJwtPayload,
     @Pagination() pagination: PaginationQueryType,
   ) {
     return this.vehiclesService.findAll(user, pagination);
@@ -75,14 +75,14 @@ export class VehiclesController {
 
   @Post('add-to-station')
   addToStation(
-    @CurrentUser() user: JwtPayload,
+    @OldCurrentUser() user: OldJwtPayload,
     @Body() vehicle: { plateNo: string },
   ) {
     return this.vehiclesService.addToStation(user, vehicle);
   }
 
   @Get('vehicle/:id')
-  findOne(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+  findOne(@Param('id') id: string, @OldCurrentUser() user: OldJwtPayload) {
     return this.vehiclesService.findOne(id, user);
   }
 
@@ -90,13 +90,13 @@ export class VehiclesController {
   updateVehicle(
     @Param('id') id: string,
     @Body() updateVehicleDto: UpdateVehicleDto,
-    @CurrentUser() user: JwtPayload,
+    @OldCurrentUser() user: OldJwtPayload,
   ) {
     return this.vehiclesService.updateVehicle(id, updateVehicleDto, user);
   }
 
   @Delete('delete-vehicle/:id')
-  deleteVehicle(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
+  deleteVehicle(@Param('id') id: string, @OldCurrentUser() user: OldJwtPayload) {
     return this.vehiclesService.deleteVehicle(id, user);
   }
 }

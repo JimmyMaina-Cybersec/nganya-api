@@ -13,8 +13,8 @@ import { RoutesService } from './routes.service';
 import { CreateRouteDto } from './dto/create-route.dto';
 import { UpdateRouteDto } from './dto/update-route.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { CurrentUser } from 'src/common/decorators/current-user.decorator';
-import { JwtPayload } from 'src/types/jwt-payload';
+import { OldCurrentUser } from 'src/common/decorators/current-user.decorator';
+import { OldJwtPayload } from 'src/types/jwt-payload';
 import { DeleteResult } from 'mongodb';
 
 @UseGuards(AuthGuard('jwt'))
@@ -25,13 +25,13 @@ export class RoutesController {
   @Post('add-route')
   create(
     @Body() createRouteDto: CreateRouteDto,
-    @CurrentUser() user: JwtPayload,
+    @OldCurrentUser() user: OldJwtPayload,
   ) {
     return this.routesService.create(createRouteDto, user);
   }
 
   @Get()
-  findAll(@Query() query: any, @CurrentUser() user: JwtPayload) {
+  findAll(@Query() query: any, @OldCurrentUser() user: OldJwtPayload) {
     return this.routesService.findAll(query, user);
   }
 
@@ -44,13 +44,13 @@ export class RoutesController {
   update(
     @Param('id') id: string,
     @Body() updateRouteDto: UpdateRouteDto,
-    @CurrentUser() user: JwtPayload,
+    @OldCurrentUser() user: OldJwtPayload,
   ) {
     return this.routesService.update(id, updateRouteDto, user);
   }
 
   @Delete('delete-route/:id')
-  remove(@Param('id') id: string, @CurrentUser() user: JwtPayload): Promise<DeleteResult> {
+  remove(@Param('id') id: string, @OldCurrentUser() user: OldJwtPayload): Promise<DeleteResult> {
     return this.routesService.remove(id, user);
   }
 }

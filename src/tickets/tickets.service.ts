@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { JwtPayload } from 'src/types/jwt-payload';
+import { OldJwtPayload } from 'src/types/jwt-payload';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
 import { Ticket, TicketDocument } from './schema/tickets.schema';
@@ -18,9 +18,9 @@ export class TicketService {
     private readonly ticketModel: Model<TicketDocument>,
     @InjectModel(Availability.name)
     private readonly availabilityModel: Model<AvailabilityDocument>,
-  ) {}
+  ) { }
 
-  async book(createTicketDto: CreateTicketDto, user: JwtPayload) {
+  async book(createTicketDto: CreateTicketDto, user: OldJwtPayload) {
     try {
       if (user.role == 'station agent' || user.role == 'station manager') {
         const ticket = await this.ticketModel.create({
@@ -51,7 +51,7 @@ export class TicketService {
     }
   }
 
-  async findAll(user: JwtPayload, pagination: PaginationQueryType) {
+  async findAll(user: OldJwtPayload, pagination: PaginationQueryType) {
     try {
       if (!user || !user.role) {
         // Handle the scenario where the user object or role property is undefined
@@ -105,11 +105,11 @@ export class TicketService {
     }
   }
 
-  update(id: string, updateTicketDto: UpdateTicketDto, user: JwtPayload) {
+  update(id: string, updateTicketDto: UpdateTicketDto, user: OldJwtPayload) {
     return `This action updates a #${id} ticket`;
   }
 
-  remove(id: string, user: JwtPayload) {
+  remove(id: string, user: OldJwtPayload) {
     return `This action removes a #${id} ticket`;
   }
 }
