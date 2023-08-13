@@ -19,7 +19,7 @@ export class UsersService {
     private configurationService: ConfigService,
   ) {}
 
-  async createUser() {
+  async createSaccoUsers() {
     const client_id = 'sy6vl7Klm5UxsoMvKHlBmF4L2dtqTcp3';
     const client_secret =
       'CBGF9Ab9iCoaO6pxrVzzxglop6A8JteUI_EBFWr3iIkG0mPDjro8UucWnTqqLHOO';
@@ -32,14 +32,6 @@ export class UsersService {
     });
 
     try {
-      await managementClient.assignRolestoUser(
-        {
-          id: 'auth0|5f9f6b3b1c9d440000d1b3a0',
-        },
-        {
-          roles: ['rol_5f9f6b3b1c9d440000d1b3a0'],
-        },
-      );
       return await managementClient.createUser({
         email: 'wekesa350@gmail.com',
         user_metadata: {
@@ -53,6 +45,15 @@ export class UsersService {
         connection: 'Username-Password-Authentication',
         password: 'Wekesa@2023',
       });
+
+      await managementClient.assignRolestoUser(
+        {
+          id: 'auth0|5f9f6b3b1c9d440000d1b3a0',
+        },
+        {
+          roles: ['rol_5f9f6b3b1c9d440000d1b3a0'],
+        },
+      );
     } catch (error) {
       console.log(error);
       throw new HttpException(
