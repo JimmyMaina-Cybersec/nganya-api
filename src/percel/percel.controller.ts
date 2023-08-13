@@ -6,44 +6,53 @@ import {
   Patch,
   Param,
   UseGuards,
+  SetMetadata,
 } from '@nestjs/common';
 import { PercelService } from './percel.service';
 import { CreatePercelDto } from './dto/create-percel.dto';
 import { UpdatePercelDto } from './dto/update-percel.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { OldCurrentUser } from 'src/common/decorators/current-user.decorator';
-import { OldJwtPayload } from 'src/types/jwt-payload';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
+import { JwtPayload, OldJwtPayload } from 'src/types/jwt-payload';
 
 import { Pagination } from '../common/decorators/paginate.decorator';
 import PaginationQueryType from 'src/types/paginationQuery';
+import { PermissionsGuard } from 'src/auth/guards/permissions/permissions.guard';
+import { AuthorizationGuard } from 'src/auth/guards/authorization-guard.service';
+import { UserPermissions } from 'src/types/PermissionType';
 
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthorizationGuard, PermissionsGuard)
 @Controller('percels')
 export class PercelController {
   constructor(private readonly percelService: PercelService) { }
 
+  @SetMetadata('permissions', [UserPermissions.BOOK_PARCEL])
   @Post('send')
   sendPercel(
     @Body() createPercelDto: CreatePercelDto,
-    @OldCurrentUser() agent: OldJwtPayload,
+    @CurrentUser() agent: JwtPayload,
   ) {
     return this.percelService.sendPercel(createPercelDto, agent);
   }
 
+  @SetMetadata('permissions', [UserPermissions.READ_PARCELS])
   @Get()
   findAll(
-    @OldCurrentUser() user: OldJwtPayload,
+    @CurrentUser() user: JwtPayload,
     @Pagination() pagination: PaginationQueryType,
   ) {
     return this.percelService.findAll(user, pagination);
   }
 
+  @SetMetadata('permissions', [UserPermissions.UPDATE_PARCELS])
   @Patch('upadate/:id')
   update(
     @Param('id') id: string,
     @Body() updatePercelDto: UpdatePercelDto,
-    @OldCurrentUser() user: OldJwtPayload,
+    @CurrentUser() user: JwtPayload,
   ) {
     return this.percelService.update(user, id, updatePercelDto);
   }
 }
+
+

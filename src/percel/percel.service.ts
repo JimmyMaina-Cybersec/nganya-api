@@ -6,7 +6,7 @@ import {
 } from '@nestjs/common';
 import { CreatePercelDto } from './dto/create-percel.dto';
 import { UpdatePercelDto } from './dto/update-percel.dto';
-import { OldJwtPayload } from 'src/types/jwt-payload';
+import { JwtPayload, OldJwtPayload } from 'src/types/jwt-payload';
 import { Model } from 'mongoose';
 import { Percel, PercelDocument } from './schema/percel.schema';
 import { InjectModel } from '@nestjs/mongoose';
@@ -22,15 +22,15 @@ export class PercelService {
     @InjectModel(Availability.name)
     private readonly availabilityModel: Model<AvailabilityDocument>,
   ) { }
-  async sendPercel(createPercelDto: CreatePercelDto, agent: OldJwtPayload) {
+  async sendPercel(createPercelDto: CreatePercelDto, agent: JwtPayload) {
     try {
-      if (agent.station) {
+      if (agent.user_metadata.station) {
         return await this.percelModel.create({
           ...createPercelDto,
-          sendingAgent: agent._id,
-          sendingStation: agent.station,
+          sendingAgent: agent.sub,
+          sendingStation: agent.user_metadata.station,
           status: 'awaiting transit',
-          sacco: agent.sacco,
+          sacco: agent.user_metadata.sacco,
         });
       }
       throw new HttpException(
@@ -42,38 +42,19 @@ export class PercelService {
     }
   }
 
-  async findAll(user: OldJwtPayload, pagination: PaginationQueryType) {
+  async findAll(user: JwtPayload, pagination: PaginationQueryType) {
     try {
-      if (!user || !user.role) {
-        throw new UnauthorizedException(
-          'You are not authorised to access Percels',
-        );
-      }
-
       const query: PercelQuery = {};
-      if (
-        user.role === 'Super User' ||
-        user.role === 'admin' ||
-        user.role === 'general admin'
-      ) {
-        query.sacco = user.sacco;
-      } else if (user.role === 'station manager') {
+        query.sacco = user.user_metadata.sacco;
         query.$or = [
-          { sendingStation: user.station },
-          { receivingStation: user.station },
+          { sendingStation: user.user_metadata.station },
+          { receivingStation: user.user_metadata.station },
         ];
-      } else if (user.role === 'station agent') {
         query.$or = [
-          { sendingAgent: user._id },
-          { pickupAgent: user._id },
-          { recivingAgent: user._id },
+          { sendingAgent: user.sub },
+          { pickupAgent: user.sub },
+          { recivingAgent: user.sub },
         ];
-      } else {
-        throw new HttpException(
-          'You are not allowed to view percels',
-          HttpStatus.FORBIDDEN,
-        );
-      }
 
       const { page, resPerPage } = pagination;
 
@@ -99,14 +80,14 @@ export class PercelService {
     }
   }
 
-  update(user: OldJwtPayload, id: string, updatePercelDto: UpdatePercelDto) {
+  update(user: JwtPayload, id: string, updatePercelDto: UpdatePercelDto) {
     try {
       return this.percelModel.findByIdAndUpdate(
         id,
         {
           ...updatePercelDto,
           updatedAt: new Date(),
-          updatedBy: user._id,
+          updatedBy: user.sub,
         },
         { new: true },
       );
