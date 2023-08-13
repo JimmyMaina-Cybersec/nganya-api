@@ -29,11 +29,11 @@ export class Payments {
   @Prop({ required: true, type: SchemaTypes.ObjectId, ref: 'Station' })
   AgentStationId: Types.ObjectId;
 
-  @Prop({ default: null, type: SchemaTypes.ObjectId, ref: 'User' })
-  ReceivingAgentId: Types.ObjectId;
+  @Prop({ default: null, type: String })
+  ReceivingAgentId: string;
 
-  @Prop({ default: null, type: SchemaTypes.ObjectId, ref: 'User' })
-  SaccoId: Types.ObjectId;
+  @Prop({ default: null, type: String })
+  SaccoId: string;
 
   @Prop({ required: true, type: String })
   ServiceDescription: string;

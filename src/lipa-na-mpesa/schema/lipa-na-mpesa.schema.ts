@@ -62,7 +62,7 @@ export class LipaNaMpesaTransaction {
   @Prop({ type: String, default: 'pending' })
   claimed: string;
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: 'User' })
+  @Prop({ type: String })
   agent: string;
 
   @Prop({ type: Array, default: null })

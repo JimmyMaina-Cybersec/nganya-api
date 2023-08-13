@@ -5,8 +5,8 @@ export type CashPaymentsDocument = HydratedDocument<CashPayments>;
 
 @Schema({ timestamps: true })
 export class CashPayments {
-  @Prop({ default: null, type: SchemaTypes.ObjectId, ref: 'User' })
-  ReceivingAgentId: Types.ObjectId;
+  @Prop({ default: null, type: String })
+  ReceivingAgentId: string;
 
   @Prop({ type: String, default: 'pending' })
   status: string;

@@ -47,14 +47,14 @@ export class Percel {
   @Prop({ type: String, default: 'pending' })
   status: string;
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: 'User', required: true })
-  sendingAgent: Types.ObjectId;
+  @Prop({ type: String, required: true })
+  sendingAgent: string;
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: 'User' })
-  receivingAgent: Types.ObjectId;
+  @Prop({ type: String })
+  receivingAgent: string;
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: 'User' })
-  driver: Types.ObjectId;
+  @Prop({ type: String })
+  driver: string;
 
   @Prop({ type: SchemaTypes.ObjectId, ref: 'Availability' })
   availability: Types.ObjectId;
@@ -75,11 +75,11 @@ export class Percel {
   @Prop({ type: Date })
   pickedUpAt: Date;
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: 'User' })
-  pickupAgent: Types.ObjectId;
+  @Prop({ type: String })
+  pickupAgent: string;
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: 'User' })
-  updatedBy: Types.ObjectId;
+  @Prop({ type: String })
+  updatedBy: string;
 }
 
 export const PercelSchema = SchemaFactory.createForClass(Percel);
