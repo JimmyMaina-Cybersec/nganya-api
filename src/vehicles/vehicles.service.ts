@@ -91,6 +91,36 @@ export class VehiclesService {
     }
   }
 
+  async findStationVehicles(user: JwtPayload, pagination) {
+    try {
+      const query: VehicleQuery = {};
+
+      query.$or = [
+        { lastStation: user.user_metadata.station },
+        { currentStation: user.user_metadata.station },
+        { nextStation: user.user_metadata.station },
+      ];
+
+      const { page, resPerPage } = pagination;
+      const [vehicles, totalCount] = await Promise.all([
+        this.vehicleModel
+          .find(query)
+          .skip(pagination.skip)
+          .limit(pagination.resPerPage),
+        this.vehicleModel.countDocuments(query),
+      ]);
+
+      return {
+        data: vehicles,
+        page,
+        resPerPage,
+        numberOfPages: Math.ceil(totalCount / resPerPage),
+      };
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
+  }
+
   async getOwnerVehicles(user: JwtPayload, vehicleOwnerID, pagination) {
     try {
       const query: VehicleQuery = {};

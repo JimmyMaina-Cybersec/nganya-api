@@ -55,16 +55,15 @@ export class VehiclesController {
     );
   }
 
-  @SetMetadata('permissions', [UserPermissions.READ_VEHiCLE_OWNER])
   @Get('driver/:vehicleID')
-  getDriverVehicles(
+  getDriverVehicle(
     @CurrentUser() user: JwtPayload,
     @Param('vehicleID') driver: string,
   ) {
     return this.vehiclesService.getDriver(user, driver);
   }
 
-  @SetMetadata('permissions', [UserPermissions.UPDATE_VEHiCLE_OWNER])
+  @SetMetadata('permissions', [UserPermissions.ASSIGN_DRIVER])
   @Patch('assign-driver')
   assignDriver(
     @CurrentUser() user: JwtPayload,
@@ -82,7 +81,16 @@ export class VehiclesController {
     return this.vehiclesService.findAll(user, pagination);
   }
 
-  @SetMetadata('permissions', [UserPermissions.UPDATE_VEHICLE])
+  @SetMetadata('permissions', [UserPermissions.READ_STATION_VEHICLE])
+  @Get()
+  findStationVehicles(
+    @CurrentUser() user: JwtPayload,
+    @Pagination() pagination: PaginationQueryType,
+  ) {
+    return this.vehiclesService.findAll(user, pagination);
+  }
+
+  @SetMetadata('permissions', [UserPermissions.ADD_VEHICLE_TO_STATION])
   @Post('add-to-station')
   addToStation(
     @CurrentUser() user: JwtPayload,
@@ -91,7 +99,6 @@ export class VehiclesController {
     return this.vehiclesService.addToStation(user, vehicle);
   }
 
-  @SetMetadata('permissions', [UserPermissions.READ_VEHICLES])
   @Get('vehicle/:id')
   findOne(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
     return this.vehiclesService.findOne(id, user);
