@@ -69,4 +69,7 @@ export enum UserPermissions {
   READ_DRIVERS = 'read:drivers',
   UPDATE_DRIVER = 'update:driver',
   DELETE_DRIVER = 'delete:driver',
+
+  ASSIGN_STATION_MANAGER = 'update:assignStationManager',
+  ASSIGN_SERVICE_AGENT = 'update:assignServiceAgent',
 }

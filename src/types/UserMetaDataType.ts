@@ -3,4 +3,5 @@ export type UserMetaDataType = {
   station?: string;
   vehicle?: string;
   idNo: string;
+  role?: string;
 };
