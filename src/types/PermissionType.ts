@@ -64,9 +64,12 @@ export enum UserPermissions {
   READ_VEHICLES = 'read:vehicles',
   UPDATE_VEHICLE = 'update:vehicle',
   DELETE_VEHICLE = 'delete:vehicle',
+  ADD_VEHICLE_TO_STATION = 'update:addVehicleToStation',
+  READ_STATION_VEHICLE = 'read:stationVehicles',
 
   CREATE_DRIVER = 'create:driver',
   READ_DRIVERS = 'read:drivers',
   UPDATE_DRIVER = 'update:driver',
+  ASSIGN_DRIVER = 'update:assignDriver',
   DELETE_DRIVER = 'delete:driver',
 }
