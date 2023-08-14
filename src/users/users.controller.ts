@@ -25,7 +25,7 @@ import AssignStationManageDto from './dto/assign-sation-manage.dto';
 @UseGuards(AuthorizationGuard, PermissionsGuard)
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   @SetMetadata('permissions', [UserPermissions.CREATE_SACCO_USERS])
   @Post('create/user')
@@ -83,7 +83,7 @@ export class UsersController {
   }
 
   @SetMetadata('permissions', [UserPermissions.READ_SERVICE_AGENTS])
-  @Get('managers')
+  @Get('agents')
   findAllAgents(
     @CurrentUser() currentUser: JwtPayload,
     @Pagination() pagination: PaginationQueryType,
@@ -92,7 +92,7 @@ export class UsersController {
   }
 
   @SetMetadata('permissions', [UserPermissions.READ_DRIVERS])
-  @Get('managers')
+  @Get('drivers')
   findAllDrivers(
     @CurrentUser() currentUser: JwtPayload,
     @Pagination() pagination: PaginationQueryType,
