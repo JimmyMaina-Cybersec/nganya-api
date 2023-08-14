@@ -28,7 +28,7 @@ export class UsersService {
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
     private configurationService: ConfigService,
-  ) {}
+  ) { }
 
   async createSaccoUsers(
     currentUser: JwtPayload,
@@ -36,7 +36,15 @@ export class UsersService {
   ) {
     try {
       const newUser = await this.addUser(currentUser, createUserDto);
-      await this.addUserRoles(newUser.user_id, [createUserDto.role]);
+      if (createUserDto.role === 'Station Manager') {
+        await this.addUserRoles(newUser.user_id, [RoleIdType.STATION_MANAGER]);
+      }
+      else if (createUserDto.role === 'Driver') {
+        await this.addUserRoles(newUser.user_id, [RoleIdType.DRIVER]);
+      }
+      else {
+        await this.addUserRoles(newUser.user_id, [RoleIdType.SERVICE_AGENT]);
+      }
       return newUser;
     } catch (error) {
       console.log(error);
@@ -128,11 +136,8 @@ export class UsersService {
   ) {
     try {
       return await this.managementClient.getUsers({
-        q: `user_metadata.sacco:${
-          currentUser.user_metadata.sacco
-        } AND user_metadata.role:${
-          filters.role ?? '*'
-        } AND user_metadata.station:${filters.station ?? '*'}`,
+        q: `user_metadata.sacco:${currentUser.user_metadata.sacco
+          }`,
       });
     } catch (error) {
       throw new HttpException(error.message, error.status);
@@ -146,9 +151,7 @@ export class UsersService {
     try {
       return await this.managementClient.getUsers({
         q: `user_metadata.sacco:${currentUser.user_metadata.sacco}`,
-        sort: 'created_at:1',
-        page: pagination.page ?? 1,
-        per_page: pagination.resPerPage ?? 20,
+
       });
     } catch (error) {
       throw new HttpException(error.message, error.status);
@@ -162,9 +165,6 @@ export class UsersService {
     try {
       return await this.managementClient.getUsers({
         q: `user_metadata.sacco:${currentUser.user_metadata.sacco} AND user_metadata.role:Administrator`,
-        sort: 'created_at:1',
-        page: pagination.page ?? 1,
-        per_page: pagination.resPerPage ?? 20,
       });
     } catch (error) {
       throw new HttpException(error.message, error.status);
@@ -178,9 +178,9 @@ export class UsersService {
     try {
       return await this.managementClient.getUsers({
         q: `user_metadata.station:${currentUser.user_metadata.station} AND user_metadata.role:Station Agent`,
-        sort: 'created_at:1',
-        page: pagination.page ?? 1,
-        per_page: pagination.resPerPage ?? 20,
+        // sort: 'created_at:1',
+        // page: pagination.page ?? 1,
+        // per_page: pagination.resPerPage ?? 20,
       });
     } catch (error) {
       throw new HttpException(error.message, error.status);
@@ -194,9 +194,9 @@ export class UsersService {
     try {
       return await this.managementClient.getUsers({
         q: `user_metadata.sacco:${currentUser.user_metadata.sacco} AND user_metadata.role:Station Manager`,
-        sort: 'created_at:1',
-        page: pagination.page ?? 1,
-        per_page: pagination.resPerPage ?? 20,
+        // sort: 'created_at:1',
+        // page: pagination.page ?? 1,
+        // per_page: pagination.resPerPage ?? 20,
       });
     } catch (error) {
       throw new HttpException(error.message, error.status);
@@ -210,9 +210,9 @@ export class UsersService {
     try {
       return await this.managementClient.getUsers({
         q: `user_metadata.sacco:${currentUser.user_metadata.sacco} AND user_metadata.role:Driver`,
-        sort: 'created_at:1',
-        page: pagination.page ?? 1,
-        per_page: pagination.resPerPage ?? 20,
+        // sort: 'created_at:1',
+        // page: pagination.page ?? 1,
+        // per_page: pagination.resPerPage ?? 20,
       });
     } catch (error) {
       throw new HttpException(error.message, error.status);
