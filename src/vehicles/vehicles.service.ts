@@ -1,13 +1,12 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateVehicleDto } from './dto/create-vehicle.dto';
 import { UpdateVehicleDto } from './dto/update-vehicle.dto';
-import { OldJwtPayload } from 'src/types/jwt-payload';
+import { JwtPayload } from 'src/types/jwt-payload';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Vehicle, VehicleDocument } from './schema/vehicle.schema';
 import { User, UserDocument } from 'src/users/schema/user.schema';
 import { UpdateDriverDto } from './dto/update-driver.dto';
-import { Pagination } from 'src/common/decorators/paginate.decorator';
 import { VehicleQuery } from 'src/types/vehicleQuery';
 
 @Injectable()
@@ -16,7 +15,7 @@ export class VehiclesService {
     @InjectModel(Vehicle.name)
     private vehicleModel: Model<VehicleDocument>,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
-  ) { }
+  ) {}
 
   async checkVehicleRegNo(regNo: string) {
     const exist = await this.vehicleModel.exists({ plateNo: regNo });
@@ -28,7 +27,7 @@ export class VehiclesService {
 
   async addVehicle(
     createVehicleDto: CreateVehicleDto,
-    user: OldJwtPayload,
+    user: JwtPayload,
     vehicleOwner: string,
   ) {
     try {
@@ -39,60 +38,38 @@ export class VehiclesService {
         );
       }
 
-      if (
-        user.role === 'Super User' ||
-        user.role === 'admin' ||
-        user.role === 'general admin'
-      ) {
-        const vehicleExists = await this.vehicleModel.exists({
-          plateNo: createVehicleDto.plateNo,
-        });
-        if (vehicleExists) {
-          throw new HttpException(
-            'Vehicle with this registration number already exists',
-            HttpStatus.BAD_REQUEST,
-          );
-        }
-
-        await this.vehicleModel.create({
-          ...createVehicleDto,
-          sacco: user.sacco,
-          vehicleOwner: user._id,
-          addedBy: user._id,
-        });
+      const vehicleExists = await this.vehicleModel.exists({
+        plateNo: createVehicleDto.plateNo,
+      });
+      if (vehicleExists) {
         throw new HttpException(
-          'Vehicle added successfully',
-          HttpStatus.CREATED,
+          'Vehicle with this registration number already exists',
+          HttpStatus.BAD_REQUEST,
         );
       }
-      throw new HttpException(
-        'You dont have permision to creat vehicles',
-        HttpStatus.FORBIDDEN,
-      );
+
+      await this.vehicleModel.create({
+        ...createVehicleDto,
+        sacco: user.user_metadata.sacco,
+        vehicleOwner: user.sub,
+        addedBy: user.sub,
+      });
+      throw new HttpException('Vehicle added successfully', HttpStatus.CREATED);
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
   }
 
-  async findAll(user: OldJwtPayload, pagination) {
+  async findAll(user: JwtPayload, pagination) {
     try {
       const query: VehicleQuery = {};
-      if (
-        user.role === 'Super User' ||
-        user.role === 'admin' ||
-        user.role === 'general admin'
-      ) {
-        query.sacco = user.sacco;
-      } else if (user.role === 'station agent' || 'station manager') {
-        query.sacco = user.sacco;
-        query.$or = [
-          { lastStation: user.station },
-          { currentStation: user.station },
-          { nextStation: user.station },
-        ];
-      } else {
-        return [];
-      }
+
+      query.sacco = user.user_metadata.sacco;
+      // query.$or = [
+      //   { lastStation: user.user_metadata.station },
+      //   { currentStation: user.user_metadata.station },
+      //   { nextStation: user.user_metadata.station },
+      // ];
 
       const { page, resPerPage } = pagination;
       const [vehicles, totalCount] = await Promise.all([
@@ -114,20 +91,12 @@ export class VehiclesService {
     }
   }
 
-  async getOwnerVehicles(user: OldJwtPayload, vehicleOwnerID, pagination) {
+  async getOwnerVehicles(user: JwtPayload, vehicleOwnerID, pagination) {
     try {
       const query: VehicleQuery = {};
-      if (user.role === 'Super User') {
-        query.owner = vehicleOwnerID;
-      } else if (user.role === 'admin' || user.role === 'general admin') {
-        query.owner = vehicleOwnerID;
-        query.sacco = user.sacco;
-      } else {
-        throw new HttpException(
-          'You are not allowed to see Details of the selected vehicle',
-          HttpStatus.FORBIDDEN,
-        );
-      }
+
+      query.owner = vehicleOwnerID;
+      // query.sacco = user.sacco;
 
       const { page, resPerPage } = pagination;
       const [ownersVehicles, totalCount] = await Promise.all([
@@ -149,84 +118,65 @@ export class VehiclesService {
     }
   }
 
-  async findOne(id: string, user: OldJwtPayload) {
-    if (user.role === 'Super User') {
-      return this.vehicleModel.findById(id);
-    }
-    if (user.role === 'admin' || user.role === 'general admin') {
-      return await this.vehicleModel.findOne({
-        _id: id,
-        sacco: user.sacco,
-      });
-    }
-    if (user.role === 'station agent' || user.role === 'station manager') {
-      return await this.vehicleModel
-        .findOne({
-          _id: id,
-          sacco: user.sacco,
-        })
-        .select('-owner');
-    }
-    throw new HttpException(
-      'You are not allowed to see Details of the selected vehicle',
-      HttpStatus.FORBIDDEN,
-    );
+  async findOne(id: string, user: JwtPayload) {
+    // return this.vehicleModel.findById(id);
+
+    return await this.vehicleModel.findOne({
+      _id: id,
+      sacco: user.user_metadata.sacco,
+    });
+
+    // return await this.vehicleModel
+    //   .findOne({
+    //     _id: id,
+    //     sacco: user.user_metadata.sacco,
+    //   })
+    //   .select('-owner');
   }
 
-  async addToStation(user: OldJwtPayload, query: { plateNo: string }) {
+  async addToStation(user: JwtPayload, query: { plateNo: string }) {
     try {
-      if (
-        user.role === 'station manager' ||
-        user.role === 'admin' ||
-        user.role === 'general admin'
-      ) {
-        console.log(user.sacco);
+      console.log(user.user_metadata.sacco);
 
-        const exists = await this.vehicleModel.exists({
-          plateNo: query.plateNo.toLowerCase(),
-          sacco: user.sacco,
-        });
+      const exists = await this.vehicleModel.exists({
+        plateNo: query.plateNo.toLowerCase(),
+        sacco: user.user_metadata.sacco,
+      });
 
-        if (!exists) {
-          throw new HttpException(
-            'Vehicle with this registration number does not exist in your sacco',
-            HttpStatus.NOT_FOUND,
-          );
-        }
-
-        const result = await this.vehicleModel.findOneAndUpdate(
-          {
-            plateNo: query.plateNo.toLowerCase(),
-          },
-          {
-            currentStation: user.station,
-            status: 'in station',
-          },
-          {
-            new: true,
-          },
-        );
-
-        if (!result) {
-          throw new HttpException(
-            'Vehicle with this registration number does not exist in your sacco',
-            HttpStatus.NOT_FOUND,
-          );
-        }
-        return result;
-      } else {
+      if (!exists) {
         throw new HttpException(
-          'You are not allowed to add vehicles to station',
-          HttpStatus.FORBIDDEN,
+          'Vehicle with this registration number does not exist in your sacco',
+          HttpStatus.NOT_FOUND,
         );
       }
+
+      const result = await this.vehicleModel.findOneAndUpdate(
+        {
+          plateNo: query.plateNo.toLowerCase(),
+        },
+        {
+          currentStation: user.user_metadata.station,
+          status: 'in station',
+        },
+        {
+          new: true,
+        },
+      );
+
+      if (!result) {
+        throw new HttpException(
+          'Vehicle with this registration number does not exist in your sacco',
+          HttpStatus.NOT_FOUND,
+        );
+      }
+      return result;
     } catch (error) {
       console.error(error);
       throw new HttpException(error.message, error.status);
     }
   }
 
-  async hasDriver(user: OldJwtPayload, vehicleID: string) {
+  async hasDriver(user: JwtPayload, vehicleID: string) {
     try {
       const exists = await this.userModel.exists({
         vehicle: vehicleID,
@@ -241,7 +191,7 @@ export class VehiclesService {
     }
   }
 
-  async assignDriver(user: OldJwtPayload, updateDriverDto: UpdateDriverDto) {
+  async assignDriver(user: JwtPayload, updateDriverDto: UpdateDriverDto) {
     if (await this.hasDriver(user, updateDriverDto.vehicleID)) {
       throw new HttpException(
         'You are already assigned to this vehicle',
@@ -260,50 +210,38 @@ export class VehiclesService {
         );
       }
 
-      if (
-        (user.role === 'admin' || user.role === 'general admin',
-          user.role === 'Super User')
-      ) {
-        await this.userModel.findOneAndUpdate(
-          {
-            _id: updateDriverDto.driverID,
-            sacco: user.sacco,
-          },
-          {
-            vehicle: updateDriverDto.vehicleID,
-          },
-        );
-        throw new HttpException('Driver assigned successfully', HttpStatus.OK);
-      } else {
-        throw new HttpException(
-          'You are not allowed to assign a driver to this vehicle',
-          HttpStatus.FORBIDDEN,
-        );
-      }
+      await this.userModel.findOneAndUpdate(
+        {
+          _id: updateDriverDto.driverID,
+          sacco: user.user_metadata.sacco,
+        },
+        {
+          vehicle: updateDriverDto.vehicleID,
+        },
+      );
+      throw new HttpException('Driver assigned successfully', HttpStatus.OK);
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
   }
 
-  async getDriver(user: OldJwtPayload, vehicleID: string) {
+  async getDriver(user: JwtPayload, vehicleID: string) {
     try {
-      if (user.role === 'Super User') {
-        return await this.userModel
+      return await this.userModel
 
-          .findOne({
-            vehicle: vehicleID,
-          })
-          .select('firstName secondName photoURL phone')
-          .exec();
-      } else {
-        return await this.userModel
-          .findOne({
-            vehicle: vehicleID,
-            sacco: user.sacco,
-          })
-          .select('firstName secondName photoURL phone')
-          .exec();
-      }
+        .findOne({
+          vehicle: vehicleID,
+        })
+        .select('firstName secondName photoURL phone')
+        .exec();
+
+      // return await this.userModel
+      //   .findOne({
+      //     vehicle: vehicleID,
+      //     sacco: user.sacco,
+      //   })
+      //   .select('firstName secondName photoURL phone')
+      //   .exec();
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
@@ -312,26 +250,20 @@ export class VehiclesService {
   updateVehicle(
     id: string,
     updateVehicleDto: UpdateVehicleDto,
-    user: OldJwtPayload,
+    user: JwtPayload,
   ) {
     return `This action updates a #${id} vehicle`;
   }
 
-  async deleteVehicle(id: string, user: OldJwtPayload) {
+  async deleteVehicle(id: string, user: JwtPayload) {
     try {
-      if (user.role === 'Super User') {
-        await this.vehicleModel.findByIdAndDelete(id);
-      } else if (user.role === 'admin' || user.role === 'general admin') {
-        await this.vehicleModel.findOneAndDelete({
-          _id: id,
-          sacco: user.sacco,
-        });
-      } else {
-        throw new HttpException(
-          'You are not allowed to delete this vehicle',
-          HttpStatus.FORBIDDEN,
-        );
-      }
+      // await this.vehicleModel.findByIdAndDelete(id);
+
+      await this.vehicleModel.findOneAndDelete({
+        _id: id,
+        sacco: user.user_metadata.sacco,
+      });
+
       throw new HttpException('Vehicle deleted successfully', HttpStatus.OK);
     } catch (error) {
       throw new HttpException(error.message, error.status);
