@@ -36,7 +36,15 @@ export class UsersService {
   ) {
     try {
       const newUser = await this.addUser(currentUser, createUserDto);
-      await this.addUserRoles(newUser.user_id, [createUserDto.role]);
+      if (createUserDto.role === 'Station Manager') {
+        await this.addUserRoles(newUser.user_id, [RoleIdType.STATION_MANAGER]);
+      }
+      else if (createUserDto.role === 'Driver') {
+        await this.addUserRoles(newUser.user_id, [RoleIdType.DRIVER]);
+      }
+      else {
+        await this.addUserRoles(newUser.user_id, [RoleIdType.SERVICE_AGENT]);
+      }
       return newUser;
     } catch (error) {
       console.log(error);
