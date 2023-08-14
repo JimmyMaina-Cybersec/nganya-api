@@ -13,6 +13,8 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Availability, AvailabilityDocument } from 'src/schemas/Availability';
 import PaginationQueryType from 'src/types/paginationQuery';
 import { PercelQuery } from 'src/types/percelQuery';
+import { Pagination } from 'src/common/decorators/paginate.decorator';
+import { UserRoles } from 'src/types/UserRoles';
 
 @Injectable()
 export class PercelService {
@@ -42,31 +44,118 @@ export class PercelService {
     }
   }
 
+  async getAgentPercels(agent: JwtPayload, pagination: PaginationQueryType) {
+    try {
+
+      if (agent.user_metadata.station) {
+        const parcelQuery = await this.percelModel.find({
+          sendingAgent: agent.sub,
+        });
+        const { page, resPerPage } = pagination;
+        const [parcelInStation, docsCount] = await Promise.all([
+          this.percelModel
+            .find(parcelQuery)
+            .skip(pagination.skip)
+            .limit(pagination.resPerPage),
+          this.percelModel.countDocuments(parcelQuery),
+        ])
+
+        return {
+          data: parcelInStation,
+          page,
+          resPerPage,
+          numberOfPages : Math.ceil(docsCount/pagination.resPerPage),
+        }
+      }
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
+  }
+  async getStationPercels(stationManager: JwtPayload, pagination: PaginationQueryType) {
+    try {
+
+      if (stationManager.user_metadata.station) {
+        const parcelQuery = await this.percelModel.find({
+          sendingStation: stationManager.user_metadata.station,
+        });
+        const { page, resPerPage } = pagination;
+        const [parcelInStation, docsCount] = await Promise.all([
+          this.percelModel
+            .find(parcelQuery)
+            .populate('sendingAgent', 'firstName secondName photoURL')
+            .populate('receivingAgent', 'firstName secondName photoURL')
+            .skip(pagination.skip)
+            .limit(pagination.resPerPage),
+          this.percelModel.countDocuments(parcelQuery),
+        ])
+
+        return {
+          data: parcelInStation,
+          page,
+          resPerPage,
+          numberOfPages : Math.ceil(docsCount/pagination.resPerPage),
+        }
+      }
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
+  }
+
+  async getAllParcels(user: JwtPayload, stationId: string, pagination: PaginationQueryType) {
+    try {
+      const stationParcels = await this.percelModel.find({
+        sendingStation: stationId,
+      })
+      const { page, resPerPage } = pagination;
+      const [parcelInStation, docsCount] = await Promise.all([
+        this.percelModel
+          .find(stationParcels)
+          .populate('sendingAgent', 'firstName secondName photoURL')
+          .populate('receivingAgent', 'firstName secondName photoURL')
+          .populate('recivingStation', 'name location phone photoURL')
+          .skip(pagination.skip)
+          .limit(pagination.resPerPage),
+        this.percelModel.countDocuments(stationParcels),
+      ])
+
+      return {
+        data: parcelInStation,
+        page,
+        resPerPage,
+        numberOfPages : Math.ceil(docsCount/pagination.resPerPage),
+      }
+    } catch (error) {
+      throw new HttpException(error.message, error.data);
+    }
+  }
   async findAll(user: JwtPayload, pagination: PaginationQueryType) {
     try {
-      const query: PercelQuery = {};
-        query.sacco = user.user_metadata.sacco;
-        query.$or = [
-          { sendingStation: user.user_metadata.station },
-          { receivingStation: user.user_metadata.station },
-        ];
-        query.$or = [
-          { sendingAgent: user.sub },
-          { pickupAgent: user.sub },
-          { recivingAgent: user.sub },
-        ];
-
+      let parcelQuery = null;
+      if (user.user_roles.includes(UserRoles.GENERAL_ADMIN)) {
+        parcelQuery = await this.percelModel.findAll().exec();
+      }
+      if (user.user_roles.includes(UserRoles.STATION_MANAGER)) {
+        parcelQuery = await this.percelModel.find({
+          sendingStation: user.user_metadata.station,
+        }).exec();
+      }
+      if (user.user_roles.includes(UserRoles.SERVICE_AGENT)) {
+        parcelQuery = await this.percelModel.findAll({
+          sendingAgent: user.sub,
+        }).exec();
+      }
+      
       const { page, resPerPage } = pagination;
 
       const [percels, totalCount] = await Promise.all([
         this.percelModel
-          .find(query)
+          .find(parcelQuery)
           .populate('sendingAgent', 'firstName secondName photoURL')
           .populate('receivingAgent', 'firstName secondName photoURL')
-          .populate('sendingStation', 'firstName secondName photoURL')
+          .populate('sendingStation', 'name location phone photoURL')
           .skip(pagination.skip)
           .limit(pagination.resPerPage),
-        this.percelModel.countDocuments(query),
+        this.percelModel.countDocuments(parcelQuery),
       ]);
 
       return {

@@ -34,6 +34,36 @@ export class PercelController {
   ) {
     return this.percelService.sendPercel(createPercelDto, agent);
   }
+// agent - all percels in station
+  @SetMetadata('permissions', [UserPermissions.READ_SERVICE_AGENT_REPORTS])
+  @Get('get-agent-parcels')
+  getAgentPercels(
+    @CurrentUser() agent: JwtPayload,
+    @Pagination() pagination: PaginationQueryType,
+  ) {
+    return this.percelService.getAgentPercels(agent, pagination);
+  }
+
+  // station manager- all percels in station
+  @SetMetadata('permissions', [UserPermissions.READ_SERVICE_AGENTS_REPORTS])
+  @Get('get-parcels-in-station')
+  getStationPercels(
+    @CurrentUser() stationManager: JwtPayload,
+    @Pagination() pagination: PaginationQueryType,
+  ) {
+    return this.percelService.getStationPercels(stationManager, pagination);
+  }
+
+// admin - all percels in all stations
+  @SetMetadata('permissions', [UserPermissions.READ_STATIONS_REPORTS])
+  @Get('get-parcels/:stationId')
+  getAllParcels(
+    @CurrentUser() user: JwtPayload,
+    @Param('stationId') stationId: string,
+    @Pagination() pagination: PaginationQueryType,
+  ) {
+    return this.percelService.getAllParcels(user, stationId, pagination);
+  }
 
   @SetMetadata('permissions', [UserPermissions.READ_PARCELS])
   @Get()
