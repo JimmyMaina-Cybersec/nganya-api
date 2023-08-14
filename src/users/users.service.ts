@@ -28,7 +28,7 @@ export class UsersService {
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
     private configurationService: ConfigService,
-  ) {}
+  ) { }
 
   async createSaccoUsers(
     currentUser: JwtPayload,
@@ -128,11 +128,8 @@ export class UsersService {
   ) {
     try {
       return await this.managementClient.getUsers({
-        q: `user_metadata.sacco:${
-          currentUser.user_metadata.sacco
-        } AND user_metadata.role:${
-          filters.role ?? '*'
-        } AND user_metadata.station:${filters.station ?? '*'}`,
+        q: `user_metadata.sacco:${currentUser.user_metadata.sacco
+          }`,
       });
     } catch (error) {
       throw new HttpException(error.message, error.status);
