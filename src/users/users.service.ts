@@ -143,9 +143,7 @@ export class UsersService {
     try {
       return await this.managementClient.getUsers({
         q: `user_metadata.sacco:${currentUser.user_metadata.sacco}`,
-        sort: 'created_at:1',
-        page: pagination.page ?? 1,
-        per_page: pagination.resPerPage ?? 20,
+
       });
     } catch (error) {
       throw new HttpException(error.message, error.status);
@@ -159,9 +157,6 @@ export class UsersService {
     try {
       return await this.managementClient.getUsers({
         q: `user_metadata.sacco:${currentUser.user_metadata.sacco} AND user_metadata.role:Administrator`,
-        sort: 'created_at:1',
-        page: pagination.page ?? 1,
-        per_page: pagination.resPerPage ?? 20,
       });
     } catch (error) {
       throw new HttpException(error.message, error.status);
@@ -175,9 +170,9 @@ export class UsersService {
     try {
       return await this.managementClient.getUsers({
         q: `user_metadata.station:${currentUser.user_metadata.station} AND user_metadata.role:Station Agent`,
-        sort: 'created_at:1',
-        page: pagination.page ?? 1,
-        per_page: pagination.resPerPage ?? 20,
+        // sort: 'created_at:1',
+        // page: pagination.page ?? 1,
+        // per_page: pagination.resPerPage ?? 20,
       });
     } catch (error) {
       throw new HttpException(error.message, error.status);
@@ -191,9 +186,9 @@ export class UsersService {
     try {
       return await this.managementClient.getUsers({
         q: `user_metadata.sacco:${currentUser.user_metadata.sacco} AND user_metadata.role:Station Manager`,
-        sort: 'created_at:1',
-        page: pagination.page ?? 1,
-        per_page: pagination.resPerPage ?? 20,
+        // sort: 'created_at:1',
+        // page: pagination.page ?? 1,
+        // per_page: pagination.resPerPage ?? 20,
       });
     } catch (error) {
       throw new HttpException(error.message, error.status);
@@ -207,9 +202,9 @@ export class UsersService {
     try {
       return await this.managementClient.getUsers({
         q: `user_metadata.sacco:${currentUser.user_metadata.sacco} AND user_metadata.role:Driver`,
-        sort: 'created_at:1',
-        page: pagination.page ?? 1,
-        per_page: pagination.resPerPage ?? 20,
+        // sort: 'created_at:1',
+        // page: pagination.page ?? 1,
+        // per_page: pagination.resPerPage ?? 20,
       });
     } catch (error) {
       throw new HttpException(error.message, error.status);
