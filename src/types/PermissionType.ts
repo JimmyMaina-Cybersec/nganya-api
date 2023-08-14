@@ -73,6 +73,13 @@ export enum UserPermissions {
   ASSIGN_DRIVER = 'update:assignDriver',
   DELETE_DRIVER = 'delete:driver',
 
+  CREATE_AVAILABILITIES = 'create:availabilities',
+  READ_AVAILABILITIES = 'read:availabilities',
+  UPDATE_AVAILABILITIES = 'update:availabilities',
+  DELETE_AVAILABILITIES = 'delete:Availabilities',
+
+  
+
   ASSIGN_STATION_MANAGER = 'update:assignStationManager',
   ASSIGN_SERVICE_AGENT = 'update:assignServiceAgent',
 }
