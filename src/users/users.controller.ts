@@ -11,16 +11,16 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { OldJwtPayload } from 'src/types/jwt-payload';
-import { OldCurrentUser } from 'src/common/decorators/current-user.decorator';
-import { FindStationAgentsDto } from './dto/find-station-agents.dto';
+import { JwtPayload } from 'src/types/jwt-payload';
+import { CurrentUser } from 'src/common/decorators/current-user.decorator';
 import { Pagination } from 'src/common/decorators/paginate.decorator';
 import PaginationQueryType from 'src/types/paginationQuery';
 import { AuthorizationGuard } from '../auth/guards/authorization-guard.service';
 import { PermissionsGuard } from '../auth/guards/permissions/permissions.guard';
 import { UserPermissions } from '../types/PermissionType';
+import { CreateSaccoUserDto } from './dto/create-sacco-user.dto';
+import AssignStationManageDto from './dto/assign-sation-manage.dto';
 
 @UseGuards(AuthorizationGuard, PermissionsGuard)
 @Controller('users')
@@ -28,81 +28,107 @@ export class UsersController {
   constructor(private readonly usersService: UsersService) {}
 
   @SetMetadata('permissions', [UserPermissions.CREATE_SACCO_USERS])
-  @Post('create-user')
-  createUser() {
-    return this.usersService.createSaccoUsers();
-  }
-
-  @Post('add-user')
-  create(
-    @Body() createUserDto: CreateUserDto,
-    @OldCurrentUser() currentUser: OldJwtPayload,
+  @Post('create/user')
+  createUser(
+    @CurrentUser() currentUser: JwtPayload,
+    @Body() createUserDto: CreateSaccoUserDto,
   ) {
-    return this.usersService.addUser(createUserDto, currentUser);
+    return this.usersService.createSaccoUsers(currentUser, createUserDto);
   }
 
+  @SetMetadata('permissions', [UserPermissions.CREATE_ADMINS])
+  @Post('create/admin')
+  createAdmins(
+    @CurrentUser() currentUser: JwtPayload,
+    @Body() createUserDto: CreateSaccoUserDto,
+  ) {
+    return this.usersService.createAdmins(currentUser, createUserDto);
+  }
+
+  @SetMetadata('permissions', [UserPermissions.CREATE_SERVICE_AGENTS])
+  @Post('create/agent')
+  createService(
+    @CurrentUser() currentUser: JwtPayload,
+    @Body() createUserDto: CreateSaccoUserDto,
+  ) {
+    return this.usersService.createServiceAgent(currentUser, createUserDto);
+  }
+
+  @SetMetadata('permissions', [UserPermissions.READ_SACCO_USERS])
   @Get()
   findAll(
-    @OldCurrentUser() currentUser: OldJwtPayload,
+    @CurrentUser() currentUser: JwtPayload,
+    @Query() pagination: PaginationQueryType,
+    @Query() filters: { role: string; station: string },
+  ) {
+    return this.usersService.findAllUsers(currentUser, pagination, filters);
+  }
+
+  @SetMetadata('permissions', [UserPermissions.READ_ADMINS])
+  @Get('administrators')
+  findAllAdmins(
+    @CurrentUser() currentUser: JwtPayload,
+    @Query() pagination: PaginationQueryType,
+  ) {
+    return this.usersService.findAllAdmins(currentUser, pagination);
+  }
+
+  @SetMetadata('permissions', [UserPermissions.READ_STATION_MANAGERS])
+  @Get('managers')
+  findAllManagers(
+    @CurrentUser() currentUser: JwtPayload,
+    @Query() pagination: PaginationQueryType,
+  ) {
+    return this.usersService.findAllManagers(currentUser, pagination);
+  }
+
+  @SetMetadata('permissions', [UserPermissions.READ_SERVICE_AGENTS])
+  @Get('managers')
+  findAllAgents(
+    @CurrentUser() currentUser: JwtPayload,
     @Pagination() pagination: PaginationQueryType,
   ) {
-    return this.usersService.findAllUsers(currentUser, pagination);
+    return this.usersService.findAllAgents(currentUser, pagination);
   }
 
-  @Get('user/:id')
-  findOne(
-    @Param('id') id: string,
-    @OldCurrentUser() currentUser: OldJwtPayload,
+  @SetMetadata('permissions', [UserPermissions.READ_DRIVERS])
+  @Get('managers')
+  findAllDrivers(
+    @CurrentUser() currentUser: JwtPayload,
+    @Pagination() pagination: PaginationQueryType,
   ) {
-    return this.usersService.findUser(id, currentUser);
-  }
-
-  @Get('find-by-id')
-  findById(
-    @Query() idNo: { idNo: string },
-    @OldCurrentUser() currentUser: OldJwtPayload,
-  ) {
-    return this.usersService.findUserById(idNo, currentUser);
+    return this.usersService.findAllDrivers(currentUser, pagination);
   }
 
   @Patch('update-user/:id')
   updateUser(
     @Param('id') id: string,
     @Body() updateUserDto: UpdateUserDto,
-    @OldCurrentUser() currentUser: OldJwtPayload,
+    @CurrentUser() currentUser: JwtPayload,
   ) {
     return this.usersService.updateUser(id, updateUserDto, currentUser);
   }
 
   @Delete('delete-user/:id')
-  deleteUser(
-    @Param('id') id: string,
-    @OldCurrentUser() currentUser: OldJwtPayload,
-  ) {
+  deleteUser(@Param('id') id: string, @CurrentUser() currentUser: JwtPayload) {
     return this.usersService.deleteUser(id, currentUser);
   }
 
-  @Get('station-agents')
-  findAgentsInStation(
-    @OldCurrentUser() currentUser: OldJwtPayload,
-    @Query() station: FindStationAgentsDto,
+  @SetMetadata('permissions', [UserPermissions.ASSIGN_SERVICE_AGENT])
+  @Patch('assign-agent')
+  assignAgentToStation(
+    @Body() body: AssignStationManageDto,
+    @CurrentUser() currentUser: JwtPayload,
   ) {
-    return this.usersService.findAgentsInStation(currentUser, station);
+    return this.usersService.assignUserToStation(body, currentUser);
   }
 
-  @Get('station-manager')
-  findStationManager(
-    @OldCurrentUser() currentUser: OldJwtPayload,
-    @Query() station: { station: string },
+  @SetMetadata('permissions', [UserPermissions.ASSIGN_STATION_MANAGER])
+  @Patch('assign-manager')
+  assignManager(
+    @Body() body: AssignStationManageDto,
+    @CurrentUser() currentUser: JwtPayload,
   ) {
-    return this.usersService.findStationManager(currentUser, station);
-  }
-
-  @Patch('assign-station-manager')
-  assingManager(
-    @Query() queryData: { station: string; userId: string },
-    @OldCurrentUser() currentUser: OldJwtPayload,
-  ) {
-    return this.usersService.assingManager(queryData, currentUser);
+    return this.usersService.assignManagerToStation(body, currentUser);
   }
 }
