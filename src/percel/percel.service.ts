@@ -64,7 +64,7 @@ export class PercelService {
           data: parcelInStation,
           page,
           resPerPage,
-          numberOfPages : Math.ceil(docsCount/pagination.resPerPage),
+          numberOfPages: Math.ceil(docsCount / pagination.resPerPage),
         }
       }
     } catch (error) {
@@ -93,7 +93,7 @@ export class PercelService {
           data: parcelInStation,
           page,
           resPerPage,
-          numberOfPages : Math.ceil(docsCount/pagination.resPerPage),
+          numberOfPages: Math.ceil(docsCount / pagination.resPerPage),
         }
       }
     } catch (error) {
@@ -122,7 +122,7 @@ export class PercelService {
         data: parcelInStation,
         page,
         resPerPage,
-        numberOfPages : Math.ceil(docsCount/pagination.resPerPage),
+        numberOfPages: Math.ceil(docsCount / pagination.resPerPage),
       }
     } catch (error) {
       throw new HttpException(error.message, error.data);
@@ -132,7 +132,9 @@ export class PercelService {
     try {
       let parcelQuery = null;
       if (user.user_roles.includes(UserRoles.GENERAL_ADMIN)) {
-        parcelQuery = await this.percelModel.findAll().exec();
+        parcelQuery = await this.percelModel.find({
+          sacco: user.user_metadata.sacco,
+        }).exec();
       }
       if (user.user_roles.includes(UserRoles.STATION_MANAGER)) {
         parcelQuery = await this.percelModel.find({
@@ -140,11 +142,11 @@ export class PercelService {
         }).exec();
       }
       if (user.user_roles.includes(UserRoles.SERVICE_AGENT)) {
-        parcelQuery = await this.percelModel.findAll({
+        parcelQuery = await this.percelModel.find({
           sendingAgent: user.sub,
         }).exec();
       }
-      
+
       const { page, resPerPage } = pagination;
 
       const [percels, totalCount] = await Promise.all([
