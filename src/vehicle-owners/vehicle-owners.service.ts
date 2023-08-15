@@ -15,23 +15,28 @@ export class VehicleOwnersService {
     private vehicleOwnerModel: Model<VehicleOwner>,
     @InjectModel(Vehicle.name)
     private vehicleModel: Model<Vehicle>,
-  ) {}
+  ) { }
 
   async addVehicleOwner(
     createVehicleOwnerDto: CreateVehicleOwnerDto,
     user: JwtPayload,
   ) {
-    await this.vehicleOwnerModel.create({
-      ...createVehicleOwnerDto,
-      sacco: user.user_metadata.sacco,
-      status: 'active',
-      createdBy: user.sub,
-      updatedBy: user.sub,
-    });
-    throw new HttpException(
-      'Vehicle Owner created successfully',
-      HttpStatus.CREATED,
-    );
+    try {
+
+      return await this.vehicleOwnerModel.create({
+        ...createVehicleOwnerDto,
+        sacco: user.user_metadata.sacco,
+        status: 'active',
+        createdBy: user.sub,
+        updatedBy: user.sub,
+      });
+    } catch (error) {
+      throw new HttpException(
+        error.message,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+
   }
 
   async findAll(user: JwtPayload, pagination) {
