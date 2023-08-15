@@ -28,7 +28,7 @@ export class UsersService {
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
     private configurationService: ConfigService,
-  ) { }
+  ) {}
 
   async createSaccoUsers(
     currentUser: JwtPayload,
@@ -38,11 +38,9 @@ export class UsersService {
       const newUser = await this.addUser(currentUser, createUserDto);
       if (createUserDto.role === 'Station Manager') {
         await this.addUserRoles(newUser.user_id, [RoleIdType.STATION_MANAGER]);
-      }
-      else if (createUserDto.role === 'Driver') {
+      } else if (createUserDto.role === 'Driver') {
         await this.addUserRoles(newUser.user_id, [RoleIdType.DRIVER]);
-      }
-      else {
+      } else {
         await this.addUserRoles(newUser.user_id, [RoleIdType.SERVICE_AGENT]);
       }
       return newUser;
@@ -136,8 +134,7 @@ export class UsersService {
   ) {
     try {
       return await this.managementClient.getUsers({
-        q: `user_metadata.sacco:${currentUser.user_metadata.sacco
-          }`,
+        q: `user_metadata.sacco:${currentUser.user_metadata.sacco}`,
       });
     } catch (error) {
       throw new HttpException(error.message, error.status);
@@ -151,7 +148,6 @@ export class UsersService {
     try {
       return await this.managementClient.getUsers({
         q: `user_metadata.sacco:${currentUser.user_metadata.sacco}`,
-
       });
     } catch (error) {
       throw new HttpException(error.message, error.status);
@@ -236,11 +232,39 @@ export class UsersService {
     );
   }
 
-  async deleteUser(id: string, user: JwtPayload) {
-    throw new HttpException(
-      'Methode Not Implemented',
-      HttpStatus.NOT_IMPLEMENTED,
-    );
+  async deleteAdmin(adminId: string) {
+    try {
+      const user = await this.managementClient.getUser({ id: adminId });
+
+      if (!user) {
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      }
+      const userRole = await this.managementClient.getUserRoles({
+        id: adminId,
+      });
+
+      const isAdmin = userRole.some((role) => role.id === RoleIdType.ADMIN);
+
+      if (!isAdmin) {
+        throw new HttpException(
+          'User is not an administrator',
+          HttpStatus.FORBIDDEN,
+        );
+      }
+
+      await this.managementClient.deleteUser({ id: adminId });
+
+      //add deleted user to the local database
+      // await this.deletedUserModel.create({});
+
+      return { message: 'Admin user deleted successfully' };
+    } catch (error) {
+      console.error('Error deleting admin:', error.message);
+      throw new HttpException(
+        error.message ?? 'Something went wrong',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   /**

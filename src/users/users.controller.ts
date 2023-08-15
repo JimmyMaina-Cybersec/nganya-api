@@ -25,7 +25,7 @@ import AssignStationManageDto from './dto/assign-sation-manage.dto';
 @UseGuards(AuthorizationGuard, PermissionsGuard)
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {}
 
   @SetMetadata('permissions', [UserPermissions.CREATE_SACCO_USERS])
   @Post('create/user')
@@ -109,10 +109,13 @@ export class UsersController {
     return this.usersService.updateUser(id, updateUserDto, currentUser);
   }
 
-  @Delete('delete-user/:id')
-  deleteUser(@Param('id') id: string, @CurrentUser() currentUser: JwtPayload) {
-    return this.usersService.deleteUser(id, currentUser);
+  @SetMetadata('permissions', UserPermissions.DELETE_ADMINS)
+  @Delete('delete-admin/:adminId')
+  deleteUser(@Param('adminId') adminId: string) {
+    return this.usersService.deleteAdmin(adminId);
   }
+  // Delete  Agent(delete:agent)
+  // Delete managers and Agents, Driver (delete:saccoUser)
 
   @SetMetadata('permissions', [UserPermissions.ASSIGN_SERVICE_AGENT])
   @Patch('assign-agent')
