@@ -39,18 +39,18 @@ export class VehicleOwner {
   @Prop({
     required: false,
     immutable: true,
-    type: SchemaTypes.ObjectId,
+    type: String,
   })
-  addedBy: Types.ObjectId;
+  addedBy: String;
 
   @Prop({ required: false })
   upadatedAt: Date;
 
   @Prop({
     required: false,
-    type: SchemaTypes.ObjectId,
+    type: String,
   })
-  updatedBy: Types.ObjectId;
+  updatedBy: String;
 }
 
 export const VehicleOwnerSchema = SchemaFactory.createForClass(VehicleOwner);
