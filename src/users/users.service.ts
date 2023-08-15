@@ -267,6 +267,83 @@ export class UsersService {
     }
   }
 
+  async deleteAgent(agentId: string) {
+    try {
+      const user = await this.managementClient.getUser({ id: agentId });
+
+      if (!user) {
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      }
+      const userRole = await this.managementClient.getUserRoles({
+        id: agentId,
+      });
+
+      const isAgent = userRole.some(
+        (role) => role.id === RoleIdType.SERVICE_AGENT,
+      );
+
+      if (!isAgent) {
+        throw new HttpException(
+          'User is not an administrator',
+          HttpStatus.FORBIDDEN,
+        );
+      }
+
+      await this.managementClient.deleteUser({ id: agentId });
+
+      //add deleted user to the local database
+      // await this.deletedUserModel.create({});
+
+      return { message: 'Admin user deleted successfully' };
+    } catch (error) {
+      console.error('Error deleting admin:', error.message);
+      throw new HttpException(
+        error.message ?? 'Something went wrong',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async deleteSaccoUser(saccoUserId: string) {
+    try {
+      const user = await this.managementClient.getUser({ id: saccoUserId });
+
+      if (!user) {
+        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
+      }
+
+      const userRole = await this.managementClient.getUserRoles({
+        id: saccoUserId,
+      });
+
+      const userRoleIds = userRole.map((role) => role.id);
+
+      if (
+        userRoleIds.includes(RoleIdType.STATION_MANAGER) ||
+        userRoleIds.includes(RoleIdType.DRIVER) ||
+        userRoleIds.includes(RoleIdType.SERVICE_AGENT)
+      ) {
+        await this.managementClient.deleteUser({ id: saccoUserId });
+      } else {
+        throw new HttpException(
+          'User role not eligible for deletion',
+          HttpStatus.BAD_REQUEST,
+        );
+      }
+
+      //add deleted user to the local database
+      // await this.deletedUserModel.create({});
+
+      return { message: 'Admin user deleted successfully' };
+    } catch (error) {
+      console.error('Error deleting admin:', error.message);
+      throw new HttpException(
+        error.message ?? 'Something went wrong',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   /**
    * ## Creates a new Auth0 user
    * @param currentUser

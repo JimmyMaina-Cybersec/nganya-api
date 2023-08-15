@@ -111,11 +111,21 @@ export class UsersController {
 
   @SetMetadata('permissions', UserPermissions.DELETE_ADMINS)
   @Delete('delete-admin/:adminId')
-  deleteUser(@Param('adminId') adminId: string) {
+  deleteAdmin(@Param('adminId') adminId: string) {
     return this.usersService.deleteAdmin(adminId);
   }
-  // Delete  Agent(delete:agent)
-  // Delete managers and Agents, Driver (delete:saccoUser)
+
+  @SetMetadata('permissions', UserPermissions.DELETE_SERVICE_AGENTS)
+  @Delete('delete-agent/:agentId')
+  deleteAgent(@Param('agentId') agentId: string) {
+    return this.usersService.deleteAgent(agentId);
+  }
+
+  @SetMetadata('permissions', UserPermissions.DELETE_SACCO_USERS)
+  @Delete('delete-saccoUser/:saccoUserId')
+  deleteSaccoUser(@Param('saccoUserId') saccoUserId: string) {
+    return this.usersService.deleteAgent(saccoUserId);
+  }
 
   @SetMetadata('permissions', [UserPermissions.ASSIGN_SERVICE_AGENT])
   @Patch('assign-agent')
