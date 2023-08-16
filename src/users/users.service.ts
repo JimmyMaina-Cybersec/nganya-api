@@ -90,6 +90,72 @@ export class UsersService {
     }
   }
 
+  async addAgentPermissions(
+    serviceAgentId: string,
+    permissionsToAdd: string[],
+  ) {
+    try {
+      const user = await this.managementClient.getUser({id: serviceAgentId});
+      if (!user) {
+        throw new HttpException('Service Agent not found', HttpStatus.NOT_FOUND);
+      }
+      const userRole = await this.managementClient.getUserRoles({
+        id: serviceAgentId,
+      });
+
+      const isServiceAgent = userRole.some((role: { id: RoleIdType; }) => role.id === RoleIdType.SERVICE_AGENT);
+      if (isServiceAgent) {
+        user.user_metadata.permissions.push(...permissionsToAdd);
+      }
+
+      return await this.managementClient.updateUserMetadata(
+        {id: serviceAgentId},
+        {permissions: user.user_metadata.permissions}
+      );
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(
+        error.message?? 'Something went wrong',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+  async removeAgentPermissions(
+    serviceAgentId: string,
+    permissionsToRemove: string[],
+  ) {
+    try {
+      const user = await this.managementClient.getUser({id: serviceAgentId});
+      if (!user) {
+        throw new HttpException('Service Agent not found', HttpStatus.NOT_FOUND);
+      }
+      const userRole = await this.managementClient.getUserRoles({
+        id: serviceAgentId,
+      });
+
+      const isServiceAgent = userRole.some((role: { id: RoleIdType; }) => role.id === RoleIdType.SERVICE_AGENT);
+      
+      let updatedPermissions: string[] = [...user.user_metadata.permissions];
+      if (isServiceAgent) {
+        updatedPermissions = user.user_metadata.permissions.filter(
+          (permission: string) => !permissionsToRemove.includes(permission)
+        );
+        
+      }
+
+      return await this.managementClient.updateUserMetadata(
+        {id: serviceAgentId},
+        {permissions: updatedPermissions}
+      );
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(
+        error.message?? 'Something went wrong',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
   async assignUserToStation(
     body: AssignStationManageDto,
     currentUser: JwtPayload,
