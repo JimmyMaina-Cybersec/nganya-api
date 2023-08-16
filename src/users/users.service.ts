@@ -28,7 +28,7 @@ export class UsersService {
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
     private configurationService: ConfigService,
-  ) { }
+  ) {}
 
   async createSaccoUsers(
     currentUser: JwtPayload,
@@ -38,11 +38,9 @@ export class UsersService {
       const newUser = await this.addUser(currentUser, createUserDto);
       if (createUserDto.role === 'Station Manager') {
         await this.addUserRoles(newUser.user_id, [RoleIdType.STATION_MANAGER]);
-      }
-      else if (createUserDto.role === 'Driver') {
+      } else if (createUserDto.role === 'Driver') {
         await this.addUserRoles(newUser.user_id, [RoleIdType.DRIVER]);
-      }
-      else {
+      } else {
         await this.addUserRoles(newUser.user_id, [RoleIdType.SERVICE_AGENT]);
       }
       return newUser;
@@ -95,27 +93,32 @@ export class UsersService {
     permissionsToAdd: string[],
   ) {
     try {
-      const user = await this.managementClient.getUser({id: serviceAgentId});
+      const user = await this.managementClient.getUser({ id: serviceAgentId });
       if (!user) {
-        throw new HttpException('Service Agent not found', HttpStatus.NOT_FOUND);
+        throw new HttpException(
+          'Service Agent not found',
+          HttpStatus.NOT_FOUND,
+        );
       }
       const userRole = await this.managementClient.getUserRoles({
         id: serviceAgentId,
       });
 
-      const isServiceAgent = userRole.some((role: { id: RoleIdType; }) => role.id === RoleIdType.SERVICE_AGENT);
+      const isServiceAgent = userRole.some(
+        (role: { id: RoleIdType }) => role.id === RoleIdType.SERVICE_AGENT,
+      );
       if (isServiceAgent) {
         user.permissions.push(...permissionsToAdd);
       }
 
       return await this.managementClient.updateUserMetadata(
-        {id: serviceAgentId},
-        {permissions: user.permissions}
+        { id: serviceAgentId },
+        { permissions: user.permissions },
       );
     } catch (error) {
       console.error(error);
       throw new HttpException(
-        error.message?? 'Something went wrong',
+        error.message ?? 'Something went wrong',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -125,32 +128,36 @@ export class UsersService {
     permissionsToRemove: string[],
   ) {
     try {
-      const user = await this.managementClient.getUser({id: serviceAgentId});
+      const user = await this.managementClient.getUser({ id: serviceAgentId });
       if (!user) {
-        throw new HttpException('Service Agent not found', HttpStatus.NOT_FOUND);
+        throw new HttpException(
+          'Service Agent not found',
+          HttpStatus.NOT_FOUND,
+        );
       }
       const userRole = await this.managementClient.getUserRoles({
         id: serviceAgentId,
       });
 
-      const isServiceAgent = userRole.some((role: { id: RoleIdType; }) => role.id === RoleIdType.SERVICE_AGENT);
-      
+      const isServiceAgent = userRole.some(
+        (role: { id: RoleIdType }) => role.id === RoleIdType.SERVICE_AGENT,
+      );
+
       let updatedPermissions: string[] = [...user.permissions];
       if (isServiceAgent) {
         updatedPermissions = user.permissions.filter(
-          (permission: string) => !permissionsToRemove.includes(permission)
+          (permission: string) => !permissionsToRemove.includes(permission),
         );
-        
       }
 
       return await this.managementClient.updateUserMetadata(
-        {id: serviceAgentId},
-        {permissions: updatedPermissions}
+        { id: serviceAgentId },
+        { permissions: updatedPermissions },
       );
     } catch (error) {
       console.error(error);
       throw new HttpException(
-        error.message?? 'Something went wrong',
+        error.message ?? 'Something went wrong',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -202,8 +209,7 @@ export class UsersService {
   ) {
     try {
       return await this.managementClient.getUsers({
-        q: `user_metadata.sacco:${currentUser.user_metadata.sacco
-          }`,
+        q: `user_metadata.sacco:${currentUser.user_metadata.sacco}`,
       });
     } catch (error) {
       throw new HttpException(error.message, error.status);
@@ -217,7 +223,6 @@ export class UsersService {
     try {
       return await this.managementClient.getUsers({
         q: `user_metadata.sacco:${currentUser.user_metadata.sacco}`,
-
       });
     } catch (error) {
       throw new HttpException(error.message, error.status);
