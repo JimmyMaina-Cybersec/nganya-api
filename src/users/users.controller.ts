@@ -25,7 +25,7 @@ import AssignStationManageDto from './dto/assign-sation-manage.dto';
 @UseGuards(AuthorizationGuard, PermissionsGuard)
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) { }
+  constructor(private readonly usersService: UsersService) {}
 
   @SetMetadata('permissions', [UserPermissions.CREATE_SACCO_USERS])
   @Post('create/user')
@@ -109,9 +109,22 @@ export class UsersController {
     return this.usersService.updateUser(id, updateUserDto, currentUser);
   }
 
-  @Delete('delete-user/:id')
-  deleteUser(@Param('id') id: string, @CurrentUser() currentUser: JwtPayload) {
-    return this.usersService.deleteUser(id, currentUser);
+  @SetMetadata('permissions', UserPermissions.DELETE_ADMINS)
+  @Delete('delete-admin/:adminId')
+  deleteAdmin(@Param('adminId') adminId: string) {
+    return this.usersService.deleteAdmin(adminId);
+  }
+
+  @SetMetadata('permissions', UserPermissions.DELETE_SERVICE_AGENTS)
+  @Delete('delete-agent/:agentId')
+  deleteAgent(@Param('agentId') agentId: string) {
+    return this.usersService.deleteAgent(agentId);
+  }
+
+  @SetMetadata('permissions', UserPermissions.DELETE_SACCO_USERS)
+  @Delete('delete-saccoUser/:saccoUserId')
+  deleteSaccoUser(@Param('saccoUserId') saccoUserId: string) {
+    return this.usersService.deleteAgent(saccoUserId);
   }
 
   @SetMetadata('permissions', [UserPermissions.ASSIGN_SERVICE_AGENT])
