@@ -21,7 +21,7 @@ export class UsersService {
     domain: 'nganya.us.auth0.com',
     clientId: this.client_id,
     clientSecret: this.client_secret,
-    scope: 'create:users',
+    scope: 'create:users delete:users',
   });
 
   constructor(
@@ -254,9 +254,6 @@ export class UsersService {
 
       await this.managementClient.deleteUser({ id: adminId });
 
-      //add deleted user to the local database
-      // await this.deletedUserModel.create({});
-
       return { message: 'Admin user deleted successfully' };
     } catch (error) {
       console.error('Error deleting admin:', error.message);
@@ -290,9 +287,6 @@ export class UsersService {
       }
 
       await this.managementClient.deleteUser({ id: agentId });
-
-      //add deleted user to the local database
-      // await this.deletedUserModel.create({});
 
       return { message: 'Admin user deleted successfully' };
     } catch (error) {
@@ -330,9 +324,6 @@ export class UsersService {
           HttpStatus.BAD_REQUEST,
         );
       }
-
-      //add deleted user to the local database
-      // await this.deletedUserModel.create({});
 
       return { message: 'Admin user deleted successfully' };
     } catch (error) {
