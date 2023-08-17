@@ -83,4 +83,16 @@ export enum UserPermissions {
 
   ASSIGN_STATION_MANAGER = 'update:assignStationManager',
   ASSIGN_SERVICE_AGENT = 'update:assignServiceAgent',
+
+  READ_AGENT_PARCELS_REPORT = 'read:agentParcelsReport',
+  READ_AGENT_BOOKINGS_REPORT = 'read:agentBookingsReport',
+  READ_AGENT_COLLECTIONS_REPORT = 'read:agentCollectionsReport',
+
+  READ_AGENTS_PARCELS_REPORTS = 'read:agentsParcelsReports',
+  READ_AGENTS_BOOKINGS_REPORTS = 'read:agentsBookingsReports',
+  READ_AGENTS_COLLECTIONS_REPORTS = 'read:agentsCollectionsReports',
+
+  READ_STATIONS_PARCELS_REPORTS = 'read:stationsParcelsReports',
+  READ_STATIONS_BOOKINGS_REPORTS = 'read:stationsBookingsReports',
+  READ_STATIONS_COLLECTIONS_REPORTS = 'read:stationsCollectionsReports',
 }
