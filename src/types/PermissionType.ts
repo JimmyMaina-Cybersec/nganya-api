@@ -9,6 +9,9 @@ export enum UserPermissions {
   UPDATE_SERVICE_AGENTS = 'update:stationServiceAgents',
   DELETE_SERVICE_AGENTS = 'delete:stationServiceAgents',
 
+  UPDATE_SERVICE_AGENT_PERMISSIONS = 'update:serviceAgentPermissions',
+  DELETE_SERVICE_AGENT_PERMISSIONS = 'delete:serviceAgentPermissions',
+
   READ_STATION_MANAGERS = 'read:stationManagers',
   CREATE_STATION_MANAGERS = 'create:stationManagers',
   UPDATE_STATION_MANAGERS = 'update:stationManagers',

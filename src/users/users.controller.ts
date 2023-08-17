@@ -100,6 +100,24 @@ export class UsersController {
     return this.usersService.findAllDrivers(currentUser, pagination);
   }
 
+  @SetMetadata('permissions', [UserPermissions.UPDATE_SERVICE_AGENT_PERMISSIONS])
+  @Post('add-permissions/:serviceAgentId')
+  updateAgentPermissions(
+    @Param('serviceAgentId') serviceAgentId: string, 
+    @Body() permissionsToAdd: string[],
+    ) {
+    return this.usersService.addAgentPermissions(serviceAgentId, permissionsToAdd);
+  }
+  
+  @SetMetadata('permissions', [UserPermissions.DELETE_SERVICE_AGENT_PERMISSIONS])
+  @Delete('remove-permissions/:serviceAgentId')
+  removeAgentPermissions(
+    @Param('serviceAgentId') serviceAgentId: string, 
+    @Body() permissionsToRemove: string[],
+    ) {
+    return this.usersService.removeAgentPermissions(serviceAgentId, permissionsToRemove);
+  }
+
   @Patch('update-user/:id')
   updateUser(
     @Param('id') id: string,
