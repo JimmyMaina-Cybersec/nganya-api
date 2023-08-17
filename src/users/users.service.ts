@@ -108,12 +108,12 @@ export class UsersService {
         (role: { id: RoleIdType }) => role.id === RoleIdType.SERVICE_AGENT,
       );
       if (isServiceAgent) {
-        user.permissions.push(...permissionsToAdd);
+        user.user_metadata.permissions.push(...permissionsToAdd);
       }
 
       return await this.managementClient.updateUserMetadata(
         { id: serviceAgentId },
-        { permissions: user.permissions },
+        { permissions: user.user_metadata.permissions },
       );
     } catch (error) {
       console.error(error);
@@ -143,9 +143,9 @@ export class UsersService {
         (role: { id: RoleIdType }) => role.id === RoleIdType.SERVICE_AGENT,
       );
 
-      let updatedPermissions: string[] = [...user.permissions];
+      let updatedPermissions: string[] = [...user.user_metadata.permissions];
       if (isServiceAgent) {
-        updatedPermissions = user.permissions.filter(
+        updatedPermissions = user.user_metadata.permissions.filter(
           (permission: string) => !permissionsToRemove.includes(permission),
         );
       }
