@@ -1,6 +1,6 @@
 import { IsString } from 'class-validator';
 
-export default class AssignStationManageDto {
+export default class AssignUserToStationDto {
   @IsString()
   station: string;
   @IsString()
