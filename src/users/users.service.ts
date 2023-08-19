@@ -9,8 +9,9 @@ import { ConfigService } from '@nestjs/config';
 import { ManagementClient } from 'auth0';
 import { CreateSaccoUserDto } from './dto/create-sacco-user.dto';
 import { RoleIdType } from '../types/RoleIdType';
-import AssignStationManageDto from './dto/assign-sation-manage.dto';
+import AssignUserToStationDto from './dto/assign-sation-manage.dto';
 import { UserRoles } from '../types/UserRoles';
+import RemoveUserFromStationDto from './dto/remove-station-manage.dto copy';
 
 @Injectable()
 export class UsersService {
@@ -163,33 +164,73 @@ export class UsersService {
     }
   }
 
-  async assignUserToStation(
-    body: AssignStationManageDto,
-    currentUser: JwtPayload,
-  ) {
-    return await this.updateUserMetaData(body.userId, {
-      station: body.station,
-    });
-  }
-
-  async assignManagerToStation(
-    body: AssignStationManageDto,
-    currentUser: JwtPayload,
-  ) {
-    const manager = await this.managementClient.getUsers({
-      q: `user_metadata.sacco:${currentUser.user_metadata.sacco} AND user_metadata.station:${body.station} AND user_metadata.role:Station Manager`,
-    });
-
-    if (manager.length > 0) {
+  async assignAgentToStation(body: AssignUserToStationDto) {
+    try {
+      const agentHasStation = await this.userModel.findById({
+        _id: body.userId,
+      });
+      if ((agentHasStation.station = null)) {
+        return await this.updateUserMetaData(body.userId, {
+          station: body.station,
+        });
+      } else {
+        return {
+          message: 'Agents already has a station',
+        };
+      }
+    } catch (error) {
+      console.error(error);
       throw new HttpException(
-        'This station already has a manager',
-        HttpStatus.BAD_REQUEST,
+        error.message ?? 'Something went wrong',
+        HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
+  }
 
-    return await this.updateUserMetaData(body.userId, {
-      station: body.station,
-    });
+  async removeAgentFromStation(body: RemoveUserFromStationDto) {
+    try {
+      const agentHasStation = await this.userModel.findById({
+        _id: body.userId,
+      });
+      if (agentHasStation.station != null) {
+        return await this.updateUserMetaData(body.userId, {
+          station: null,
+        });
+      } else {
+        return {
+          message: 'Agent does not have a station',
+        };
+      }
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(
+        error.message ?? 'Something went wrong',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async assignManagerToStation(body: AssignUserToStationDto) {
+    try {
+      const managerHasStation = await this.userModel.findById({
+        _id: body.userId,
+      });
+      if ((managerHasStation.station = null)) {
+        return await this.updateUserMetaData(body.userId, {
+          station: body.station,
+        });
+      } else {
+        return {
+          message: 'Manager already has a station',
+        };
+      }
+    } catch (error) {
+      console.error(error);
+      throw new HttpException(
+        error.message ?? 'Something went wrong',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
   /**

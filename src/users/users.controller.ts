@@ -20,7 +20,7 @@ import { AuthorizationGuard } from '../auth/guards/authorization-guard.service';
 import { PermissionsGuard } from '../auth/guards/permissions/permissions.guard';
 import { UserPermissions } from '../types/PermissionType';
 import { CreateSaccoUserDto } from './dto/create-sacco-user.dto';
-import AssignStationManageDto from './dto/assign-sation-manage.dto';
+import AssignUserToStationDto from './dto/assign-sation-manage.dto';
 
 @UseGuards(AuthorizationGuard, PermissionsGuard)
 @Controller('users')
@@ -100,22 +100,32 @@ export class UsersController {
     return this.usersService.findAllDrivers(currentUser, pagination);
   }
 
-  @SetMetadata('permissions', [UserPermissions.UPDATE_SERVICE_AGENT_PERMISSIONS])
+  @SetMetadata('permissions', [
+    UserPermissions.UPDATE_SERVICE_AGENT_PERMISSIONS,
+  ])
   @Post('add-permissions/:serviceAgentId')
   updateAgentPermissions(
-    @Param('serviceAgentId') serviceAgentId: string, 
+    @Param('serviceAgentId') serviceAgentId: string,
     @Body() permissionsToAdd: string[],
-    ) {
-    return this.usersService.addAgentPermissions(serviceAgentId, permissionsToAdd);
+  ) {
+    return this.usersService.addAgentPermissions(
+      serviceAgentId,
+      permissionsToAdd,
+    );
   }
-  
-  @SetMetadata('permissions', [UserPermissions.DELETE_SERVICE_AGENT_PERMISSIONS])
+
+  @SetMetadata('permissions', [
+    UserPermissions.DELETE_SERVICE_AGENT_PERMISSIONS,
+  ])
   @Delete('remove-permissions/:serviceAgentId')
   removeAgentPermissions(
-    @Param('serviceAgentId') serviceAgentId: string, 
+    @Param('serviceAgentId') serviceAgentId: string,
     @Body() permissionsToRemove: string[],
-    ) {
-    return this.usersService.removeAgentPermissions(serviceAgentId, permissionsToRemove);
+  ) {
+    return this.usersService.removeAgentPermissions(
+      serviceAgentId,
+      permissionsToRemove,
+    );
   }
 
   @Patch('update-user/:id')
@@ -145,21 +155,23 @@ export class UsersController {
     return this.usersService.deleteAgent(saccoUserId);
   }
 
-  @SetMetadata('permissions', [UserPermissions.ASSIGN_SERVICE_AGENT])
+  @SetMetadata('permissions', [UserPermissions.ASSIGN_SERVICE_AGENT_TO_STATION])
   @Patch('assign-agent')
-  assignAgentToStation(
-    @Body() body: AssignStationManageDto,
-    @CurrentUser() currentUser: JwtPayload,
-  ) {
-    return this.usersService.assignUserToStation(body, currentUser);
+  assignAgentToStation(@Body() body: AssignUserToStationDto) {
+    return this.usersService.assignAgentToStation(body);
   }
 
-  @SetMetadata('permissions', [UserPermissions.ASSIGN_STATION_MANAGER])
+  @SetMetadata('permissions', [UserPermissions.REMOVE_SERVICE_AGENT_TO_STATION])
+  @Patch('remove-agent')
+  removeAgentFromStation(@Body() body: AssignUserToStationDto) {
+    return this.usersService.removeAgentFromStation(body);
+  }
+
+  @SetMetadata('permissions', [
+    UserPermissions.ASSIGN_STATION_MANAGER_TO_STATION,
+  ])
   @Patch('assign-manager')
-  assignManager(
-    @Body() body: AssignStationManageDto,
-    @CurrentUser() currentUser: JwtPayload,
-  ) {
-    return this.usersService.assignManagerToStation(body, currentUser);
+  assignManager(@Body() body: AssignUserToStationDto) {
+    return this.usersService.assignManagerToStation(body);
   }
 }
