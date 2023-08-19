@@ -24,6 +24,7 @@ import { SmsModule } from './sms/sms.module';
 import { PaymentsModule } from './payments/payments.module';
 import { TestAuthModule } from './test-auth/test-auth.module';
 import { OnboardingModule } from './onboarding/onboarding.module';
+import { ReportsModule } from './reports/reports.module';
 
 @Module({
   imports: [
@@ -57,6 +58,7 @@ import { OnboardingModule } from './onboarding/onboarding.module';
     PaymentsModule,
     TestAuthModule,
     OnboardingModule,
+    ReportsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
