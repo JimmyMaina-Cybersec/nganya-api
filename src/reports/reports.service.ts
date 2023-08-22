@@ -224,7 +224,7 @@ export class ReportsService {
             $lte: endOfDay,
           },
         })
-        .populate('sendingStation', 'name');
+        .populate('station', 'name');
 
       return stationCollectionsReports;
     } catch (error) {
