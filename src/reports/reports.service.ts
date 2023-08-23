@@ -21,9 +21,9 @@ export class ReportsService {
   ) {}
 
   // Agents: Parcels, Bookings and Transactions with sendingAgent/agent field == agent.sub
-  async findAgentParcelReport(agent: JwtPayload, day: string) {
+  async findAgentParcelReport(agent: JwtPayload) {
     try {
-      const { startOfDay, endOfDay } = this.calculateDateRange(day);
+      const { startOfDay, endOfDay } = this.calculateDateRange();
 
       const agentParcelsReport = await this.percelModel.find({
         sendingAgent: agent.sub,
@@ -43,9 +43,9 @@ export class ReportsService {
       );
     }
   }
-  async findAgentBookingsReport(agent: JwtPayload, day: string) {
+  async findAgentBookingsReport(agent: JwtPayload) {
     try {
-      const { startOfDay, endOfDay } = this.calculateDateRange(day);
+      const { startOfDay, endOfDay } = this.calculateDateRange();
 
       const agentBookingsReport = await this.bookingModel.find({
         sendingAgent: agent.sub,
@@ -65,9 +65,9 @@ export class ReportsService {
       );
     }
   }
-  async findAgentCollectionsReport(agent: JwtPayload, day: string) {
+  async findAgentCollectionsReport(agent: JwtPayload) {
     try {
-      const { startOfDay, endOfDay } = this.calculateDateRange(day);
+      const { startOfDay, endOfDay } = this.calculateDateRange();
 
       const agentCollectionsReport =
         await this.lipaNaMpesaTransactionModel.find({
@@ -90,9 +90,9 @@ export class ReportsService {
   }
 
   // Station-Managers: Parcels, Bookings and Transactions with sendingStation/station field == manager.user_metadata.station
-  async findManagerParcelReport(manager: JwtPayload, day: string) {
+  async findManagerParcelReport(manager: JwtPayload) {
     try {
-      const { startOfDay, endOfDay } = this.calculateDateRange(day);
+      const { startOfDay, endOfDay } = this.calculateDateRange();
 
       const managerParcelsReports = await this.percelModel
         .find({
@@ -114,9 +114,9 @@ export class ReportsService {
       );
     }
   }
-  async findManagerBookingsReport(manager: JwtPayload, day: string) {
+  async findManagerBookingsReport(manager: JwtPayload) {
     try {
-      const { startOfDay, endOfDay } = this.calculateDateRange(day);
+      const { startOfDay, endOfDay } = this.calculateDateRange();
 
       const managerBookingsReports = await this.bookingModel
         .find({
@@ -138,9 +138,9 @@ export class ReportsService {
       );
     }
   }
-  async findManagerCollectionsReport(manager: JwtPayload, day: string) {
+  async findManagerCollectionsReport(manager: JwtPayload) {
     try {
-      const { startOfDay, endOfDay } = this.calculateDateRange(day);
+      const { startOfDay, endOfDay } = this.calculateDateRange();
 
       const managerCollectionsReports = await this.lipaNaMpesaTransactionModel
         .find({
@@ -164,9 +164,9 @@ export class ReportsService {
   }
 
   // Sacco admins or General Admins: Parcels, Bookings and Transactions with sendingStation field == stationId
-  async findStationParcelsReports(stationId: string, day: string) {
+  async findStationParcelsReports(stationId: string) {
     try {
-      const { startOfDay, endOfDay } = this.calculateDateRange(day);
+      const { startOfDay, endOfDay } = this.calculateDateRange();
 
       const stationParcelsReports = await this.percelModel
         .find({
@@ -188,9 +188,9 @@ export class ReportsService {
       );
     }
   }
-  async findStationBookingsReports(stationId: string, day: string) {
+  async findStationBookingsReports(stationId: string) {
     try {
-      const { startOfDay, endOfDay } = this.calculateDateRange(day);
+      const { startOfDay, endOfDay } = this.calculateDateRange();
 
       const stationBookingsReports = await this.bookingModel
         .find({
@@ -212,9 +212,9 @@ export class ReportsService {
       );
     }
   }
-  async findStationCollectionsReports(stationId: string, day: string) {
+  async findStationCollectionsReports(stationId: string) {
     try {
-      const { startOfDay, endOfDay } = this.calculateDateRange(day);
+      const { startOfDay, endOfDay } = this.calculateDateRange();
 
       const stationCollectionsReports = await this.lipaNaMpesaTransactionModel
         .find({
@@ -224,7 +224,7 @@ export class ReportsService {
             $lte: endOfDay,
           },
         })
-        .populate('sendingStation', 'name');
+        .populate('station', 'name');
 
       return stationCollectionsReports;
     } catch (error) {
@@ -237,12 +237,15 @@ export class ReportsService {
     }
   }
 
-  private calculateDateRange(day: string): {
+  private calculateDateRange(): {
     startOfDay: Date;
     endOfDay: Date;
   } {
-    const startOfDay = new Date(day);
-    const endOfDay = new Date(day);
+    const startOfDay = new Date();
+    startOfDay.setHours(0, 0, 0, 0);
+
+    const endOfDay = new Date();
+    endOfDay.setHours(23, 59, 59, 999);
     endOfDay.setDate(endOfDay.getDate() + 1);
 
     return { startOfDay, endOfDay };
