@@ -12,6 +12,8 @@ import { RoleIdType } from '../types/RoleIdType';
 import AssignUserToStationDto from './dto/assign-sation-manage.dto';
 import { UserRoles } from '../types/UserRoles';
 import RemoveUserFromStationDto from './dto/remove-station-manage.dto copy';
+import { AssignDriverToVehicleDto } from './dto/assign_driver_to_vehicle.dto';
+import { Vehicle } from 'src/vehicles/schema/vehicle.schema';
 
 @Injectable()
 export class UsersService {
@@ -28,6 +30,8 @@ export class UsersService {
   constructor(
     @InjectModel(User.name)
     private userModel: Model<UserDocument>,
+    @InjectModel(Vehicle.name)
+    private vehicleModel: Model<Vehicle>,
     private configurationService: ConfigService,
   ) { }
 
@@ -166,10 +170,8 @@ export class UsersService {
 
   async assignAgentToStation(body: AssignUserToStationDto) {
     try {
-      const agentHasStation = await this.userModel.findById({
-        _id: body.userId,
-      });
-      if ((agentHasStation.station = null)) {
+      const agentMetadata = await this.managementClient.getUserMetadata({id: body.userId});
+      if ((agentMetadata.station = null)) {
         return await this.updateUserMetaData(body.userId, {
           station: body.station,
         });
@@ -189,10 +191,8 @@ export class UsersService {
 
   async removeAgentFromStation(body: RemoveUserFromStationDto) {
     try {
-      const agentHasStation = await this.userModel.findById({
-        _id: body.userId,
-      });
-      if (agentHasStation.station != null) {
+      const agentMetadata = await this.managementClient.getUserMetadata({id: body.userId});
+      if (agentMetadata.station != null) {
         return await this.updateUserMetaData(body.userId, {
           station: null,
         });
@@ -212,10 +212,8 @@ export class UsersService {
 
   async assignManagerToStation(body: AssignUserToStationDto) {
     try {
-      const managerHasStation = await this.userModel.findById({
-        _id: body.userId,
-      });
-      if ((managerHasStation.station = null)) {
+      const managerMetadata = await this.managementClient.getUserMetadata({id: body.userId});
+      if ((managerMetadata.station = null)) {
         return await this.updateUserMetaData(body.userId, {
           station: body.station,
         });
@@ -444,6 +442,41 @@ export class UsersService {
       return { message: 'Admin user deleted successfully' };
     } catch (error) {
       console.error('Error deleting admin:', error.message);
+      throw new HttpException(
+        error.message ?? 'Something went wrong',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async assignDriverToVehicle(assignDriverToVehicleDto: AssignDriverToVehicleDto) {
+    try {
+      const driverMetadata = await this.managementClient.getUserMetadata({id: assignDriverToVehicleDto.driverId});
+      if (driverMetadata.vehicle != null) {
+        throw new HttpException(
+          'Vehicle already has a driver assigned',
+          HttpStatus.BAD_REQUEST,
+        );
+      } else {
+        await this.managementClient.updateUserMetadata(
+          {
+            id: assignDriverToVehicleDto.driverId
+          },
+          {
+            vehicle: assignDriverToVehicleDto.vehicleId,
+          },
+        );
+        return await this.vehicleModel.findByIdAndUpdate(
+          {
+            _id: assignDriverToVehicleDto.vehicleId,
+          },
+          {
+            driver: assignDriverToVehicleDto.driverId,
+          }
+        )
+      }
+    } catch (error) {
+      console.error('Error assigning driver to vehicle:', error.message);
       throw new HttpException(
         error.message ?? 'Something went wrong',
         HttpStatus.INTERNAL_SERVER_ERROR,
