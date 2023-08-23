@@ -6,13 +6,15 @@ import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 import { JwtPayload } from 'src/types/jwt-payload';
 import { StationQuery } from 'src/types/stationQuery';
+import { UpdateStationsDestinationsDTO } from './dto/update-destinations.dto';
 
 @Injectable()
 export class StationsService {
+
   constructor(
     @InjectModel(Station.name)
     private readonly stationModel: Model<StationDocument>,
-  ) {}
+  ) { }
 
   findOneStation(user: JwtPayload, id: string) {
     return this.stationModel.findById(id);
@@ -139,5 +141,17 @@ export class StationsService {
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
+  }
+
+
+  updateStationsDestinations(currentUser: JwtPayload, updateStationDto: UpdateStationsDestinationsDTO) {
+    return this.stationModel.findByIdAndUpdate(
+      currentUser.user_metadata.station, {
+      $addToSet: { destinations: { "$each": updateStationDto.destinations } },
+    }, {
+      new: true
+    }
+    )
+
   }
 }

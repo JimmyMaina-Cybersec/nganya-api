@@ -100,5 +100,5 @@ export enum UserPermissions {
   ASSIGN_STATION_MANAGER_TO_STATION = 'update:assignStationManager',
   ASSIGN_SERVICE_AGENT_TO_STATION = 'update:assignServiceAgent',
   REMOVE_SERVICE_AGENT_TO_STATION = 'update:removeServiceAgent',
-
+  UPDATE_STATION_DESTINATIONS = "update:stationDestinations"
 }
