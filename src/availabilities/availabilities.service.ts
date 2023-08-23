@@ -39,7 +39,9 @@ export class AvailabilitiesService {
         station: user.user_metadata.station,
         sacco: user.user_metadata.sacco,
         addedBy: user.sub,
+        // addingUserNames: user.user_metadata.given_name + ' ' + user.user_metadata.family_name,
         addedOn: new Date(),
+        status: 'Available',
       });
 
     } catch (error) {
@@ -47,11 +49,13 @@ export class AvailabilitiesService {
     }
   }
 
-  async findAll(user: JwtPayload, pagination: PaginationQueryType) {
+  async findAll(user: JwtPayload, fliters: {
+    status?: string,
+  },) {
     try {
       const [availabilities] = await Promise.all([
         this.availabilityModel
-          .find({ station: user.user_metadata.station })
+          .find({ station: user.user_metadata.station, status: fliters.status ?? 'Available' })
           .populate('vehicle')
           .populate('route'),
       ]);
@@ -72,23 +76,17 @@ export class AvailabilitiesService {
     user: JwtPayload,
   ) {
     try {
-      if (
-        user.user_roles.includes(UserRoles.SACCO_ADMIN) ||
-        user.user_roles.includes(UserRoles.SUPER_ADMIN) ||
-        user.user_roles.includes(UserRoles.GENERAL_ADMIN) ||
-        user.user_roles.includes(UserRoles.STATION_MANAGER) ||
-        user.user_roles.includes(UserRoles.SERVICE_AGENT)
-      ) {
-        return await this.availabilityModel.findByIdAndUpdate(
-          id,
-          {
-            ...updateAvailabilityDto,
-            updatedBy: user.sub,
-            updatedOn: new Date(),
-          },
-          { new: true },
-        );
-      }
+
+      return await this.availabilityModel.findByIdAndUpdate(
+        id,
+        {
+          ...updateAvailabilityDto,
+          updatedBy: user.sub,
+          updatedOn: new Date(),
+        },
+        { new: true },
+      );
+
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
