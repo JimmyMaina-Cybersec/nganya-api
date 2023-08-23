@@ -34,14 +34,14 @@ export class AvailabilitiesService {
 
   async create(createAvailabilityDto: CreateAvailabilityDto, user: JwtPayload) {
     try {
-        return await this.availabilityModel.create({
-          ...createAvailabilityDto,
-          station: user.user_metadata.station,
-          sacco: user.user_metadata.sacco,
-          addedBy: user.sub,
-          addedOn: new Date(),
-        });
-      
+      return await this.availabilityModel.create({
+        ...createAvailabilityDto,
+        station: user.user_metadata.station,
+        sacco: user.user_metadata.sacco,
+        addedBy: user.sub,
+        addedOn: new Date(),
+      });
+
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
@@ -49,40 +49,14 @@ export class AvailabilitiesService {
 
   async findAll(user: JwtPayload, pagination: PaginationQueryType) {
     try {
-      const query: AvailabilityQuery = {};
-
-      if (
-        user.user_roles.includes(UserRoles.GENERAL_ADMIN) ||
-        user.user_roles.includes(UserRoles.SACCO_ADMIN) ||
-        user.user_roles.includes(UserRoles.SUPER_ADMIN)
-      ) {
-        query.sacco = user.user_metadata.sacco;
-      }
-      if (
-        user.user_roles.includes(UserRoles.STATION_MANAGER) ||
-        user.user_roles.includes(UserRoles.SERVICE_AGENT)
-      ) {
-        query.station = user.user_metadata.station;
-      } 
-
-      const { page, resPerPage } = pagination;
-
-      const [availabilities, totalCount] = await Promise.all([
+      const [availabilities] = await Promise.all([
         this.availabilityModel
-          .find(query)
+          .find({ station: user.user_metadata.station })
           .populate('vehicle')
-          .populate('route')
-          .skip(pagination.skip)
-          .limit(pagination.resPerPage),
-        this.availabilityModel.countDocuments(query),
+          .populate('route'),
       ]);
 
-      return {
-        data: availabilities,
-        page,
-        resPerPage,
-        totalPages: Math.ceil(totalCount / resPerPage),
-      };
+      return availabilities
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
@@ -99,7 +73,7 @@ export class AvailabilitiesService {
   ) {
     try {
       if (
-        user.user_roles.includes(UserRoles.SACCO_ADMIN)||
+        user.user_roles.includes(UserRoles.SACCO_ADMIN) ||
         user.user_roles.includes(UserRoles.SUPER_ADMIN) ||
         user.user_roles.includes(UserRoles.GENERAL_ADMIN) ||
         user.user_roles.includes(UserRoles.STATION_MANAGER) ||
@@ -123,8 +97,7 @@ export class AvailabilitiesService {
   async deleteAvalablity(id: string, user: JwtPayload) {
     try {
       if (user.user_roles.includes(UserRoles.SACCO_ADMIN) ||
-        user.user_roles.includes(UserRoles.GENERAL_ADMIN) )
-        {
+        user.user_roles.includes(UserRoles.GENERAL_ADMIN)) {
         await this.availabilityModel.findByIdAndDelete(id);
       }
       if (
