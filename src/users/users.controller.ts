@@ -21,6 +21,7 @@ import { PermissionsGuard } from '../auth/guards/permissions/permissions.guard';
 import { UserPermissions } from '../types/PermissionType';
 import { CreateSaccoUserDto } from './dto/create-sacco-user.dto';
 import AssignUserToStationDto from './dto/assign-sation-manage.dto';
+import { AssignDriverToVehicleDto } from './dto/assign_driver_to_vehicle.dto';
 
 @UseGuards(AuthorizationGuard, PermissionsGuard)
 @Controller('users')
@@ -160,18 +161,24 @@ export class UsersController {
   assignAgentToStation(@Body() body: AssignUserToStationDto) {
     return this.usersService.assignAgentToStation(body);
   }
-
+  
   @SetMetadata('permissions', [UserPermissions.REMOVE_SERVICE_AGENT_TO_STATION])
   @Patch('remove-agent')
   removeAgentFromStation(@Body() body: AssignUserToStationDto) {
     return this.usersService.removeAgentFromStation(body);
   }
-
+  
   @SetMetadata('permissions', [
     UserPermissions.ASSIGN_STATION_MANAGER_TO_STATION,
   ])
   @Patch('assign-manager')
   assignManager(@Body() body: AssignUserToStationDto) {
     return this.usersService.assignManagerToStation(body);
+  }
+
+  @SetMetadata('Permissions', [UserPermissions.ASSIGN_DRIVER])
+  @Patch('assign-driver')
+  assignDriver(@Body() assignDriverToVehicleDto: AssignDriverToVehicleDto) {
+    return this.usersService.assignDriverToVehicle(assignDriverToVehicleDto);
   }
 }
