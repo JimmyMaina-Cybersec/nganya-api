@@ -246,9 +246,7 @@ export class ReportsService {
 
     const endOfDay = new Date(date);
     endOfDay.setHours(23, 59, 59, 999);
-    // endOfDay.setDate(endOfDay.getDate() + 1);
 
     return { startOfDay, endOfDay };
   }
 }
-// YYYY-MM-DD-T-HH-mm-ss-sss-z
