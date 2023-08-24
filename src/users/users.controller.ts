@@ -161,13 +161,13 @@ export class UsersController {
   assignAgentToStation(@Body() body: AssignUserToStationDto) {
     return this.usersService.assignAgentToStation(body);
   }
-  
+
   @SetMetadata('permissions', [UserPermissions.REMOVE_SERVICE_AGENT_TO_STATION])
   @Patch('remove-agent')
   removeAgentFromStation(@Body() body: AssignUserToStationDto) {
     return this.usersService.removeAgentFromStation(body);
   }
-  
+
   @SetMetadata('permissions', [
     UserPermissions.ASSIGN_STATION_MANAGER_TO_STATION,
   ])

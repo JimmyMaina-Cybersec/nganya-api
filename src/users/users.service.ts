@@ -170,8 +170,8 @@ export class UsersService {
 
   async assignAgentToStation(body: AssignUserToStationDto) {
     try {
-      const agentMetadata = await this.managementClient.getUserMetadata({id: body.userId});
-      if ((agentMetadata.station === null)) {
+      const agentMetadata = await this.getUserMetadata(body.userId);
+      if (agentMetadata.station === null) {
         return await this.updateUserMetaData(body.userId, {
           station: body.station,
         });
@@ -191,7 +191,7 @@ export class UsersService {
 
   async removeAgentFromStation(body: RemoveUserFromStationDto) {
     try {
-      const agentMetadata = await this.managementClient.getUserMetadata({id: body.userId});
+      const agentMetadata = await this.getUserMetadata(body.userId);
       if (agentMetadata.station) {
         return await this.updateUserMetaData(body.userId, {
           station: null,
@@ -212,8 +212,8 @@ export class UsersService {
 
   async assignManagerToStation(body: AssignUserToStationDto) {
     try {
-      const managerMetadata = await this.managementClient.getUserMetadata({id: body.userId});
-      if ((managerMetadata.station === null)) {
+      const managerMetadata = await this.getUserMetadata(body.userId);
+      if (managerMetadata.station === null) {
         return await this.updateUserMetaData(body.userId, {
           station: body.station,
         });
@@ -449,38 +449,46 @@ export class UsersService {
     }
   }
 
-  async assignDriverToVehicle(assignDriverToVehicleDto: AssignDriverToVehicleDto) {
+  async assignDriverToVehicle(
+    assignDriverToVehicleDto: AssignDriverToVehicleDto,
+  ) {
     try {
-        const driverMetadata = await this.managementClient.getUserMetadata({id: assignDriverToVehicleDto.driverId});
-        
-        if (driverMetadata.vehicle) {
-            throw new HttpException(
-                'Vehicle already has a driver assigned',
-                HttpStatus.BAD_REQUEST,
-            );
-        } else if (await this.vehicleModel.findOne({ driver: assignDriverToVehicleDto.driverId })) {
-            throw new HttpException(
-                'Driver is already assigned to a vehicle',
-                HttpStatus.BAD_REQUEST,
-            );
-        } else {
-            await this.managementClient.updateUserMetadata(
-                { id: assignDriverToVehicleDto.driverId },
-                { vehicle: assignDriverToVehicleDto.vehicleId }
-            );
-            await this.vehicleModel.findByIdAndUpdate(
-                assignDriverToVehicleDto.vehicleId,
-                { driver: assignDriverToVehicleDto.driverId }
-            );
-            
-            return { message: 'Driver assigned to vehicle successfully.' };
-        }
-    } catch (error) {
-        console.error('Error assigning driver to vehicle:', error.message);
+      const driverMetadata = await this.getUserMetadata(
+        assignDriverToVehicleDto.driverId,
+      );
+
+      if (driverMetadata.vehicle) {
         throw new HttpException(
-            error.message ?? 'Something went wrong',
-            HttpStatus.INTERNAL_SERVER_ERROR,
+          'Vehicle already has a driver assigned',
+          HttpStatus.BAD_REQUEST,
         );
+      } else if (
+        await this.vehicleModel.findOne({
+          driver: assignDriverToVehicleDto.driverId,
+        })
+      ) {
+        throw new HttpException(
+          'Driver is already assigned to a vehicle',
+          HttpStatus.BAD_REQUEST,
+        );
+      } else {
+        await this.managementClient.updateUserMetadata(
+          { id: assignDriverToVehicleDto.driverId },
+          { vehicle: assignDriverToVehicleDto.vehicleId },
+        );
+        await this.vehicleModel.findByIdAndUpdate(
+          assignDriverToVehicleDto.vehicleId,
+          { driver: assignDriverToVehicleDto.driverId },
+        );
+
+        return { message: 'Driver assigned to vehicle successfully.' };
+      }
+    } catch (error) {
+      console.error('Error assigning driver to vehicle:', error.message);
+      throw new HttpException(
+        error.message ?? 'Something went wrong',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
     }
   }
 
@@ -537,6 +545,16 @@ export class UsersService {
       );
     } catch (error) {
       throw new HttpException(error.message, error.status);
+    }
+  }
+
+  async getUserMetadata(userId: string) {
+    try {
+      const user = await this.managementClient.getUser({ id: userId });
+      return user.user_metadata;
+    } catch (error) {
+      console.error('Error retrieving user metadata:', error);
+      throw error;
     }
   }
 
