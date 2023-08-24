@@ -171,7 +171,7 @@ export class UsersService {
   async assignAgentToStation(body: AssignUserToStationDto) {
     try {
       const agentMetadata = await this.managementClient.getUserMetadata({id: body.userId});
-      if ((agentMetadata.station = null)) {
+      if ((agentMetadata.station === null)) {
         return await this.updateUserMetaData(body.userId, {
           station: body.station,
         });
@@ -192,7 +192,7 @@ export class UsersService {
   async removeAgentFromStation(body: RemoveUserFromStationDto) {
     try {
       const agentMetadata = await this.managementClient.getUserMetadata({id: body.userId});
-      if (agentMetadata.station != null) {
+      if (agentMetadata.station) {
         return await this.updateUserMetaData(body.userId, {
           station: null,
         });
@@ -213,7 +213,7 @@ export class UsersService {
   async assignManagerToStation(body: AssignUserToStationDto) {
     try {
       const managerMetadata = await this.managementClient.getUserMetadata({id: body.userId});
-      if ((managerMetadata.station = null)) {
+      if ((managerMetadata.station === null)) {
         return await this.updateUserMetaData(body.userId, {
           station: body.station,
         });
@@ -451,36 +451,36 @@ export class UsersService {
 
   async assignDriverToVehicle(assignDriverToVehicleDto: AssignDriverToVehicleDto) {
     try {
-      const driverMetadata = await this.managementClient.getUserMetadata({id: assignDriverToVehicleDto.driverId});
-      if (driverMetadata.vehicle != null) {
-        throw new HttpException(
-          'Vehicle already has a driver assigned',
-          HttpStatus.BAD_REQUEST,
-        );
-      } else {
-        await this.managementClient.updateUserMetadata(
-          {
-            id: assignDriverToVehicleDto.driverId
-          },
-          {
-            vehicle: assignDriverToVehicleDto.vehicleId,
-          },
-        );
-        return await this.vehicleModel.findByIdAndUpdate(
-          {
-            _id: assignDriverToVehicleDto.vehicleId,
-          },
-          {
-            driver: assignDriverToVehicleDto.driverId,
-          }
-        )
-      }
+        const driverMetadata = await this.managementClient.getUserMetadata({id: assignDriverToVehicleDto.driverId});
+        
+        if (driverMetadata.vehicle) {
+            throw new HttpException(
+                'Vehicle already has a driver assigned',
+                HttpStatus.BAD_REQUEST,
+            );
+        } else if (await this.vehicleModel.findOne({ driver: assignDriverToVehicleDto.driverId })) {
+            throw new HttpException(
+                'Driver is already assigned to a vehicle',
+                HttpStatus.BAD_REQUEST,
+            );
+        } else {
+            await this.managementClient.updateUserMetadata(
+                { id: assignDriverToVehicleDto.driverId },
+                { vehicle: assignDriverToVehicleDto.vehicleId }
+            );
+            await this.vehicleModel.findByIdAndUpdate(
+                assignDriverToVehicleDto.vehicleId,
+                { driver: assignDriverToVehicleDto.driverId }
+            );
+            
+            return { message: 'Driver assigned to vehicle successfully.' };
+        }
     } catch (error) {
-      console.error('Error assigning driver to vehicle:', error.message);
-      throw new HttpException(
-        error.message ?? 'Something went wrong',
-        HttpStatus.INTERNAL_SERVER_ERROR,
-      );
+        console.error('Error assigning driver to vehicle:', error.message);
+        throw new HttpException(
+            error.message ?? 'Something went wrong',
+            HttpStatus.INTERNAL_SERVER_ERROR,
+        );
     }
   }
 
