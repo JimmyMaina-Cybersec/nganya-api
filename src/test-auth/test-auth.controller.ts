@@ -14,12 +14,15 @@ import { CreateTestAuthDto } from './dto/create-test-auth.dto';
 import { UpdateTestAuthDto } from './dto/update-test-auth.dto';
 import { AuthorizationGuard } from '../auth/guards/authorization-guard.service';
 import { PermissionsGuard } from '../auth/guards/permissions/permissions.guard';
-import { CurrentUser, OldCurrentUser } from 'src/common/decorators/current-user.decorator';
+import {
+  CurrentUser,
+  OldCurrentUser,
+} from 'src/common/decorators/current-user.decorator';
 import { JwtPayload, OldJwtPayload } from 'src/types/jwt-payload';
 
 @Controller('test-auth')
 export class TestAuthController {
-  constructor(private readonly testAuthService: TestAuthService) { }
+  constructor(private readonly testAuthService: TestAuthService) {}
 
   @Post()
   create(@Body() createTestAuthDto: CreateTestAuthDto) {
