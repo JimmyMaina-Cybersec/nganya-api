@@ -5,11 +5,13 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Category } from './entities/category.entity';
 import { Model } from 'mongoose';
 import { JwtPayload } from 'src/types/jwt-payload';
+import { Station } from 'src/stations/schema/station.schema';
 
 @Injectable()
 export class CategoriesService {
   constructor(
     @InjectModel(Category.name) private categoryModel: Model<Category>,
+    @InjectModel(Station.name) private stationModel: Model<Station>,
   ) {}
   async createCategory(createCategoryDto: CreateCategoryDto, user: JwtPayload) {
     try {
@@ -56,6 +58,31 @@ export class CategoriesService {
       return {
         message: 'Category updated successfully',
         category: categoryToUpdate,
+      };
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
+  }
+
+  async addCategoryToStation(categoryId: string, user: JwtPayload) {
+    try {
+      const category = await this.categoryModel.findById(categoryId);
+      if (!category) {
+        throw new HttpException('Category does not exist', 404);
+      }
+      const categoryToAdd = {
+        category: category.categoryName,
+      };
+      const stationToUpdate = await this.stationModel.findOneAndUpdate(
+        {
+          _id: user.user_metadata.station,
+        },
+        { $push: { parcelCategories: categoryToAdd } },
+        { new: true },
+      );
+      return {
+        message: 'Category added successfully',
+        station: stationToUpdate,
       };
     } catch (error) {
       throw new HttpException(error.message, error.status);
