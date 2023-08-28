@@ -28,8 +28,7 @@ export class Station {
   @Prop({ required: false, default: [] })
   destinations: Array<string>;
 
-  // categories
-  @Prop({ required: false, default: [] })
+  @Prop({ required: false, default: null })
   parcelCategories: Array<string>;
 
   @Prop({

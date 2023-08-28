@@ -22,6 +22,9 @@ export class Sacco {
   @Prop({ required: true })
   logo: string;
 
+  @Prop({ required: false, default: [] })
+  percelCategories: Array<string>;
+
   @Prop({ required: false })
   primaryColor: string;
 
@@ -43,7 +46,7 @@ export class Sacco {
     immutable: true,
     type: String,
   })
-  addedBy: String;
+  addedBy: string;
 
   @Prop({ required: false })
   upadatedAt: Date;

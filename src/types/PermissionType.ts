@@ -81,7 +81,6 @@ export enum UserPermissions {
   UPDATE_AVAILABILITIES = 'update:availabilities',
   DELETE_AVAILABILITIES = 'delete:Availabilities',
 
-
   ASSIGN_STATION_MANAGER = 'update:assignStationManager',
   ASSIGN_SERVICE_AGENT = 'update:assignServiceAgent',
 
@@ -101,4 +100,8 @@ export enum UserPermissions {
   ASSIGN_SERVICE_AGENT_TO_STATION = 'update:assignServiceAgent',
   REMOVE_SERVICE_AGENT_TO_STATION = 'update:removeServiceAgent',
 
+  CREATE_CATEGORY = 'create:category',
+  READ_CATEGORY = 'read:categories',
+  UPDATE_CATEGORY = 'update:category',
+  DELETE_CATEGORY = 'delete:category',
 }

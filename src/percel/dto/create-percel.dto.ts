@@ -45,9 +45,6 @@ export class CreatePercelDto {
   readonly percelWeight: string;
 
   @IsString()
-  readonly percelCategory: string;
-
-  @IsString()
   @IsNotEmpty()
   paymentMethode: string;
 }

@@ -1,4 +1,10 @@
-import { IsEmail, IsNotEmpty, IsPhoneNumber, IsString } from 'class-validator';
+import {
+  IsArray,
+  IsEmail,
+  IsNotEmpty,
+  IsPhoneNumber,
+  IsString,
+} from 'class-validator';
 
 export class CreateSaccoDto {
   @IsNotEmpty()
@@ -20,4 +26,8 @@ export class CreateSaccoDto {
   @IsNotEmpty()
   @IsString()
   logo: string;
+
+  @IsNotEmpty()
+  @IsArray()
+  percelCategories: string[];
 }
