@@ -23,7 +23,7 @@ export class PercelService {
     private readonly percelModel: Model<PercelDocument>,
     @InjectModel(Availability.name)
     private readonly availabilityModel: Model<AvailabilityDocument>,
-  ) { }
+  ) {}
   async sendPercel(createPercelDto: CreatePercelDto, agent: JwtPayload) {
     try {
       if (agent.user_metadata.station) {
@@ -46,7 +46,6 @@ export class PercelService {
 
   async getAgentPercels(agent: JwtPayload, pagination: PaginationQueryType) {
     try {
-
       if (agent.user_metadata.station) {
         const parcelQuery = await this.percelModel.find({
           sendingAgent: agent.sub,
@@ -58,22 +57,24 @@ export class PercelService {
             .skip(pagination.skip)
             .limit(pagination.resPerPage),
           this.percelModel.countDocuments(parcelQuery),
-        ])
+        ]);
 
         return {
           data: parcelInStation,
           page,
           resPerPage,
           numberOfPages: Math.ceil(docsCount / pagination.resPerPage),
-        }
+        };
       }
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
   }
-  async getStationPercels(stationManager: JwtPayload, pagination: PaginationQueryType) {
+  async getStationPercels(
+    stationManager: JwtPayload,
+    pagination: PaginationQueryType,
+  ) {
     try {
-
       if (stationManager.user_metadata.station) {
         const parcelQuery = await this.percelModel.find({
           sendingStation: stationManager.user_metadata.station,
@@ -87,25 +88,29 @@ export class PercelService {
             .skip(pagination.skip)
             .limit(pagination.resPerPage),
           this.percelModel.countDocuments(parcelQuery),
-        ])
+        ]);
 
         return {
           data: parcelInStation,
           page,
           resPerPage,
           numberOfPages: Math.ceil(docsCount / pagination.resPerPage),
-        }
+        };
       }
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
   }
 
-  async getAllParcels(user: JwtPayload, stationId: string, pagination: PaginationQueryType) {
+  async getAllParcels(
+    user: JwtPayload,
+    stationId: string,
+    pagination: PaginationQueryType,
+  ) {
     try {
       const stationParcels = await this.percelModel.find({
         sendingStation: stationId,
-      })
+      });
       const { page, resPerPage } = pagination;
       const [parcelInStation, docsCount] = await Promise.all([
         this.percelModel
@@ -116,14 +121,14 @@ export class PercelService {
           .skip(pagination.skip)
           .limit(pagination.resPerPage),
         this.percelModel.countDocuments(stationParcels),
-      ])
+      ]);
 
       return {
         data: parcelInStation,
         page,
         resPerPage,
         numberOfPages: Math.ceil(docsCount / pagination.resPerPage),
-      }
+      };
     } catch (error) {
       throw new HttpException(error.message, error.data);
     }
@@ -132,19 +137,25 @@ export class PercelService {
     try {
       let parcelQuery = null;
       if (user.user_roles.includes(UserRoles.GENERAL_ADMIN)) {
-        parcelQuery = await this.percelModel.find({
-          sacco: user.user_metadata.sacco,
-        }).exec();
+        parcelQuery = await this.percelModel
+          .find({
+            sacco: user.user_metadata.sacco,
+          })
+          .exec();
       }
       if (user.user_roles.includes(UserRoles.STATION_MANAGER)) {
-        parcelQuery = await this.percelModel.find({
-          sendingStation: user.user_metadata.station,
-        }).exec();
+        parcelQuery = await this.percelModel
+          .find({
+            sendingStation: user.user_metadata.station,
+          })
+          .exec();
       }
       if (user.user_roles.includes(UserRoles.SERVICE_AGENT)) {
-        parcelQuery = await this.percelModel.find({
-          sendingAgent: user.sub,
-        }).exec();
+        parcelQuery = await this.percelModel
+          .find({
+            sendingAgent: user.sub,
+          })
+          .exec();
       }
 
       const { page, resPerPage } = pagination;
