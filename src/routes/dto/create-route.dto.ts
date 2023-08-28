@@ -12,5 +12,5 @@ export class CreateRouteDto {
   documentPrices: { destination: string; price: number }[];
 
   @IsArray()
-  parcelPrices: { destination: string; price: number }[];
+  parcelPrices: { destination: string; category: string; price: number }[];
 }

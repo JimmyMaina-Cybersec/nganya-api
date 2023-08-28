@@ -41,6 +41,9 @@ export class Percel {
   @Prop({ type: String, default: 0 })
   percelWeight: string;
 
+  @Prop({ type: Array, default: [] })
+  percelCategory: Array<string>;
+
   @Prop({ type: String, required: true })
   paymentMethode: string;
 
