@@ -104,4 +104,5 @@ export enum UserPermissions {
   READ_CATEGORY = 'read:categories',
   UPDATE_CATEGORY = 'update:category',
   DELETE_CATEGORY = 'delete:category',
+  UPDATE_STATION_CATEGORY = 'update:stationCategory',
 }
