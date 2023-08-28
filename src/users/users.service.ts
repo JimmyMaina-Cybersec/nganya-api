@@ -170,8 +170,9 @@ export class UsersService {
 
   async assignAgentToStation(body: AssignUserToStationDto) {
     try {
-      const agentMetadata = await this.getUserMetadata(body.userId);
-      if (agentMetadata.station === null) {
+      const agent = await this.managementClient.getUser({ id: body.userId });
+      const agentHasStation = `_exists_:user_metadata.station:${agent.user_metadata.station}`;
+      if (!agentHasStation) {
         return await this.updateUserMetaData(body.userId, {
           station: body.station,
         });
@@ -191,8 +192,9 @@ export class UsersService {
 
   async removeAgentFromStation(body: RemoveUserFromStationDto) {
     try {
-      const agentMetadata = await this.getUserMetadata(body.userId);
-      if (agentMetadata.station) {
+      const agent = await this.managementClient.getUser({ id: body.userId });
+      const agentHasStation = `_exists_:user_metadata.station:${agent.user_metadata.station}`;
+      if (agentHasStation) {
         return await this.updateUserMetaData(body.userId, {
           station: null,
         });
@@ -212,8 +214,9 @@ export class UsersService {
 
   async assignManagerToStation(body: AssignUserToStationDto) {
     try {
-      const managerMetadata = await this.getUserMetadata(body.userId);
-      if (managerMetadata.station === null) {
+      const manager = await this.managementClient.getUser({ id: body.userId });
+      const managerHasStation = `_exists_:user_metadata.station:${manager.user_metadata.station}`;
+      if (!managerHasStation) {
         return await this.updateUserMetaData(body.userId, {
           station: body.station,
         });
