@@ -81,7 +81,30 @@ export class CategoriesService {
         { new: true },
       );
       return {
-        message: 'Category added successfully',
+        message: 'Category added to station successfully',
+        station: stationToUpdate,
+      };
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
+  }
+
+  async removeCategoryFromStation(categoryId: string, user: JwtPayload) {
+    try {
+      const category = await this.categoryModel.findById(categoryId);
+      if (!category) {
+        throw new HttpException('Category does not exist', 404);
+      }
+
+      const stationToUpdate = await this.stationModel.findOneAndUpdate(
+        {
+          _id: user.user_metadata.station,
+        },
+        { $pull: { parcelCategories: category.categoryName } },
+        { new: true },
+      );
+      return {
+        message: 'Category removed from station successfully',
         station: stationToUpdate,
       };
     } catch (error) {

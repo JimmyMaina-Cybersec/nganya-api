@@ -60,6 +60,15 @@ export class CategoriesController {
     return this.categoriesService.addCategoryToStation(categoryId, user);
   }
 
+  @SetMetadata('permissions', [UserPermissions.UPDATE_STATION_CATEGORY])
+  @Patch('update-station-category/:categoryId')
+  removeCategoryFromStation(
+    @Param('categoryId') categoryId: string,
+    @CurrentUser() user: JwtPayload,
+  ) {
+    return this.categoriesService.removeCategoryFromStation(categoryId, user);
+  }
+
   @SetMetadata('permissions', [UserPermissions.DELETE_CATEGORY])
   @Delete('delete-category/:id')
   removeCategory(@Param('id') id: string) {
