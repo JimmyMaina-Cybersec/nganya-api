@@ -52,7 +52,7 @@ export class CategoriesController {
   }
 
   @SetMetadata('permissions', [UserPermissions.UPDATE_STATION_CATEGORY])
-  @Patch('update-station-category')
+  @Patch('update-station-category/:categoryId')
   addCategoryToStation(
     @Param('categoryId') categoryId: string,
     @CurrentUser() user: JwtPayload,
