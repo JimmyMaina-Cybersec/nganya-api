@@ -19,11 +19,12 @@ import PaginationQueryType from 'src/types/paginationQuery';
 import { PermissionsGuard } from 'src/auth/guards/permissions/permissions.guard';
 import { AuthorizationGuard } from 'src/auth/guards/authorization-guard.service';
 import { UserPermissions } from 'src/types/PermissionType';
+import { UpdateStationsDestinationsDTO } from './dto/update-destinations.dto';
 
 @UseGuards(AuthorizationGuard, PermissionsGuard)
 @Controller('stations')
 export class StationsController {
-  constructor(private readonly stationsService: StationsService) {}
+  constructor(private readonly stationsService: StationsService) { }
 
   @SetMetadata('permissions', [UserPermissions.CREATE_STATIONS])
   @Post('add-station')
@@ -69,6 +70,19 @@ export class StationsController {
       currentUser,
       updateStationDto,
       id,
+    );
+  }
+
+  @SetMetadata('permissions', [UserPermissions.CREATE_SERVICE_AGENTS])
+  @Patch('my-station/update-destinations')
+  updateStationsDestinations(
+
+    @Body() updateStationsDestinationsDTO: UpdateStationsDestinationsDTO,
+    @CurrentUser() currentUser: JwtPayload,
+  ) {
+    return this.stationsService.updateStationsDestinations(
+      currentUser,
+      updateStationsDestinationsDTO,
     );
   }
 

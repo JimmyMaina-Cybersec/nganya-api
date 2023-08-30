@@ -13,8 +13,10 @@ import { Vehicle, VehicleSchema } from 'src/vehicles/schema/vehicle.schema';
       { name: User.name, schema: UserSchema },
       { name: Sacco.name, schema: SaccoSchema },
       { name: Vehicle.name, schema: VehicleSchema },
+
+      { name: Vehicle.name, schema: VehicleSchema }
     ]),
   ],
   providers: [UsersService],
 })
-export class UsersModule {}
+export class UsersModule { }

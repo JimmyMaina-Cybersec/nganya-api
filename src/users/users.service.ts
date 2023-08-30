@@ -33,7 +33,7 @@ export class UsersService {
     @InjectModel(Vehicle.name)
     private vehicleModel: Model<Vehicle>,
     private configurationService: ConfigService,
-  ) {}
+  ) { }
 
   async createSaccoUsers(
     currentUser: JwtPayload,

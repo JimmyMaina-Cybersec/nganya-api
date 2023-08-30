@@ -34,55 +34,33 @@ export class AvailabilitiesService {
 
   async create(createAvailabilityDto: CreateAvailabilityDto, user: JwtPayload) {
     try {
-        return await this.availabilityModel.create({
-          ...createAvailabilityDto,
-          station: user.user_metadata.station,
-          sacco: user.user_metadata.sacco,
-          addedBy: user.sub,
-          addedOn: new Date(),
-        });
-      
+      return await this.availabilityModel.create({
+        ...createAvailabilityDto,
+        station: user.user_metadata.station,
+        sacco: user.user_metadata.sacco,
+        addedBy: user.sub,
+        // addingUserNames: user.user_metadata.given_name + ' ' + user.user_metadata.family_name,
+        addedOn: new Date(),
+        status: 'Available',
+      });
+
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
   }
 
-  async findAll(user: JwtPayload, pagination: PaginationQueryType) {
+  async findAll(user: JwtPayload, fliters: {
+    status?: string,
+  },) {
     try {
-      const query: AvailabilityQuery = {};
-
-      if (
-        user.user_roles.includes(UserRoles.GENERAL_ADMIN) ||
-        user.user_roles.includes(UserRoles.SACCO_ADMIN) ||
-        user.user_roles.includes(UserRoles.SUPER_ADMIN)
-      ) {
-        query.sacco = user.user_metadata.sacco;
-      }
-      if (
-        user.user_roles.includes(UserRoles.STATION_MANAGER) ||
-        user.user_roles.includes(UserRoles.SERVICE_AGENT)
-      ) {
-        query.station = user.user_metadata.station;
-      } 
-
-      const { page, resPerPage } = pagination;
-
-      const [availabilities, totalCount] = await Promise.all([
+      const [availabilities] = await Promise.all([
         this.availabilityModel
-          .find(query)
+          .find({ station: user.user_metadata.station, status: fliters.status ?? 'Available' })
           .populate('vehicle')
-          .populate('route')
-          .skip(pagination.skip)
-          .limit(pagination.resPerPage),
-        this.availabilityModel.countDocuments(query),
+          .populate('route'),
       ]);
 
-      return {
-        data: availabilities,
-        page,
-        resPerPage,
-        totalPages: Math.ceil(totalCount / resPerPage),
-      };
+      return availabilities
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
@@ -98,23 +76,17 @@ export class AvailabilitiesService {
     user: JwtPayload,
   ) {
     try {
-      if (
-        user.user_roles.includes(UserRoles.SACCO_ADMIN)||
-        user.user_roles.includes(UserRoles.SUPER_ADMIN) ||
-        user.user_roles.includes(UserRoles.GENERAL_ADMIN) ||
-        user.user_roles.includes(UserRoles.STATION_MANAGER) ||
-        user.user_roles.includes(UserRoles.SERVICE_AGENT)
-      ) {
-        return await this.availabilityModel.findByIdAndUpdate(
-          id,
-          {
-            ...updateAvailabilityDto,
-            updatedBy: user.sub,
-            updatedOn: new Date(),
-          },
-          { new: true },
-        );
-      }
+
+      return await this.availabilityModel.findByIdAndUpdate(
+        id,
+        {
+          ...updateAvailabilityDto,
+          updatedBy: user.sub,
+          updatedOn: new Date(),
+        },
+        { new: true },
+      );
+
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
@@ -123,8 +95,7 @@ export class AvailabilitiesService {
   async deleteAvalablity(id: string, user: JwtPayload) {
     try {
       if (user.user_roles.includes(UserRoles.SACCO_ADMIN) ||
-        user.user_roles.includes(UserRoles.GENERAL_ADMIN) )
-        {
+        user.user_roles.includes(UserRoles.GENERAL_ADMIN)) {
         await this.availabilityModel.findByIdAndDelete(id);
       }
       if (

@@ -100,9 +100,13 @@ export enum UserPermissions {
   ASSIGN_SERVICE_AGENT_TO_STATION = 'update:assignServiceAgent',
   REMOVE_SERVICE_AGENT_TO_STATION = 'update:removeServiceAgent',
 
+
   CREATE_CATEGORY = 'create:category',
   READ_CATEGORY = 'read:categories',
   UPDATE_CATEGORY = 'update:category',
   DELETE_CATEGORY = 'delete:category',
   UPDATE_STATION_CATEGORY = 'update:stationCategory',
+
+  UPDATE_STATION_DESTINATIONS = "update:stationDestinations"
+
 }

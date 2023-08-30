@@ -8,6 +8,7 @@ import {
   Delete,
   UseGuards,
   SetMetadata,
+  Query,
 } from '@nestjs/common';
 import { AvailabilitiesService } from './availabilities.service';
 import { CreateAvailabilityDto } from './dto/create-availability.dto';
@@ -38,31 +39,33 @@ export class AvailabilitiesController {
   @Get()
   findAll(
     @CurrentUser() user: JwtPayload,
-    @Pagination() pagination: PaginationQueryType,
-    ) {
-      return this.availabilitiesService.findAll(user, pagination);
-    }
-    
-  
+    @Query() filters: {
+      status?: string,
+    },
+  ) {
+    return this.availabilitiesService.findAll(user, filters);
+  }
+
+
   @SetMetadata('permission', UserPermissions.READ_AVAILABILITIES)
   @Get(':id')
   findOne(
     @Param('availability/id') id: string,
     @CurrentUser() user: JwtPayload,
-    ) {
-      return this.availabilitiesService.findOne(id, user);
-    }
-    
+  ) {
+    return this.availabilitiesService.findOne(id, user);
+  }
+
   @SetMetadata('permission', UserPermissions.UPDATE_AVAILABILITIES)
   @Patch('update-availability/:id')
   update(
     @Param('id') id: string,
     @Body() updateAvailabilityDto: UpdateAvailabilityDto,
     @CurrentUser() user: JwtPayload,
-    ) {
-      return this.availabilitiesService.update(id, updateAvailabilityDto, user);
-    }
-    
+  ) {
+    return this.availabilitiesService.update(id, updateAvailabilityDto, user);
+  }
+
   @SetMetadata('permission', UserPermissions.DELETE_AVAILABILITIES)
   @Delete('delete-availability')
   remove(
