@@ -42,6 +42,9 @@ export class Percel {
   percelWeight: string;
 
   @Prop({ type: String, required: true })
+  percelCategory: string;
+
+  @Prop({ type: String, required: true })
   paymentMethode: string;
 
   @Prop({ type: String, default: 'pending' })

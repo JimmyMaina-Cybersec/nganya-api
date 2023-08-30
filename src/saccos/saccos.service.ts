@@ -16,7 +16,7 @@ import PaginationQueryType from 'src/types/paginationQuery';
 export class SaccosService {
   constructor(
     @InjectModel(Sacco.name) private readonly saccoModel: Model<SaccoDocument>,
-  ) { }
+  ) {}
 
   async create(createSaccoDto: CreateSaccoDto, user: OldJwtPayload) {
     if (user.role === 'Super User') {

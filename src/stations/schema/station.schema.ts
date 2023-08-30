@@ -28,6 +28,9 @@ export class Station {
   @Prop({ required: false, default: [] })
   destinations: Array<string>;
 
+  @Prop({ required: false, default: null })
+  parcelCategories: Array<string>;
+
   @Prop({
     required: true,
     type: SchemaTypes.ObjectId,
