@@ -6,11 +6,8 @@ export class CreateRouteDto {
   destinations: string[];
 
   @IsArray()
-  prices: { destination: string; price: number }[];
+  farePrices: { destination: string; category: string; price: number, currency: string }[];
 
   @IsArray()
-  documentPrices: { destination: string; price: number }[];
-
-  @IsArray()
-  parcelPrices: { destination: string; category: string; price: number }[];
+  parcelPrices: { destination: string; category: string; price: number, currency: string }[];
 }

@@ -12,10 +12,7 @@ export class Route {
   destinations: Array<string>;
 
   @Prop({ type: Array, default: [] })
-  prices: [];
-
-  @Prop({ type: Array, default: [] })
-  documentPrices: Array<number>;
+  farePrices: [];
 
   @Prop({ type: Array, default: [] })
   parcelPrices: Array<number>;
