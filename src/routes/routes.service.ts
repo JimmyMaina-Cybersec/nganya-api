@@ -6,6 +6,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Route, RouteDocument } from './schema/route.schema';
 import { DeleteResult } from 'mongodb';
+import CreatePriceDto from './dto/create-price.dto';
 
 @Injectable()
 export class RoutesService {
@@ -26,52 +27,61 @@ export class RoutesService {
       console.log(error);
 
       throw new HttpException(
-        error.message || 'Something went wrong',
-        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        error.message ?? 'Something went wrong',
+        error.status ?? HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
 
-  findAll(query: any, user: OldJwtPayload) {
+
+  findStationRoutes(user: JwtPayload) {
     try {
-      if (user.role === 'admin' || user.role === 'general admin') {
-        return this.routeModel.find({
-          ...query,
-          sacco: user.sacco,
-        });
-      }
+
+
+
       return this.routeModel.find({
-        ...query,
-        station: user.station,
+        station: user.user_metadata.station,
       });
     } catch (error) {
+      console.log(error);
+
       throw new HttpException(
-        error.message || 'Something went wrong',
-        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        error.message ?? 'Something went wrong',
+        error.status ?? HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} route`;
+  findAll(query: any, user: JwtPayload) {
+    try {
+
+      return this.routeModel.find({
+        ...query,
+        sacco: user.user_metadata.sacco,
+      });
+
+    } catch (error) {
+      throw new HttpException(
+        error.message ?? 'Something went wrong',
+        error.status ?? HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 
-  update(id: string, updateRouteDto: UpdateRouteDto, user: OldJwtPayload) {
+  findOne(id: string) {
+    return this.routeModel.findById(id);
+  }
+
+  updatePrice(id: string, createPriceDto: CreatePriceDto, user: JwtPayload) {
     try {
-      if (
-        user.role === 'Super User' ||
-        user.role === 'station manager' ||
-        user.role === 'admin' ||
-        user.role === 'general admin'
-      ) {
+
+      if (createPriceDto.mode == "fare") {
         return this.routeModel.updateOne(
           {
             _id: id,
           },
           {
-            ...updateRouteDto,
-            updatedBy: user._id,
-            updatedAt: new Date(),
+            farePrices: createPriceDto.prices,
           },
           {
             new: true,
@@ -79,39 +89,39 @@ export class RoutesService {
         );
       }
 
-      throw new HttpException(
-        'You do not have permission to update routes',
-        HttpStatus.FORBIDDEN,
-      );
+      else {
+        return this.routeModel.updateOne(
+          {
+            _id: id,
+          },
+          {
+            parcelPrices: createPriceDto.prices,
+          },
+          {
+            new: true,
+          },
+        );
+      }
+
     } catch (error) {
       throw new HttpException(
-        error.message || 'Something went wrong',
-        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        error.message ?? 'Something went wrong',
+        error.status ?? HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
 
-  remove(_id: string, user: OldJwtPayload): Promise<DeleteResult> {
+  remove(_id: string, user: JwtPayload): Promise<DeleteResult> {
     try {
-      if (
-        user.role === 'Super User' ||
-        user.role === 'station manager' ||
-        user.role === 'admin' ||
-        user.role === 'general admin'
-      ) {
-        return this.routeModel.deleteOne({
-          _id,
-        });
-      }
 
-      throw new HttpException(
-        'Only station managers can delete routes',
-        HttpStatus.FORBIDDEN,
-      );
+      return this.routeModel.deleteOne({
+        _id,
+      });
+
     } catch (error) {
       throw new HttpException(
-        error.message || 'Something went wrong',
-        error.status || HttpStatus.INTERNAL_SERVER_ERROR,
+        error.message ?? 'Something went wrong',
+        error.status ?? HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }
