@@ -12,12 +12,12 @@ export class RoutesService {
   constructor(
     @InjectModel(Route.name)
     private readonly routeModel: Model<RouteDocument>,
-  ) {}
+  ) { }
 
   create(createRouteDto: CreateRouteDto, user: JwtPayload) {
     try {
       return this.routeModel.create({
-        ...createRouteDto,
+        destinations: createRouteDto.destinations,
         sacco: user.user_metadata.sacco,
         station: user.user_metadata.station,
         addedBy: user.sub,
