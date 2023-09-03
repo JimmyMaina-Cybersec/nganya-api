@@ -20,6 +20,9 @@ export class Availability {
   @Prop({ default: null })
   arrivalTime: Date;
 
+  @Prop({ default: null })
+  plateNo: string;
+
   @Prop({ type: SchemaTypes.ObjectId, ref: 'Vehicle' })
   vehicle: Types.ObjectId;
 

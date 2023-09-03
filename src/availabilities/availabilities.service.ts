@@ -66,6 +66,23 @@ export class AvailabilitiesService {
     }
   }
 
+  async findVehicleAvailabilities(user: JwtPayload, fliters: {
+    status?: string,
+  }, plateNo: string) {
+    try {
+      const [availabilities] = await Promise.all([
+        this.availabilityModel
+          .find({ plateNo, status: fliters.status ?? 'Available' })
+          .populate('vehicle')
+          .populate('route'),
+      ]);
+
+      return availabilities
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
+  }
+
   async findOne(id: string, user: JwtPayload) {
     return await this.availabilityModel.findById(id);
   }

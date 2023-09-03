@@ -46,6 +46,18 @@ export class AvailabilitiesController {
     return this.availabilitiesService.findAll(user, filters);
   }
 
+  @SetMetadata('permission', UserPermissions.READ_AVAILABILITIES)
+  @Get('vehicle/:plateNo')
+  findVehicleAvailabilities(
+    @CurrentUser() user: JwtPayload,
+    @Query() filters: {
+      status?: string,
+    },
+    @Param('plateNo') plateNo: string,
+  ) {
+    return this.availabilitiesService.findVehicleAvailabilities(user, filters, plateNo);
+  }
+
 
   @SetMetadata('permission', UserPermissions.READ_AVAILABILITIES)
   @Get(':id')

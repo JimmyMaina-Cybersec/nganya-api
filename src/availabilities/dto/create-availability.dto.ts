@@ -11,6 +11,10 @@ export class CreateAvailabilityDto {
   @IsString()
   vehicle: string;
 
+  @IsString()
+  @IsNotEmpty()
+  plateNo: string;
+
   @IsDateString()
   depatureTime: Date;
 
