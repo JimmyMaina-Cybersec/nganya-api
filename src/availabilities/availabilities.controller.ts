@@ -52,6 +52,7 @@ export class AvailabilitiesController {
     @CurrentUser() user: JwtPayload,
     @Query() filters: {
       status?: string,
+      station?: string,
     },
     @Param('vehicle') vehicle: string,
   ) {
