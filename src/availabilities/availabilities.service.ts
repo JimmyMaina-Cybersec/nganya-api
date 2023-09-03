@@ -68,11 +68,11 @@ export class AvailabilitiesService {
 
   async findVehicleAvailabilities(user: JwtPayload, fliters: {
     status?: string,
-  }, plateNo: string) {
+  }, vehicle: string) {
     try {
       const [availabilities] = await Promise.all([
         this.availabilityModel
-          .find({ plateNo, status: fliters.status ?? 'Available', station: user.user_metadata.station })
+          .find({ vehicle: vehicle, status: fliters.status ?? 'Available', station: user.user_metadata.station })
           .populate('vehicle')
           .populate('route'),
       ]);
