@@ -7,6 +7,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { JwtPayload } from 'src/types/jwt-payload';
 import { StationQuery } from 'src/types/stationQuery';
 import { UpdateStationsDestinationsDTO } from './dto/update-destinations.dto';
+import { ManagementClient } from 'auth0';
 
 @Injectable()
 export class StationsService {
@@ -16,8 +17,26 @@ export class StationsService {
     private readonly stationModel: Model<StationDocument>,
   ) { }
 
-  findOneStation(user: JwtPayload, id: string) {
-    return this.stationModel.findById(id);
+  async findOneStation(user: JwtPayload, id: string) {
+    const client_id: string = 'sy6vl7Klm5UxsoMvKHlBmF4L2dtqTcp3';
+    const client_secret: string =
+      'CBGF9Ab9iCoaO6pxrVzzxglop6A8JteUI_EBFWr3iIkG0mPDjro8UucWnTqqLHOO';
+    const managementClient = new ManagementClient({
+      domain: 'nganya.us.auth0.com',
+      clientId: client_id,
+      clientSecret: client_secret,
+      scope: 'create:users delete:users',
+    });
+
+    const agents = await managementClient.getUsers({
+      q: `user_metadata.station:${id}`,
+    });
+
+    const station = await this.stationModel.findById(id);
+    return {
+      station,
+      users: agents
+    }
 
     // return this.stationModel.findOne({
     //   _id: id,
