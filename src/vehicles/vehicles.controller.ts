@@ -25,7 +25,7 @@ import { PermissionsGuard } from 'src/auth/guards/permissions/permissions.guard'
 @UseGuards(AuthorizationGuard, PermissionsGuard)
 @Controller('vehicles')
 export class VehiclesController {
-  constructor(private readonly vehiclesService: VehiclesService) {}
+  constructor(private readonly vehiclesService: VehiclesService) { }
 
   @SetMetadata('permissions', [UserPermissions.CREATE_VEHICLE])
   @Post('add-vehicle')
@@ -82,12 +82,12 @@ export class VehiclesController {
   }
 
   @SetMetadata('permissions', [UserPermissions.READ_STATION_VEHICLE])
-  @Get()
+  @Get("station-vehicles")
   findStationVehicles(
     @CurrentUser() user: JwtPayload,
     @Pagination() pagination: PaginationQueryType,
   ) {
-    return this.vehiclesService.findAll(user, pagination);
+    return this.vehiclesService.findStationVehicles(user, pagination);
   }
 
   @SetMetadata('permissions', [UserPermissions.ADD_VEHICLE_TO_STATION])

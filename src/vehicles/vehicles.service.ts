@@ -15,7 +15,7 @@ export class VehiclesService {
     @InjectModel(Vehicle.name)
     private vehicleModel: Model<VehicleDocument>,
     @InjectModel(User.name) private userModel: Model<UserDocument>,
-  ) {}
+  ) { }
 
   async checkVehicleRegNo(regNo: string) {
     const exist = await this.vehicleModel.exists({ plateNo: regNo });
@@ -65,11 +65,6 @@ export class VehiclesService {
       const query: VehicleQuery = {};
 
       query.sacco = user.user_metadata.sacco;
-      // query.$or = [
-      //   { lastStation: user.user_metadata.station },
-      //   { currentStation: user.user_metadata.station },
-      //   { nextStation: user.user_metadata.station },
-      // ];
 
       const { page, resPerPage } = pagination;
       const [vehicles, totalCount] = await Promise.all([
@@ -91,6 +86,11 @@ export class VehiclesService {
     }
   }
 
+
+
+
+
+
   async findStationVehicles(user: JwtPayload, pagination) {
     try {
       const query: VehicleQuery = {};
@@ -110,12 +110,13 @@ export class VehiclesService {
         this.vehicleModel.countDocuments(query),
       ]);
 
-      return {
-        data: vehicles,
-        page,
-        resPerPage,
-        numberOfPages: Math.ceil(totalCount / resPerPage),
-      };
+      // return {
+      //   data: vehicles,
+      //   page,
+      //   resPerPage,
+      //   numberOfPages: Math.ceil(totalCount / resPerPage),
+      // };
+      return vehicles;
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
