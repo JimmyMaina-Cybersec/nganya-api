@@ -109,13 +109,6 @@ export class VehiclesService {
           .limit(pagination.resPerPage),
         this.vehicleModel.countDocuments(query),
       ]);
-
-      // return {
-      //   data: vehicles,
-      //   page,
-      //   resPerPage,
-      //   numberOfPages: Math.ceil(totalCount / resPerPage),
-      // };
       return vehicles;
     } catch (error) {
       throw new HttpException(error.message, error.status);

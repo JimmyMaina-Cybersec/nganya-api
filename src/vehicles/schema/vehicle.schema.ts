@@ -26,6 +26,12 @@ export class Vehicle {
   @Prop({ required: false })
   imageURL: string;
 
+  @Prop({ required: true })
+  seatLayout: Array<Array<string>>;
+
+  @Prop({ required: true })
+  capacity: number;
+
   @Prop({ type: String, required: false })
   driver: string;
 
