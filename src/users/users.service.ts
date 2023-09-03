@@ -82,6 +82,10 @@ export class UsersService {
   ) {
     try {
       const newUser = await this.addUser(currentUser, createUserDto);
+      await this.managementClient.updateUserMetadata(
+        { id: newUser.user_id },
+        { station: currentUser.user_metadata.station },
+      );
       await this.addUserRoles(newUser.user_id, [RoleIdType.SERVICE_AGENT]);
       return newUser;
     } catch (error) {
@@ -171,16 +175,16 @@ export class UsersService {
   async assignAgentToStation(body: AssignUserToStationDto) {
     try {
       const agent = await this.managementClient.getUser({ id: body.userId });
-      const agentHasStation = `_exists_:user_metadata.station:${agent.user_metadata.station}`;
-      if (!agentHasStation) {
-        return await this.updateUserMetaData(body.userId, {
-          station: body.station,
-        });
-      } else {
-        return {
-          message: 'Agents already has a station',
-        };
-      }
+      // const agentHasStation = `_exists_:user_metadata.station:${agent.user_metadata.station}`;
+      // if (!agentHasStation) {
+      return await this.updateUserMetaData(body.userId, {
+        station: body.station,
+      });
+      // } else {
+      //   return {
+      //     message: 'Agents already has a station',
+      //   };
+      // }
     } catch (error) {
       console.error(error);
       throw new HttpException(
@@ -502,7 +506,7 @@ export class UsersService {
    * @returns Promise<User<AppMetadata, UserMetadata>>;
    * */
   async addUser(currentUser: JwtPayload, createUserDto: CreateSaccoUserDto) {
-    return await this.managementClient.createUser({
+    const user = await this.managementClient.createUser({
       email: createUserDto.email,
       user_metadata: {
         sacco: currentUser.user_metadata.sacco,
@@ -516,6 +520,14 @@ export class UsersService {
       connection: 'Username-Password-Authentication',
       password: `${createUserDto.idNo}@${createUserDto.firstName}`,
     });
+
+
+    // this.managementClient.updateUserMetadata(
+    //   { id: user.user_id },
+    //   { sacco: currentUser.user_metadata.sacco },
+    // );
+
+    return user;
   }
 
   /**
