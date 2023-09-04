@@ -26,7 +26,7 @@ import { AssignDriverToVehicleDto } from './dto/assign_driver_to_vehicle.dto';
 @UseGuards(AuthorizationGuard, PermissionsGuard)
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly usersService: UsersService) { }
 
   @SetMetadata('permissions', [UserPermissions.CREATE_SACCO_USERS])
   @Post('create/user')
@@ -83,7 +83,8 @@ export class UsersController {
     return this.usersService.findAllManagers(currentUser, pagination);
   }
 
-  @SetMetadata('permissions', [UserPermissions.READ_SERVICE_AGENTS])
+  // @SetMetadata('permissions', [UserPermissions.READ_SERVICE_AGENTS])
+  // TODO: Add permissions
   @Get('agents')
   findAllAgents(
     @CurrentUser() currentUser: JwtPayload,
