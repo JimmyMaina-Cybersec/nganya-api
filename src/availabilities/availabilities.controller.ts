@@ -20,8 +20,10 @@ import { Pagination } from 'src/common/decorators/paginate.decorator';
 import PaginationQueryType from 'src/types/paginationQuery';
 import { AuthGuard } from '@nestjs/passport';
 import { UserPermissions } from 'src/types/PermissionType';
+import { AuthorizationGuard } from 'src/auth/guards/authorization-guard.service';
+import { PermissionsGuard } from 'src/auth/guards/permissions/permissions.guard';
 
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthorizationGuard, PermissionsGuard)
 @Controller('availabilities')
 export class AvailabilitiesController {
   constructor(private readonly availabilitiesService: AvailabilitiesService) { }
