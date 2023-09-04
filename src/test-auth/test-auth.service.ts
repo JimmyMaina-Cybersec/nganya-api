@@ -12,7 +12,7 @@ export class TestAuthService {
   findAll(user: JwtPayload) {
     console.log(user);
 
-    return `This action returns all testAuth`;
+    return user;
   }
 
   findOne(id: number) {

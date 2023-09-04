@@ -22,7 +22,7 @@ import { JwtPayload, OldJwtPayload } from 'src/types/jwt-payload';
 
 @Controller('test-auth')
 export class TestAuthController {
-  constructor(private readonly testAuthService: TestAuthService) {}
+  constructor(private readonly testAuthService: TestAuthService) { }
 
   @Post()
   create(@Body() createTestAuthDto: CreateTestAuthDto) {
@@ -30,7 +30,7 @@ export class TestAuthController {
   }
 
   @UseGuards(AuthorizationGuard, PermissionsGuard)
-  @SetMetadata('permissions', ['read:test-auth'])
+  // @SetMetadata('permissions', ['read:test-auth'])
   @Get()
   findAll(@CurrentUser() currentUser: JwtPayload) {
     return this.testAuthService.findAll(currentUser);
