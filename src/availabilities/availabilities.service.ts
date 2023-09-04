@@ -71,12 +71,11 @@ export class AvailabilitiesService {
     station?: string,
   }, vehicle: string) {
     try {
-      const [availabilities] = await Promise.all([
-        this.availabilityModel
-          .find({ vehicle: vehicle, status: fliters.status ?? 'Available', station: fliters.station })
-          .populate('vehicle')
-          .populate('route'),
-      ]);
+      const availabilities = await this.availabilityModel
+        .find({ vehicle: vehicle, status: fliters.status ?? 'Available', station: user.user_metadata.station })
+        .populate('vehicle')
+        .populate('route')
+
 
       return availabilities
     } catch (error) {
