@@ -87,6 +87,11 @@ export class UsersService {
         { station: currentUser.user_metadata.station },
       );
       await this.addUserRoles(newUser.user_id, [RoleIdType.SERVICE_AGENT]);
+      await this.managementClient.updateUserMetadata({
+        id: newUser.user_id,
+      }, {
+        station: currentUser.user_metadata.station,
+      })
       return newUser;
     } catch (error) {
       console.log(error);
