@@ -32,6 +32,9 @@ export class Percel {
   @Prop({ type: String, required: true })
   reciverLocation: string;
 
+  @Prop({ type: String, required: true })
+  sendingAgentName: string;
+
   @Prop({ type: String, default: null })
   reciverIdNo: string;
 

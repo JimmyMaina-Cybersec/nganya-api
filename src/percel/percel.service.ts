@@ -23,15 +23,16 @@ export class PercelService {
     private readonly percelModel: Model<PercelDocument>,
     @InjectModel(Availability.name)
     private readonly availabilityModel: Model<AvailabilityDocument>,
-  ) {}
+  ) { }
   async sendPercel(createPercelDto: CreatePercelDto, agent: JwtPayload) {
     try {
       if (agent.user_metadata.station) {
         return await this.percelModel.create({
           ...createPercelDto,
           sendingAgent: agent.sub,
+          sendingAgentName: createPercelDto.agentName,
           sendingStation: agent.user_metadata.station,
-          status: 'awaiting transit',
+          status: 'Awaiting Transit',
           sacco: agent.user_metadata.sacco,
         });
       }
@@ -83,8 +84,6 @@ export class PercelService {
         const [parcelInStation, docsCount] = await Promise.all([
           this.percelModel
             .find(parcelQuery)
-            .populate('sendingAgent', 'firstName secondName photoURL')
-            .populate('receivingAgent', 'firstName secondName photoURL')
             .skip(pagination.skip)
             .limit(pagination.resPerPage),
           this.percelModel.countDocuments(parcelQuery),
@@ -115,9 +114,6 @@ export class PercelService {
       const [parcelInStation, docsCount] = await Promise.all([
         this.percelModel
           .find(stationParcels)
-          .populate('sendingAgent', 'firstName secondName photoURL')
-          .populate('receivingAgent', 'firstName secondName photoURL')
-          .populate('recivingStation', 'name location phone photoURL')
           .skip(pagination.skip)
           .limit(pagination.resPerPage),
         this.percelModel.countDocuments(stationParcels),
@@ -163,9 +159,6 @@ export class PercelService {
       const [percels, totalCount] = await Promise.all([
         this.percelModel
           .find(parcelQuery)
-          .populate('sendingAgent', 'firstName secondName photoURL')
-          .populate('receivingAgent', 'firstName secondName photoURL')
-          .populate('sendingStation', 'name location phone photoURL')
           .skip(pagination.skip)
           .limit(pagination.resPerPage),
         this.percelModel.countDocuments(parcelQuery),

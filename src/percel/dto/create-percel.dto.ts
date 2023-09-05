@@ -47,4 +47,7 @@ export class CreatePercelDto {
   @IsString()
   @IsNotEmpty()
   paymentMethode: string;
+
+  @IsString()
+  agentName: string;
 }
