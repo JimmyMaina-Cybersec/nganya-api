@@ -37,7 +37,7 @@ export class PercelService {
         });
       }
       throw new HttpException(
-        'Only station managers and station agents with permission to add availabilities can add availabilities',
+        'Only agents with stations can send parcels',
         HttpStatus.FORBIDDEN,
       );
     } catch (error) {
