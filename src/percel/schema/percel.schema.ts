@@ -38,17 +38,14 @@ export class Percel {
   @Prop({ type: String, default: null })
   reciverIdNo: string;
 
-  @Prop({ type: String, required: true })
-  percelType: string;
-
   @Prop({ type: String, default: 0 })
-  percelWeight: string;
+  parcelWeight: string;
 
   @Prop({ type: String, required: true })
-  percelCategory: string;
+  parcelCategory: string;
 
   @Prop({ type: String, required: true })
-  paymentMethode: string;
+  paymentMethod: string;
 
   @Prop({ type: String, default: 'pending' })
   status: string;
