@@ -6,19 +6,19 @@ import {
   LipaNaMpesaTransaction,
   LipaNaMpesaTransactionDocument,
 } from 'src/lipa-na-mpesa/schema/lipa-na-mpesa.schema';
-import { Percel, PercelDocument } from 'src/percel/schema/percel.schema';
+import { Parcel, PercelDocument } from 'src/percel/schema/percel.schema';
 import { JwtPayload } from 'src/types/jwt-payload';
 
 @Injectable()
 export class ReportsService {
   constructor(
-    @InjectModel(Percel.name)
+    @InjectModel(Parcel.name)
     private readonly percelModel: Model<PercelDocument>,
     @InjectModel(Booking.name)
     private readonly bookingModel: Model<BookingDocument>,
     @InjectModel(LipaNaMpesaTransaction.name)
     private readonly lipaNaMpesaTransactionModel: Model<LipaNaMpesaTransactionDocument>,
-  ) {}
+  ) { }
 
   // Agents: Parcels, Bookings and Transactions with sendingAgent/agent field == agent.sub
   async findAgentParcelReport(agent: JwtPayload, date: string) {
@@ -38,7 +38,7 @@ export class ReportsService {
       console.error(error);
       throw new HttpException(
         error.message ??
-          'Something went wrong while fetching your parcels report',
+        'Something went wrong while fetching your parcels report',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -60,7 +60,7 @@ export class ReportsService {
       console.error(error);
       throw new HttpException(
         error.message ??
-          'Something went wrong while fetching your bookings report',
+        'Something went wrong while fetching your bookings report',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -83,7 +83,7 @@ export class ReportsService {
       console.error(error);
       throw new HttpException(
         error.message ??
-          'Something went wrong while fetching your money collections report',
+        'Something went wrong while fetching your money collections report',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -109,7 +109,7 @@ export class ReportsService {
       console.error(error);
       throw new HttpException(
         error.message ??
-          `Something went wrong while fetching your station's parcels reports`,
+        `Something went wrong while fetching your station's parcels reports`,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -133,7 +133,7 @@ export class ReportsService {
       console.error(error);
       throw new HttpException(
         error.message ??
-          `Something went wrong while fetching your station's bookings reports`,
+        `Something went wrong while fetching your station's bookings reports`,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -157,7 +157,7 @@ export class ReportsService {
       console.error(error);
       throw new HttpException(
         error.message ??
-          `Something went wrong while fetching your station's money collections reports`,
+        `Something went wrong while fetching your station's money collections reports`,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -183,7 +183,7 @@ export class ReportsService {
       console.error(error);
       throw new HttpException(
         error.message ??
-          `Something went wrong while fetching the station's parcels reports`,
+        `Something went wrong while fetching the station's parcels reports`,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -207,7 +207,7 @@ export class ReportsService {
       console.error(error);
       throw new HttpException(
         error.message ??
-          `Something went wrong while fetching the station's bookings reports`,
+        `Something went wrong while fetching the station's bookings reports`,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -231,7 +231,7 @@ export class ReportsService {
       console.error(error);
       throw new HttpException(
         error.message ??
-          `Something went wrong while fetching the station's money collections reports`,
+        `Something went wrong while fetching the station's money collections reports`,
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

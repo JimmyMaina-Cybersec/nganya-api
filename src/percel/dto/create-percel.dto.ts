@@ -39,14 +39,11 @@ export class CreatePercelDto {
 
   @IsString()
   @IsNotEmpty()
-  readonly percelType: string;
-
-  @IsString()
-  readonly percelWeight: string;
+  readonly parcelCategory: string;
 
   @IsString()
   @IsNotEmpty()
-  paymentMethode: string;
+  paymentMethod: string;
 
   @IsString()
   agentName: string;

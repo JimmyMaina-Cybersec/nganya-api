@@ -8,7 +8,7 @@ import {
   Station,
   StationSchema,
 } from 'src/stations/schema/station.schema';
-import { Percel, PercelSchema } from './schema/percel.schema';
+import { Parcel, ParcelSchema } from './schema/percel.schema';
 
 @Module({
   controllers: [PercelController],
@@ -17,8 +17,8 @@ import { Percel, PercelSchema } from './schema/percel.schema';
     MongooseModule.forFeature([
       { name: Availability.name, schema: AvailabilitySchema },
       { name: Station.name, schema: StationSchema },
-      { name: Percel.name, schema: PercelSchema },
+      { name: Parcel.name, schema: ParcelSchema },
     ]),
   ],
 })
-export class PercelModule {}
+export class PercelModule { }

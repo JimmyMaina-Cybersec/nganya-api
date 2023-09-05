@@ -8,7 +8,7 @@ import { CreatePercelDto } from './dto/create-percel.dto';
 import { UpdatePercelDto } from './dto/update-percel.dto';
 import { JwtPayload, OldJwtPayload } from 'src/types/jwt-payload';
 import { Model } from 'mongoose';
-import { Percel, PercelDocument } from './schema/percel.schema';
+import { Parcel, PercelDocument } from './schema/percel.schema';
 import { InjectModel } from '@nestjs/mongoose';
 import { Availability, AvailabilityDocument } from 'src/schemas/Availability';
 import PaginationQueryType from 'src/types/paginationQuery';
@@ -19,7 +19,7 @@ import { UserRoles } from 'src/types/UserRoles';
 @Injectable()
 export class PercelService {
   constructor(
-    @InjectModel(Percel.name)
+    @InjectModel(Parcel.name)
     private readonly percelModel: Model<PercelDocument>,
     @InjectModel(Availability.name)
     private readonly availabilityModel: Model<AvailabilityDocument>,

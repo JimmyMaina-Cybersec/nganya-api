@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { ReportsService } from './reports.service';
 import { ReportsController } from './reports.controller';
-import { Percel, PercelSchema } from 'src/percel/schema/percel.schema';
+import { Parcel, ParcelSchema } from 'src/percel/schema/percel.schema';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Booking, BookingSchema } from 'src/booking/schema/booking.schema';
 import {
@@ -14,7 +14,7 @@ import {
   providers: [ReportsService],
   imports: [
     MongooseModule.forFeature([
-      { name: Percel.name, schema: PercelSchema },
+      { name: Parcel.name, schema: ParcelSchema },
       { name: Booking.name, schema: BookingSchema },
       {
         name: LipaNaMpesaTransaction.name,
@@ -24,4 +24,4 @@ import {
     ]),
   ],
 })
-export class ReportsModule {}
+export class ReportsModule { }

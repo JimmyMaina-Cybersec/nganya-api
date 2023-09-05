@@ -1,10 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, SchemaTypes, Types } from 'mongoose';
 
-export type PercelDocument = HydratedDocument<Percel>;
+export type PercelDocument = HydratedDocument<Parcel>;
 
 @Schema({ timestamps: true })
-export class Percel {
+export class Parcel {
   @Prop({ type: String, required: true })
   senderFirstName: string;
 
@@ -85,4 +85,4 @@ export class Percel {
   updatedBy: string;
 }
 
-export const PercelSchema = SchemaFactory.createForClass(Percel);
+export const ParcelSchema = SchemaFactory.createForClass(Parcel);
