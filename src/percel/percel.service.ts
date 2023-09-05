@@ -131,45 +131,12 @@ export class PercelService {
   }
   async findAll(user: JwtPayload, pagination: PaginationQueryType) {
     try {
-      let parcelQuery = null;
-      if (user.user_roles.includes(UserRoles.GENERAL_ADMIN)) {
-        parcelQuery = await this.percelModel
-          .find({
-            sacco: user.user_metadata.sacco,
-          })
-          .exec();
-      }
-      if (user.user_roles.includes(UserRoles.STATION_MANAGER)) {
-        parcelQuery = await this.percelModel
-          .find({
-            sendingStation: user.user_metadata.station,
-          })
-          .exec();
-      }
-      if (user.user_roles.includes(UserRoles.SERVICE_AGENT)) {
-        parcelQuery = await this.percelModel
-          .find({
-            sendingAgent: user.sub,
-          })
-          .exec();
-      }
-
-      const { page, resPerPage } = pagination;
-
-      const [percels, totalCount] = await Promise.all([
-        this.percelModel
-          .find(parcelQuery)
-          .skip(pagination.skip)
-          .limit(pagination.resPerPage),
-        this.percelModel.countDocuments(parcelQuery),
-      ]);
-
-      return {
-        data: percels,
-        page,
-        resPerPage,
-        numberOfPages: Math.ceil(totalCount / resPerPage),
-      };
+      return await this.percelModel
+        .find({
+          status: 'Awaiting Transit',
+          sendingStation: user.user_metadata.station,
+        })
+        .exec();
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }

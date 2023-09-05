@@ -22,7 +22,7 @@ import { AuthorizationGuard } from 'src/auth/guards/authorization-guard.service'
 import { UserPermissions } from 'src/types/PermissionType';
 
 @UseGuards(AuthorizationGuard, PermissionsGuard)
-@Controller('percels')
+@Controller('parcels')
 export class PercelController {
   constructor(private readonly percelService: PercelService) { }
 
@@ -34,7 +34,7 @@ export class PercelController {
   ) {
     return this.percelService.sendPercel(createPercelDto, agent);
   }
-// agent - all percels in station
+  // agent - all percels in station
   @SetMetadata('permissions', [UserPermissions.READ_SERVICE_AGENT_REPORTS])
   @Get('get-agent-parcels')
   getAgentPercels(
@@ -54,7 +54,7 @@ export class PercelController {
     return this.percelService.getStationPercels(stationManager, pagination);
   }
 
-// admin - all percels in all stations
+  // admin - all percels in all stations
   @SetMetadata('permissions', [UserPermissions.READ_STATIONS_REPORTS])
   @Get('get-parcels/:stationId')
   getAllParcels(
