@@ -65,7 +65,7 @@ export class AvailabilitiesController {
   @SetMetadata('permission', UserPermissions.READ_AVAILABILITIES)
   @Get(':id')
   findOne(
-    @Param('availability/id') id: string,
+    @Param('id') id: string,
     @CurrentUser() user: JwtPayload,
   ) {
     return this.availabilitiesService.findOne(id, user);

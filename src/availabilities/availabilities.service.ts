@@ -84,7 +84,12 @@ export class AvailabilitiesService {
   }
 
   async findOne(id: string, user: JwtPayload) {
-    return await this.availabilityModel.findById(id);
+    const availability = await this.availabilityModel.findById(id).populate('vehicle')
+      .populate('route');
+    if (!availability) {
+      throw new HttpException('Availability not found', HttpStatus.NOT_FOUND);
+    }
+    return availability;
   }
 
   async update(
