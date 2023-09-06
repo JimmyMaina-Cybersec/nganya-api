@@ -51,17 +51,15 @@ export class StationsService {
 
   async createSacco(createStationDto: CreateStationDto, user: JwtPayload) {
     try {
-      await this.stationModel.create({
+      return await this.stationModel.create({
         ...createStationDto,
         sacco: user.user_metadata.sacco,
         addedBy: user.sub,
       });
 
-      return {
-        message: 'Station created successfully',
-      };
+
     } catch (error) {
-      throw new HttpException(error.message, error.status);
+      throw new HttpException(error.message, error.status ?? HttpStatus.BAD_REQUEST);
     }
 
     // return 'This action adds a new station';
