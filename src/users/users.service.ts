@@ -180,18 +180,23 @@ export class UsersService {
   async assignAgentToStation(body: AssignUserToStationDto) {
     try {
       const agent = await this.managementClient.getUser({ id: body.userId });
-      // const agentHasStation = `_exists_:user_metadata.station:${agent.user_metadata.station}`;
+
+      // const agentHasStation = await this.managementClient.getUsers({
+      //   q: `_exists_:user_metadata.station:${agent.user_metadata.station}`,
+      // });
+      // console.log(agentHasStation);
+
       // if (!agentHasStation) {
       return await this.updateUserMetaData(body.userId, {
         station: body.station,
       });
       // } else {
-      //   return {
-      //     message: 'Agents already has a station',
-      //   };
+      //   throw new HttpException(
+      //     'Agent already has a station',
+      //     HttpStatus.CONFLICT,
+      //   );
       // }
     } catch (error) {
-      console.error(error);
       throw new HttpException(
         error.message ?? 'Something went wrong',
         HttpStatus.INTERNAL_SERVER_ERROR,
@@ -224,7 +229,10 @@ export class UsersService {
   async assignManagerToStation(body: AssignUserToStationDto) {
     try {
       const manager = await this.managementClient.getUser({ id: body.userId });
-      const managerHasStation = `_exists_:user_metadata.station:${manager.user_metadata.station}`;
+      // q: `_exists_:user_metadata.station:${manager.user_metadata.station}`;
+      const managerHasStation = await this.managementClient.getUsers({
+        q: `_exists_:user_metadata.station:${manager.user_metadata.station}`,
+      });
       if (!managerHasStation) {
         return await this.updateUserMetaData(body.userId, {
           station: body.station,
