@@ -393,17 +393,12 @@ export class UsersService {
 
   async deleteAgent(agentId: string) {
     try {
-      const user = await this.managementClient.getUser({ id: agentId });
-
-      if (!user) {
-        throw new HttpException('User not found', HttpStatus.NOT_FOUND);
-      }
       const userRole = await this.managementClient.getUserRoles({
         id: agentId,
       });
 
       const isAgent = userRole.some(
-        (role) => role.id === RoleIdType.SERVICE_AGENT,
+        (role) => role.id === RoleIdType.SERVICE_AGENT
       );
 
       if (!isAgent) {
