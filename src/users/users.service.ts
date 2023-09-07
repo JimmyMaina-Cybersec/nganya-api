@@ -45,9 +45,24 @@ export class UsersService {
         await this.addUserRoles(newUser.user_id, [RoleIdType.STATION_MANAGER]);
       } else if (createUserDto.role === 'Driver') {
         await this.addUserRoles(newUser.user_id, [RoleIdType.DRIVER]);
-      } else {
+      } else if (createUserDto.role === 'Service Agent') {
         await this.addUserRoles(newUser.user_id, [RoleIdType.SERVICE_AGENT]);
+      } else {
+        throw new HttpException(
+          'Invalid user role',
+          HttpStatus.BAD_REQUEST,
+        );
       }
+
+      this.managementClient.updateUserMetadata(
+        { id: newUser.user_id },
+        {
+          sacco: currentUser.user_metadata.sacco,
+          station: createUserDto.station ?? null,
+          role: createUserDto.role
+        },
+
+      );
       return newUser;
     } catch (error) {
       console.log(error);
