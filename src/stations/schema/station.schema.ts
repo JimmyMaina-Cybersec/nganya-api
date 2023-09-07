@@ -6,7 +6,7 @@ export type StationDocument = HydratedDocument<Station>;
 
 @Schema({ timestamps: true })
 export class Station {
-  @Prop({ required: true })
+  @Prop({ required: false, default: null })
   name: string;
 
   @Prop({ required: true })

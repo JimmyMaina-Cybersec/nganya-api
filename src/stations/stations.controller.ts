@@ -32,7 +32,7 @@ export class StationsController {
     @Body() createStationDto: CreateStationDto,
     @CurrentUser() currentUser: JwtPayload,
   ) {
-    return this.stationsService.createSacco(createStationDto, currentUser);
+    return this.stationsService.createStation(createStationDto, currentUser);
   }
 
   @SetMetadata('permissions', [UserPermissions.READ_SERVICE_AGENT_REPORTS])

@@ -49,7 +49,7 @@ export class StationsService {
     // });
   }
 
-  async createSacco(createStationDto: CreateStationDto, user: JwtPayload) {
+  async createStation(createStationDto: CreateStationDto, user: JwtPayload) {
     try {
       return await this.stationModel.create({
         ...createStationDto,
