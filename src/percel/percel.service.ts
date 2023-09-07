@@ -18,6 +18,7 @@ import { UserRoles } from 'src/types/UserRoles';
 
 @Injectable()
 export class PercelService {
+
   constructor(
     @InjectModel(Parcel.name)
     private readonly percelModel: Model<PercelDocument>,
@@ -137,6 +138,15 @@ export class PercelService {
           sendingStation: user.user_metadata.station,
         })
         .exec();
+    } catch (error) {
+      throw new HttpException(error.message, error.status);
+    }
+  }
+
+
+  getPercel(parcelId: string) {
+    try {
+      return this.percelModel.findById(parcelId);
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }

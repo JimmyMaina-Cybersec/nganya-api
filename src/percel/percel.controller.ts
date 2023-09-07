@@ -44,6 +44,14 @@ export class PercelController {
     return this.percelService.getAgentPercels(agent, pagination);
   }
 
+  // @SetMetadata('permissions', [UserPermissions.READ_SERVICE_AGENT_REPORTS])
+  @Get(':id')
+  getParcel(
+    @Param('id') parcelId: string,
+  ) {
+    return this.percelService.getPercel(parcelId);
+  }
+
   // station manager- all percels in station
   @SetMetadata('permissions', [UserPermissions.READ_SERVICE_AGENTS_REPORTS])
   @Get('get-parcels-in-station')
