@@ -39,7 +39,7 @@ export class CreatePercelDto {
   paymentMethod: string;
 
   @IsString()
-  agentName: string;
+  sendingAgentName: string;
 
   @IsNumber()
   shippingAmount: number;

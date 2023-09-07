@@ -27,21 +27,18 @@ export class PercelService {
   ) { }
   async sendPercel(createPercelDto: CreatePercelDto, agent: JwtPayload) {
     try {
-      if (agent.user_metadata.station) {
-        return await this.percelModel.create({
-          ...createPercelDto,
-          sendingAgent: agent.sub,
-          sendingAgentName: createPercelDto.agentName,
-          sendingStation: agent.user_metadata.station,
-          status: 'Awaiting Transit',
-          sacco: agent.user_metadata.sacco,
-        });
-      }
-      throw new HttpException(
-        'Only agents with stations can send parcels',
-        HttpStatus.FORBIDDEN,
-      );
-    } catch (error) {
+      return await this.percelModel.create({
+
+        ...createPercelDto,
+        sendingAgent: agent.sub,
+        sendingAgentName: createPercelDto.sendingAgentName,
+        sendingStation: agent.user_metadata.station,
+        status: 'Awaiting Transit',
+        sacco: agent.user_metadata.sacco,
+      });
+    }
+
+    catch (error) {
       throw new HttpException(error.message, error.status);
     }
   }
