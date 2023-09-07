@@ -40,6 +40,9 @@ export class Parcel {
   @Prop({ type: String, required: true })
   parcelCategory: string;
 
+  @Prop({ type: Number, required: true })
+  shippingAmount: number;
+
   @Prop({ type: String, required: true })
   paymentMethod: string;
 
