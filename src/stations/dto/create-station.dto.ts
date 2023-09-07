@@ -20,6 +20,5 @@ export class CreateStationDto {
   @IsArray()
   destinations: string[];
 
-  @IsArray()
-  parcelCategories: string[];
+
 }

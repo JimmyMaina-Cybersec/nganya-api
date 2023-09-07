@@ -28,8 +28,6 @@ export class Station {
   @Prop({ required: false, default: [] })
   destinations: Array<string>;
 
-  @Prop({ required: false, default: null })
-  parcelCategories: Array<string>;
 
   @Prop({
     required: true,
@@ -41,27 +39,20 @@ export class Station {
   status: string;
 
   @Prop({
-    required: false,
-    default: () => Date.now(),
+    required: true,
     immutable: true,
+    type: String,
   })
-  addedOn: Date;
-
-  @Prop({
-    required: false,
-    immutable: true,
-    type: SchemaTypes.ObjectId,
-  })
-  addedBy: Types.ObjectId;
+  addedBy: String;
 
   @Prop({ required: false })
   upadatedAt: Date;
 
   @Prop({
     required: false,
-    type: SchemaTypes.ObjectId,
+    type: String,
   })
-  updatedBy: Types.ObjectId | string;
+  updatedBy: String;
 }
 
 export const StationSchema = SchemaFactory.createForClass(Station);

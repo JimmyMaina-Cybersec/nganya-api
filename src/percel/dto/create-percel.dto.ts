@@ -3,11 +3,8 @@ import { IsNotEmpty, IsString } from 'class-validator';
 export class CreatePercelDto {
   @IsString()
   @IsNotEmpty()
-  readonly senderFirstName: string;
+  readonly senderName: string;
 
-  @IsString()
-  @IsNotEmpty()
-  readonly senderSecondName: string;
 
   @IsString()
   @IsNotEmpty()
@@ -23,11 +20,7 @@ export class CreatePercelDto {
 
   @IsString()
   @IsNotEmpty()
-  readonly reciverFirstName: string;
-
-  @IsString()
-  @IsNotEmpty()
-  readonly reciverSecondName: string;
+  readonly reciverName: string;
 
   @IsString()
   @IsNotEmpty()

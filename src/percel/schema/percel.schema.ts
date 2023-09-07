@@ -6,10 +6,8 @@ export type PercelDocument = HydratedDocument<Parcel>;
 @Schema({ timestamps: true })
 export class Parcel {
   @Prop({ type: String, required: true })
-  senderFirstName: string;
+  senderName: string;
 
-  @Prop({ type: String, required: true })
-  senderSecondName: string;
 
   @Prop({ type: String, required: true })
   senderPhone: string;
@@ -21,10 +19,8 @@ export class Parcel {
   senderIdNo: string;
 
   @Prop({ type: String, required: true })
-  reciverFirstName: string;
+  reciverName: string;
 
-  @Prop({ type: String, required: true })
-  reciverSecondName: string;
 
   @Prop({ type: String, required: true })
   reciverPhone: string;
