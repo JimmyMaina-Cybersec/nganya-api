@@ -206,17 +206,10 @@ export class UsersService {
 
   async removeAgentFromStation(body: RemoveUserFromStationDto) {
     try {
-      const agent = await this.managementClient.getUser({ id: body.userId });
-      const agentHasStation = `_exists_:user_metadata.station:${agent.user_metadata.station}`;
-      if (agentHasStation) {
-        return await this.updateUserMetaData(body.userId, {
-          station: null,
-        });
-      } else {
-        return {
-          message: 'Agent does not have a station',
-        };
-      }
+      return await this.updateUserMetaData(body.userId, {
+        station: null,
+      });
+
     } catch (error) {
       console.error(error);
       throw new HttpException(
