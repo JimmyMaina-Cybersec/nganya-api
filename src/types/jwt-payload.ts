@@ -54,6 +54,3 @@ export class JwtPayload {
   permissions: string[];
   sub: string;
 }
-
-
-

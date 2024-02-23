@@ -1,9 +1,4 @@
-import {
-  HttpException,
-  HttpStatus,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { CreateAvailabilityDto } from './dto/create-availability.dto';
 import { UpdateAvailabilityDto } from './dto/update-availability.dto';
 import { JwtPayload } from 'src/types/jwt-payload';
@@ -13,24 +8,14 @@ import {
   Availability,
   AvailabilityDocument,
 } from './schema/availability.schema';
-import { Station, StationDocument } from 'src/stations/schema/station.schema';
-import { Vehicle, VehicleDocument } from 'src/vehicles/schema/vehicle.schema';
-import PaginationQueryType from 'src/types/paginationQuery';
-import { AvailabilityQuery } from '../types/availabilitiesQuery';
-import { UserRoles } from 'src/types/UserRoles';
-import { Permission } from 'src/types/permission';
-import { UserPermissions } from 'src/types/PermissionType';
+import { UserRoles } from '../types/UserRoles';
 
 @Injectable()
 export class AvailabilitiesService {
   constructor(
     @InjectModel(Availability.name)
     private readonly availabilityModel: Model<AvailabilityDocument>,
-    @InjectModel(Station.name)
-    private readonly stationModel: Model<StationDocument>,
-    @InjectModel(Vehicle.name)
-    private readonly vehicleModel: Model<VehicleDocument>,
-  ) { }
+  ) {}
 
   async create(createAvailabilityDto: CreateAvailabilityDto, user: JwtPayload) {
     try {
@@ -43,48 +28,62 @@ export class AvailabilitiesService {
         addedOn: new Date(),
         status: 'Available',
       });
-
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
   }
 
-  async findAll(user: JwtPayload, fliters: {
-    status?: string,
-  },) {
+  async findAll(
+    user: JwtPayload,
+    filters: {
+      status?: string;
+    },
+  ) {
     try {
       const [availabilities] = await Promise.all([
         this.availabilityModel
-          .find({ station: user.user_metadata.station, status: fliters.status ?? 'Available' })
+          .find({
+            station: user.user_metadata.station,
+            status: filters.status ?? 'Available',
+          })
           .populate('vehicle')
           .populate('route'),
       ]);
 
-      return availabilities
+      return availabilities;
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
   }
 
-  async findVehicleAvailabilities(user: JwtPayload, fliters: {
-    status?: string,
-    station?: string,
-  }, vehicle: string) {
+  async findVehicleAvailabilities(
+    user: JwtPayload,
+    fliters: {
+      status?: string;
+      station?: string;
+    },
+    vehicle: string,
+  ) {
     try {
       const availabilities = await this.availabilityModel
-        .find({ vehicle: vehicle, status: fliters.status ?? 'Available', station: user.user_metadata.station })
+        .find({
+          vehicle: vehicle,
+          status: fliters.status ?? 'Available',
+          station: user.user_metadata.station,
+        })
         .populate('vehicle')
-        .populate('route')
+        .populate('route');
 
-
-      return availabilities
+      return availabilities;
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
   }
 
   async findOne(id: string, user: JwtPayload) {
-    const availability = await this.availabilityModel.findById(id).populate('vehicle')
+    const availability = await this.availabilityModel
+      .findById(id)
+      .populate('vehicle')
       .populate('route');
     if (!availability) {
       throw new HttpException('Availability not found', HttpStatus.NOT_FOUND);
@@ -98,7 +97,6 @@ export class AvailabilitiesService {
     user: JwtPayload,
   ) {
     try {
-
       return await this.availabilityModel.findByIdAndUpdate(
         id,
         {
@@ -108,7 +106,6 @@ export class AvailabilitiesService {
         },
         { new: true },
       );
-
     } catch (error) {
       throw new HttpException(error.message, error.status);
     }
@@ -116,8 +113,10 @@ export class AvailabilitiesService {
 
   async deleteAvalablity(id: string, user: JwtPayload) {
     try {
-      if (user.user_roles.includes(UserRoles.SACCO_ADMIN) ||
-        user.user_roles.includes(UserRoles.GENERAL_ADMIN)) {
+      if (
+        user.user_roles.includes(UserRoles.SACCO_ADMIN) ||
+        user.user_roles.includes(UserRoles.GENERAL_ADMIN)
+      ) {
         await this.availabilityModel.findByIdAndDelete(id);
       }
       if (

@@ -26,7 +26,7 @@ import { PermissionsGuard } from 'src/auth/guards/permissions/permissions.guard'
 @UseGuards(AuthorizationGuard, PermissionsGuard)
 @Controller('availabilities')
 export class AvailabilitiesController {
-  constructor(private readonly availabilitiesService: AvailabilitiesService) { }
+  constructor(private readonly availabilitiesService: AvailabilitiesService) {}
 
   @SetMetadata('permission', UserPermissions.CREATE_AVAILABILITIES)
   @Post('add-availability')
@@ -41,8 +41,9 @@ export class AvailabilitiesController {
   @Get()
   findAll(
     @CurrentUser() user: JwtPayload,
-    @Query() filters: {
-      status?: string,
+    @Query()
+    filters: {
+      status?: string;
     },
   ) {
     return this.availabilitiesService.findAll(user, filters);
@@ -52,22 +53,23 @@ export class AvailabilitiesController {
   @Get('vehicle/:vehicle')
   findVehicleAvailabilities(
     @CurrentUser() user: JwtPayload,
-    @Query() filters: {
-      status?: string,
-      station?: string,
+    @Query()
+    filters: {
+      status?: string;
+      station?: string;
     },
     @Param('vehicle') vehicle: string,
   ) {
-    return this.availabilitiesService.findVehicleAvailabilities(user, filters, vehicle);
+    return this.availabilitiesService.findVehicleAvailabilities(
+      user,
+      filters,
+      vehicle,
+    );
   }
-
 
   @SetMetadata('permission', UserPermissions.READ_AVAILABILITIES)
   @Get(':id')
-  findOne(
-    @Param('id') id: string,
-    @CurrentUser() user: JwtPayload,
-  ) {
+  findOne(@Param('id') id: string, @CurrentUser() user: JwtPayload) {
     return this.availabilitiesService.findOne(id, user);
   }
 
@@ -91,6 +93,3 @@ export class AvailabilitiesController {
     return this.availabilitiesService.deleteAvalablity(id, user);
   }
 }
-
-
-
